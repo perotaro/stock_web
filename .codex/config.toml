@@ -1,0 +1,89 @@
+model_context_window = 1000000
+model_auto_compact_token_limit = 900000
+
+################################################################################
+# Core
+################################################################################
+model_provider = "openai"
+
+# 品質寄り（重ければ "medium" に）
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+
+# コマンド実行は「必要時だけ確認」に寄せつつ、ファイル編集できる sandbox に
+approval_policy = "on-request"
+sandbox_mode = "danger-full-access"
+
+# 余計な推論ログは消す（必要なら false）
+hide_agent_reasoning = true
+
+file_opener = "vscode"
+check_for_update_on_startup = true
+mcp_oauth_credentials_store = "auto"
+
+################################################################################
+# History
+################################################################################
+[history]
+persistence = "save-all"
+# max_bytes = 5_242_880  # 5MB（必要なら）
+
+################################################################################
+# Sandbox (workspace-write の追加設定)
+################################################################################
+[sandbox_workspace_write]
+# パッケージ導入・外部API呼び出し等が必要なら true 推奨
+network_access = true
+writable_roots = []
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+################################################################################
+# Shell environment（秘密系 env をむやみに子プロセスへ渡さない）
+################################################################################
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = false
+exclude = []
+set = {}
+include_only = []
+experimental_use_profile = false
+
+################################################################################
+# Web search（Codexの検索ツールをON）
+################################################################################
+[features]
+shell_tool = true
+shell_snapshot = true
+unified_exec = false
+apply_patch_freeform = false
+exec_policy = true
+
+################################################################################
+# MCP Servers
+################################################################################
+
+# --- Serena MCP (long-term memory / project workflow)
+[mcp_servers.serena]
+# uvx が PATH に乗らない/別物を踏む事故を避けるため “絶対パス推奨”
+# （上の uv install を vscode ユーザーで実行した想定）
+command = "/home/vscode/.local/bin/uvx"
+
+args = [
+  "--from", "git+https://github.com/oraios/serena",
+  "serena", "start-mcp-server",
+  "--context", "codex",
+  "--project-from-cwd",
+  "--open-web-dashboard", "false",
+]
+
+# 初回はインデックス作成などで時間がかかりがちなので少し長めに
+startup_timeout_sec = 60
+tool_timeout_sec = 120
+
+[mcp_servers.drawio]
+command = "npx"
+args = ["-y", "@drawio/mcp"]
+
+[projects."/workspace"]
+trust_level = "trusted"
