@@ -1,0 +1,52 @@
+{
+  "name": "web dev",
+  // compose を devcontainer から利用
+  "dockerComposeFile": [
+    "../compose.yml"
+  ],
+  // アタッチ先は dev サービス
+  "service": "dev_web",
+  // ルートがそのままワークスペース
+  "workspaceFolder": "/workspace",
+
+  // // Node/npm は Features で導入（npm not found を回避）
+  // "features": {
+  //   "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  // },
+
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+
+  "overrideCommand": false,
+
+  // Codex を CLI/拡張ともに用意、Python 依存もインストール
+  
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.npm || true && mkdir -p $HOME/.npm-global && npm config set prefix $HOME/.npm-global && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> $HOME/.bashrc && export PATH=$HOME/.npm-global/bin:$PATH && npm i -g @openai/codex && python -m pip install -U pip && if [ -f apps/backend/requirements.txt ]; then pip install -r apps/backend/requirements.txt; fi",
+  "postStartCommand": "grep -q '.npm-global/bin' $HOME/.bashrc || echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> $HOME/.bashrc; sudo chown -R vscode:vscode /home/vscode/.npm /home/vscode/.codex || true",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  // dev コンテナ起動時に別コンテナも立ち上げたい場合（任意）
+  "runServices": ["dev_web"],
+
+  "mounts": [
+      // Codex のログイン情報(~/.codex)をコンテナ間で永続化
+      "source=codex-config,target=/home/vscode/.codex,type=volume",
+      // npm キャッシュを永続化（任意）
+      "source=workspace-npm-cache,target=/home/vscode/.npm,type=volume"
+  ]
+}

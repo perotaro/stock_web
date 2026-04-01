@@ -1,0 +1,35 @@
+# ベースは devcontainers の Python
+FROM mcr.microsoft.com/devcontainers/python:3.11
+
+# ルートで Node.js 20 + npm を導入（確実に npm が入る手順）
+USER root
+SHELL ["/bin/bash", "-lc"]
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nodejs \
+    && node -v && npm -v \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# AWS CLI v2 を導入
+# AWS CLI v2 を導入
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "${ARCH}" in \
+        x86_64) AWS_ARCH="x86_64" ;; \
+        aarch64|arm64) AWS_ARCH="aarch64" ;; \
+        *) echo "Unsupported architecture: ${ARCH}" >&2; exit 1 ;; \
+    esac; \
+    rm -f /etc/apt/sources.list.d/yarn.list || true; \
+    rm -f /etc/apt/sources.list.d/nodesource.list || true; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends curl unzip; \
+    curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o /tmp/awscliv2.zip; \
+    unzip -q /tmp/awscliv2.zip -d /tmp; \
+    /tmp/aws/install; \
+    rm -rf /tmp/aws /tmp/awscliv2.zip; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
+
+# 以降は開発ユーザー
+USER vscode
+WORKDIR /workspace

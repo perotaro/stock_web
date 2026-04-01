@@ -1,0 +1,52 @@
+services:
+  dev_web:
+    # 開発専用。devcontainer がアタッチする先
+    build:
+      context: .
+      dockerfile: ./.devcontainer/Dockerfile.dev
+    user: "1000:1000"
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace:rw
+      - npm-cache:/home/vscode/.npm
+
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
+      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://dynamodb-local:8000}
+    # 起動し続ける
+    init: true
+    command: sleep infinity
+    # depends_on:
+    #   dynamodb-local-web:
+    #     condition: service_started
+
+  # dynamodb-local-web:
+  #   image: amazon/dynamodb-local:latest
+  #   container_name: dynamodb-local-web
+  #   user: root
+  #   command: ["-jar","DynamoDBLocal.jar","-sharedDb","-dbPath","/home/dynamodblocal/data"]
+  #   working_dir: /home/dynamodblocal
+  #   volumes:
+  #     - dynamodb-data:/home/dynamodblocal/data
+  #   ports:
+  #     - "${DYNAMODB_PORT:-8000}:8000"
+
+  # dynamodb-admin-web:
+  #   image: aaronshaf/dynamodb-admin:latest
+  #   container_name: dynamodb-admin-web
+  #   restart: unless-stopped
+  #   environment:
+  #     - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+  #     - AWS_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
+  #   depends_on:
+  #     - dynamodb-local-web
+  #   ports:
+  #     - "${DYNAMODB_ADMIN_PORT:-8001}:8001"
+
+volumes:
+  npm-cache:
+  dynamodb-data:
