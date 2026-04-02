@@ -30,6 +30,10 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
+# uv をビルド時に導入し、devcontainer 起動直後から利用可能にする
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh \
+    && uv --version
+
 # 以降は開発ユーザー
 USER vscode
 WORKDIR /workspace
