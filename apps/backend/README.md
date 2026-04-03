@@ -97,6 +97,20 @@ apps/backend/
 pip install -r apps/backend/requirements.txt
 ```
 
+## ローカル実行コンテナ
+
+ルートの [`compose.yml`](/workspace/compose.yml) には `backend_dev` サービスを用意しています。`DynamoDB Local` はこのリポジトリ内では起動せず、バッチ側 compose が起動している共有インスタンスを利用する前提です。
+
+```bash
+docker compose up -d backend_dev
+docker compose logs -f backend_dev
+```
+
+- 既定ポートは `8080`
+- `DYNAMODB_ENDPOINT_URL` の既定値は `http://host.docker.internal:8000`
+- 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
+- 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
+
 ## テスト・静的解析
 
 ```bash

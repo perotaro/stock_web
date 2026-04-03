@@ -14,13 +14,36 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
-      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://dynamodb-local:8000}
+      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://host.docker.internal:8000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # 起動し続ける
     init: true
     command: sleep infinity
     # depends_on:
     #   dynamodb-local-web:
     #     condition: service_started
+
+  backend_dev:
+    # バックエンドのローカル実行専用
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.dev
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace:rw
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
+      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://host.docker.internal:8000}
+      - BACKEND_PORT=${BACKEND_PORT:-8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    init: true
+    command: bash /workspace/apps/backend/scripts/run_dev.sh
 
   # dynamodb-local-web:
   #   image: amazon/dynamodb-local:latest

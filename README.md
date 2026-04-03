@@ -167,7 +167,22 @@ root/
 
 ## ローカル開発
 
-開発環境は devcontainer 前提です。`compose.yml` には devcontainer がアタッチする `dev_web` サービス定義があり、必要に応じて DynamoDB Local を使えるようにコメント付きの設定も置いています。
+開発環境は devcontainer 前提です。`compose.yml` には devcontainer がアタッチする `dev_web` サービス定義があり、`dev_web` と `backend_dev` はどちらもバッチ側 compose が起動している共有 `DynamoDB Local` を参照する既定値になっています。必要に応じて、このリポジトリ単体で DynamoDB Local を使えるようにコメント付きの設定も残しています。
+
+あわせて、ローカルでバックエンドを起動するための `backend_dev` サービスを `compose.yml` に用意しています。`DynamoDB Local` はこのリポジトリ内では起動せず、バッチ側 compose で起動している共有インスタンスを利用する前提です。
+
+### バックエンド実行コンテナ
+
+```bash
+docker compose up -d backend_dev
+docker compose logs -f backend_dev
+```
+
+- 既定ポートは `http://localhost:8080`
+- `DYNAMODB_ENDPOINT_URL` の既定値は `http://host.docker.internal:8000`
+- Linux でも `extra_hosts: host.docker.internal:host-gateway` で共有 DynamoDB Local に到達できるようにしています
+- 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
+- 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
 
 ただし、現時点ではフロントエンドやバックエンドの実装本体はまだ十分に配置されていません。全体セットアップやアプリ起動の手順は、実装追加に合わせて README を更新します。
 
