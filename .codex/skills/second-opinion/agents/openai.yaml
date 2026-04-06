@@ -1,0 +1,7 @@
+interface:
+  display_name: "Second Opinion"
+  short_description: "Independent review of prior answers and decisions"
+  default_prompt: "Use $second-opinion to spawn an independent subagent, evaluate the previous answer objectively, verify claims from primary evidence, and state uncertainty clearly."
+
+policy:
+  allow_implicit_invocation: false
