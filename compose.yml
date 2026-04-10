@@ -9,6 +9,7 @@ services:
     volumes:
       - ./:/workspace:rw
       - npm-cache:/home/vscode/.npm
+      - frontend-node-modules:/workspace/apps/frontend/node_modules
 
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
@@ -45,6 +46,28 @@ services:
     init: true
     command: bash /workspace/apps/backend/scripts/run_dev.sh
 
+  frontend_dev:
+    # フロントエンドのローカル実行専用
+    build:
+      context: .
+      dockerfile: ./.devcontainer/Dockerfile.dev
+    working_dir: /workspace/apps/frontend
+    volumes:
+      - ./:/workspace:rw
+      - npm-cache:/home/vscode/.npm
+      - frontend-node-modules:/workspace/apps/frontend/node_modules
+    environment:
+      - FRONTEND_API_PROXY_TARGET=http://backend_dev:8080
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend_dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    init: true
+    command: >-
+      bash -lc "if [ ! -d node_modules ]; then npm ci; fi && npm run dev -- --host 0.0.0.0 --port 5173"
+
   # dynamodb-local-web:
   #   image: amazon/dynamodb-local:latest
   #   container_name: dynamodb-local-web
@@ -72,4 +95,5 @@ services:
 
 volumes:
   npm-cache:
+  frontend-node-modules:
   dynamodb-data:

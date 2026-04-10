@@ -51,11 +51,12 @@ Guppy の Web システムは、公開トップページとログイン後画面
 
 ## 現在の状態
 
-現時点では、実装よりも要件定義と開発ガイドの整備が先行しています。特に以下が先に存在しています。
+現時点では、バックエンドはプレースホルダー API、フロントエンドは開発基盤まで整備済みです。特に以下が先に存在しています。
 
 - ルートの開発ガイド: [AGENTS.md](/workspace/AGENTS.md)
 - バックエンド向けガイド: [apps/backend/AGENTS.md](/workspace/apps/backend/AGENTS.md)
 - バックエンド README: [apps/backend/README.md](/workspace/apps/backend/README.md)
+- フロントエンド README: [apps/frontend/README.md](/workspace/apps/frontend/README.md)
 - システム要件定義: [docs/required/web_system_required.md](/workspace/docs/required/web_system_required.md)
 - 開発コンテナ定義: [compose.yml](/workspace/compose.yml), [.devcontainer/devcontainer.json](/workspace/.devcontainer/devcontainer.json)
 
@@ -184,7 +185,28 @@ docker compose logs -f backend_dev
 - 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
 - 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
 
-ただし、現時点ではフロントエンドやバックエンドの実装本体はまだ十分に配置されていません。全体セットアップやアプリ起動の手順は、実装追加に合わせて README を更新します。
+フロントエンドは `apps/frontend` に Vite ベースの開発環境を追加済みです。公開トップ、ログイン導線、認証後画面のルーティング骨格、env 検証、API クライアント、Vitest / Playwright の設定が入っています。
+
+### フロントエンド実行
+
+```bash
+cd apps/frontend
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+- 既定ポートは `http://localhost:5173`
+- `VITE_API_BASE_URL` は既定で `/api`
+- `FRONTEND_API_PROXY_TARGET` を設定すると、Vite 開発サーバからバックエンドへ `/api` をプロキシできます
+- OIDC 実接続前の画面開発を進めるため、既定では `VITE_ENABLE_DEV_AUTH_BYPASS=true` を用意しています
+
+Docker Compose でフロントとバックエンドを一緒に起動する場合は次を使えます。
+
+```bash
+docker compose up -d backend_dev frontend_dev
+docker compose logs -f frontend_dev
+```
 
 ## バックエンドについて
 

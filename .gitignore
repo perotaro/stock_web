@@ -1,2 +1,7 @@
 .serena
 apps/backend/src/__pycache__/*.pyc
+node_modules/
+apps/frontend/dist/
+apps/frontend/playwright-report/
+apps/frontend/test-results/
+apps/frontend/.env.local
