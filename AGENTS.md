@@ -1,3 +1,5 @@
+# general
+
 ## You Must
 
 必ず思考は英語で、回答は日本語でお願いします。
@@ -109,6 +111,21 @@
 - 新しいツールや手法を適切に評価して取り入れる
 - チームや将来の開発者のために知識を文書化
 
+# CC-SDD
 
+## Project guidance
+- Project-wide rules and architecture guidance live in `.kiro/steering/`.
+- Folder-specific conventions belong in nested `AGENTS.md` files near the code.
+- Spec artifacts live in `.kiro/specs/`.
 
+## Language
+- Markdown files generated for specs must follow `spec.json.language`.
 
+## Workflow
+- Default workflow: Requirements → Design → Tasks → Implementation.
+- Require human review at each phase unless fast-tracking is explicitly requested.
+- Keep steering current when project-wide conventions change.
+- Follow user instructions exactly and act autonomously within that scope.
+
+## Skills
+- Check repository skills under `.agents/skills/` and use them when they clearly match the task.

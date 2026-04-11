@@ -58,6 +58,8 @@ shell_snapshot = true
 unified_exec = false
 apply_patch_freeform = false
 exec_policy = true
+collaboration_modes = true
+multi_agent = true
 
 ################################################################################
 # MCP Servers
