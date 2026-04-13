@@ -90,5 +90,14 @@ approval_mode = "approve"
 command = "npx"
 args = ["-y", "@drawio/mcp"]
 
+[mcp_servers."gemini-cli"]
+command = "npx"
+args = ["-y", "gemini-mcp-tool"]
+startup_timeout_sec = 60
+tool_timeout_sec = 300
+
+[mcp_servers."gemini-cli".tools.ask-gemini]
+approval_mode = "approve"
+
 [projects."/workspace"]
 trust_level = "trusted"

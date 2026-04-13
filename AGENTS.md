@@ -111,6 +111,13 @@
 - 新しいツールや手法を適切に評価して取り入れる
 - チームや将来の開発者のために知識を文書化
 
+## Skills
+- Check repository skills under `.agents/skills/` and workspace skills under `.codex/skills/`, and use them when they clearly match the task.
+- ユーザーが `$skill-name` またはスキル名を明示した場合は、そのスキルを優先して適用する
+- 外部調査、Web検索、最新情報確認、公式ドキュメント確認、出典確認が必要になった場合、`gemini-search-fallback` が利用可能なら必ず最初に使う
+- 最初は手元の知識だけで回答を始めた場合でも、途中で外部調査が必要になった時点で `gemini-search-fallback` に切り替える
+- ただし、より高優先の指示で直接検証、厳密な出典提示、または必須ブラウジングが求められる場合は、その要件を優先する
+
 # CC-SDD
 
 ## Project guidance
@@ -126,6 +133,3 @@
 - Require human review at each phase unless fast-tracking is explicitly requested.
 - Keep steering current when project-wide conventions change.
 - Follow user instructions exactly and act autonomously within that scope.
-
-## Skills
-- Check repository skills under `.agents/skills/` and use them when they clearly match the task.
