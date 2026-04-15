@@ -187,18 +187,22 @@ Client
 - 指定 `system_code` の最新結果のみを返す
 - `META#LATEST` をヘッダ情報として扱う
 - `SIGNAL#...` を `signals[]` として返す
+- API 契約上は `BUY` 以外の判定も許容するが、初期運用では保存件数を抑えるため `BUY` 中心の登録を想定する
 - DynamoDB の並び順を維持し、優先度順を崩さない
 
 #### `GET /api/v1/watchlist`
 - `is_active` 未指定時は `true` を補完する
 - `updated_at` 降順を前提に返す
-- `q_ticker` は部分一致で扱う
-- 当面はページングを実装しない
+- `q_ticker` は完全一致で扱い、指定時は `ticker` 主キーで直接取得する
+- `q_ticker` 未指定時は `limit/cursor` によるカーソルベースページングを行う
+- `system_code` / `category_code` は当面サーバー側フィルタで扱う
 
 ### 8.3 入力検証方針
 - `system_code` は必須 Path Parameter とする
 - `is_active` は boolean として解釈する
 - `sort` は `updated_at_desc` のみ許可する
+- `limit` は `1..100` の整数のみ許可する
+- `cursor` は自APIが発行した opaque cursor のみ受け付ける
 - 不正な query/path は `400 Bad Request` を返す
 
 ### 8.4 エラー応答方針
@@ -228,7 +232,8 @@ Client
 - `systems/{system_code}/latest`
   - `md_system_latest_signals` を `Query`
 - `watchlist`
-  - `md_watchlist` の GSI を `Query`
+  - `q_ticker` 指定時は `md_watchlist` を `GetItem`
+  - `q_ticker` 未指定時は `md_watchlist` の GSI を `Query`
 
 ### 9.3 バックエンドで持たない責務
 - 当月成功率の再計算
@@ -401,6 +406,7 @@ infra/cdk/
 - `systems/{system_code}/latest` が保存済み順序を維持する
 - `watchlist` が `is_active=true` を既定値として扱う
 - `watchlist` が `updated_at` 降順で返る
+- `watchlist` が `limit/cursor` に従って段階取得できる
 - 存在しない `system_code` に対して `404` を返す
 - JST の日時文字列を壊さず返す
 

@@ -45,10 +45,10 @@
 
 - `GET /api/v1/watchlist`
   - `/app/watchlist` 向けの対象銘柄一覧を返す
-  - `q_ticker` は部分一致
+  - `q_ticker` は完全一致
   - `is_active` のデフォルトは `true`
   - 並び順は `updated_at` 降順
-  - 当面ページングは行わず全件返却
+  - `limit/cursor` によるカーソルベースページングを前提とする
 
 ## 認証
 
@@ -126,7 +126,7 @@ mypy apps/backend
 - 公開 API が匿名集計のみを返すことを検証する
 - 認証必須 API が未認証や無効トークンで `401/403` を返すことを検証する
 - `systems/{system_code}/latest` が最新実行結果のみを返し、保存済み順序を維持することを検証する
-- `watchlist` の部分一致、既定値、並び順を検証する
+- `watchlist` の完全一致検索、既定値、並び順、ページングを検証する
 - DynamoDB や JWT クレームなどの外部依存はモック化する
 
 ## 参照ドキュメント

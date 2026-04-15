@@ -107,10 +107,10 @@
 - システム横断サマリAPIは、システム単位の表示に必要な `system_code` と `system_name` を返すこと。
 - システム別最新実行結果APIは、最新実行分の `ticker` と `判定結果` を返すこと。
 - システム別最新実行結果APIは、バッチ実行時に算出・保存した入札優先度順を維持して返すこと。
-- 対象銘柄一覧APIの `q_ticker` は部分一致とする。
+- 対象銘柄一覧APIの `q_ticker` は完全一致とする。
 - 対象銘柄一覧APIは `is_active=true` をデフォルト条件とする。
 - 対象銘柄一覧APIの並び順は更新日時降順とする。
-- 対象銘柄一覧APIは当面ページングを行わず、全件返却とする。
+- 対象銘柄一覧APIは `limit/cursor` によるカーソルベースページングを提供する。
 - 認証はJWTベースで行い、未認証アクセスは拒否する。
 - 初期段階では API は読み取り専用とし、画面からのバッチ起動 API は対象外とする。
 
@@ -126,7 +126,7 @@
 | 1 | `/` 公開トップ | 初回表示 | `GET /api/v1/public/summary` | 不要 | なし | なし | `operating_days`, `batch_runs_total`, `success_rate`, `avg_duration_sec`, `updated_at` |
 | 2 | `/app` ログイン後サマリ | 初回表示 | `GET /api/v1/summary` | 必須 | なし | なし | `system_count`, `latest_run_at`, `status_counts`, `systems[]` |
 | 3 | `/app/systems/{system_code}` | 初回表示 | `GET /api/v1/systems/{system_code}/latest` | 必須 | Path: `system_code` | `signals` は入札優先度順を維持 | `system_code`, `system_name`, `latest_run_at`, `signals[]`, `updated_at` |
-| 4 | `/app/watchlist` | 初回表示・検索/絞り込み変更時 | `GET /api/v1/watchlist` | 必須 | Query: `q_ticker`（部分一致）, `is_active`（未指定時`true`）, `system_code`, `category_code`, `sort=updated_at_desc` | `updated_at` 降順, ページングなし（全件返却） | `ticker`, `is_active`, `category_code`, `systems`, `latest_decisions_by_system`, `updated_at` |
+| 4 | `/app/watchlist` | 初回表示・検索/絞り込み変更時 | `GET /api/v1/watchlist` | 必須 | Query: `q_ticker`（完全一致）, `is_active`（未指定時`true`）, `system_code`, `category_code`, `sort=updated_at_desc`, `limit`, `cursor` | `updated_at` 降順, カーソルベースページング | `items[]`, `next_cursor` |
 
 ## 7. バッチ実行要件
 - EventBridge Schedulerで各バッチLambdaを個別スケジュール設定できること。

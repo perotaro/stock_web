@@ -214,9 +214,9 @@ Frontend SPA
 
 #### `/app/watchlist`
 - `q_ticker`、`system_code`、`category_code`、`is_active` を使った絞り込み UI を持つ
-- テキスト検索は入力直後ではなく短い debounce を入れて API 呼び出し頻度を抑える
+- `q_ticker` は銘柄コード完全一致で扱い、入力直後ではなく短い debounce を入れて API 呼び出し頻度を抑える
 - `is_active` の既定値は `true` とし、並び順は `updated_at` 降順を前提とする
-- 当面ページングは実装せず、全件返却された結果を表示する
+- 一覧は `limit/cursor` による段階取得を前提とし、条件変更時は先頭ページから再取得する
 - モバイルではカード表示、タブレット以上では表形式表示を基本とし、横スクロール常態化を避ける
 
 ## 8. コンポーネント・ディレクトリ設計
@@ -320,9 +320,9 @@ apps/frontend/
 - `systemLatest`
   - `system_code` 単位で query key を分離する
 - `watchlist`
-  - `q_ticker` `system_code` `category_code` `is_active` `sort=updated_at_desc` を query key に含める
+  - `q_ticker` `system_code` `category_code` `is_active` `sort=updated_at_desc` `limit` を query key に含める
   - `is_active` 未指定時は `true` を補完する
-  - テキスト検索は debounce 後に query を発火する
+  - テキスト検索は debounce 後に query を発火し、`cursor` は追加取得時の page param として扱う
 
 ### 9.4 例外・エラーハンドリング方針
 - API 呼び出しには `AbortController` を利用したタイムアウトを設定し、初期値は `10` 秒を目安とする。
@@ -476,6 +476,7 @@ apps/frontend/
 - 認証済み状態で Access Token が `Authorization` ヘッダに付与される
 - `system_code` ごとの詳細ページが分離表示される
 - watchlist が `is_active=true` を既定値として扱う
+- watchlist が `next_cursor` に応じて追加取得できる
 - watchlist のモバイル表示で横スクロール常態化が発生しない
 
 ### 14.3 テスト実行条件

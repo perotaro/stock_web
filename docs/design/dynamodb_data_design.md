@@ -28,7 +28,7 @@
 | 1 | `GET /api/v1/public/summary` | 固定1件 | 当月稼働日数、累計実行回数、当月成功率(run_id単位)、当月平均処理時間、更新日時 |
 | 2 | `GET /api/v1/summary` | 固定 | システム件数、全体最新実行日時、成功/失敗件数、システム別最新ステータス |
 | 3 | `GET /api/v1/systems/{system_code}/latest` | `system_code` 指定 | 最新実行の銘柄判定一覧（入札優先度順） |
-| 4 | `GET /api/v1/watchlist` | フィルタ有 | `q_ticker` 部分一致、`is_active=true` デフォルト、`updated_at` 降順、ページングなし |
+| 4 | `GET /api/v1/watchlist` | フィルタ有 | `q_ticker` 完全一致、`is_active=true` デフォルト、`updated_at` 降順、`limit/cursor` によるページング |
 
 ## 4. 推奨テーブル一覧
 本構成は「シンプル運用優先」の複数テーブル設計とする。
@@ -177,8 +177,8 @@
 意図:
 - デフォルトの `is_active=true` で高速絞り込み。
 - `ScanIndexForward=false` で `updated_at` 降順を実現。
-- `q_ticker` 部分一致は FilterExpression（`contains`）で適用。
-- `system_code` / `category_code` も FilterExpression で適用。
+- `q_ticker` 指定時は `PK=ticker` の `GetItem` で直接取得する。
+- `system_code` / `category_code` は当面 FilterExpression で適用し、必要に応じて将来 GSI 追加を検討する。
 
 主な属性:
 - `ticker`
@@ -298,12 +298,14 @@
 1. `md_system_latest_signals` を `PK=system_code` で `Query`
 2. `META#LATEST` をヘッダ、`SIGNAL#...` を `signals[]` に整形
 3. `signals[]` は取得順（入札優先度順）を維持
+4. API 契約は `BUY` 以外の判定も許容するが、初期運用では保存件数を抑えるため `md_system_latest_signals` には主に `BUY` を登録する想定とする
 
 ### 6.4 `GET /api/v1/watchlist`
 1. `is_active` 未指定なら `true` を補完
-2. `md_watchlist` の GSI1 を `is_active` で `Query`、`ScanIndexForward=false`
-3. `q_ticker/system_code/category_code` を FilterExpression 適用
-4. ページングなしで全件返却
+2. `q_ticker` 指定時は `PK=ticker` で `GetItem` し、追加条件があれば Lambda 側で判定
+3. `q_ticker` 未指定時は `md_watchlist` の GSI1 を `is_active` で `Query`、`ScanIndexForward=false`
+4. `system_code/category_code` は FilterExpression で適用し、`limit` 件に達するまで必要な範囲を読み進める
+5. `LastEvaluatedKey` を API の `next_cursor` に変換して返す
 
 ## 7. 書き込みフロー（日次運用）
 ### 7.1 バッチLambda（各システム）
@@ -332,6 +334,6 @@
 
 ## 9. コスト/運用メモ
 - 想定件数（watchlist ~ 821, system_instruments ~ 1272）では、オンデマンド課金で低コスト運用が可能。
-- ページングなしでも当面は成立するが、件数増加時は `limit/cursor` を導入する。
-- `q_ticker` 部分一致はDynamo単体で高速化しにくいため、件数増加時は検索専用ストア（OpenSearch等）を検討する。
+- 件数増加を見込み、watchlist は初期段階から `limit/cursor` によるカーソルベースページングを採用する。
+- `q_ticker` は完全一致とすることで DynamoDB 単体で安定運用しやすくする。
 - 公開サマリは増分更新を基本とし、日次ジョブは再計算より整合確認を主目的とする。
