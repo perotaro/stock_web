@@ -1,20 +1,20 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -eu
 
 BACKEND_ROOT="/workspace/apps/backend"
 
-if [[ ! -d "${BACKEND_ROOT}" ]]; then
+if [ ! -d "${BACKEND_ROOT}" ]; then
   echo "[backend_dev] apps/backend が見つかりません。" >&2
   exit 1
 fi
 
 cd /workspace
 
-if [[ -f "${BACKEND_ROOT}/src/main.py" ]]; then
+if [ -f "${BACKEND_ROOT}/src/main.py" ]; then
   exec python "${BACKEND_ROOT}/src/main.py"
 fi
 
-if [[ -f "${BACKEND_ROOT}/src/local_dev_server.py" ]]; then
+if [ -f "${BACKEND_ROOT}/src/local_dev_server.py" ]; then
   exec python "${BACKEND_ROOT}/src/local_dev_server.py"
 fi
 

@@ -4,15 +4,27 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Mapping
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any
+from typing import Any, TypedDict
+from urllib.parse import urlsplit
 
 
 DEFAULT_PORT = 8080
 
 
-def build_json_response(body: dict[str, Any]) -> bytes:
+class PublicSummaryResponse(TypedDict):
+    """公開トップ向け匿名集計 API のレスポンス。"""
+
+    operating_days: int
+    batch_runs_total: int
+    success_rate: float
+    avg_duration_sec: float
+    updated_at: str
+
+
+def build_json_response(body: Mapping[str, Any]) -> bytes:
     """JSON レスポンス本文を組み立てる。
 
     Args:
@@ -23,6 +35,25 @@ def build_json_response(body: dict[str, Any]) -> bytes:
     """
 
     return json.dumps(body, ensure_ascii=False).encode("utf-8")
+
+
+def build_public_summary_response() -> PublicSummaryResponse:
+    """公開トップ向け匿名集計レスポンスを返す。
+
+    Args:
+        なし。
+
+    Returns:
+        ローカル開発用の固定レスポンス。
+    """
+
+    return {
+        "operating_days": 7,
+        "batch_runs_total": 1284,
+        "success_rate": 98.4,
+        "avg_duration_sec": 12.4,
+        "updated_at": "2026-04-10T12:00:00+09:00",
+    }
 
 
 class LocalDevRequestHandler(BaseHTTPRequestHandler):
@@ -37,7 +68,9 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
             なし。
         """
 
-        if self.path == "/healthz":
+        path = urlsplit(self.path).path
+
+        if path == "/healthz":
             self._send_json(
                 HTTPStatus.OK,
                 {
@@ -51,13 +84,17 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
             )
             return
 
-        if self.path == "/":
+        if path == "/api/v1/public/summary":
+            self._send_json(HTTPStatus.OK, build_public_summary_response())
+            return
+
+        if path == "/":
             self._send_json(
                 HTTPStatus.OK,
                 {
                     "service": "backend_dev",
-                    "message": "Local backend placeholder server is running.",
-                    "next_step": "Replace apps/backend/src/local_dev_server.py with the real local entrypoint when backend handlers are implemented.",
+                    "message": "Local backend development server is running.",
+                    "public_summary_endpoint": "/api/v1/public/summary",
                 },
             )
             return
@@ -66,7 +103,7 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
             HTTPStatus.NOT_IMPLEMENTED,
             {
                 "message": "Backend API is not implemented yet.",
-                "path": self.path,
+                "path": path,
             },
         )
 
@@ -87,7 +124,7 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
             flush=True,
         )
 
-    def _send_json(self, status: HTTPStatus, body: dict[str, Any]) -> None:
+    def _send_json(self, status: HTTPStatus, body: Mapping[str, Any]) -> None:
         """JSON レスポンスを返す。
 
         Args:
