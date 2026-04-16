@@ -10,6 +10,7 @@
 - [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
 - [システム基本設計](/workspace/docs/design/system_basic_design.md)
 - [フロントエンドビジュアル設計](/workspace/docs/design/frontend_visual_design.md)
+- [フロントエンド実装メモ](/workspace/docs/design/frontend_implementation_memo.md)
 - [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
 - [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
 
@@ -218,6 +219,125 @@ Frontend SPA
 - `is_active` の既定値は `true` とし、並び順は `updated_at` 降順を前提とする
 - 一覧は `limit/cursor` による段階取得を前提とし、条件変更時は先頭ページから再取得する
 - モバイルではカード表示、タブレット以上では表形式表示を基本とし、横スクロール常態化を避ける
+
+### 7.4 コンポーネント構成図
+以下の図は、React の関数コンポーネント、hooks、API 呼び出し責務の分割方針を示す論理図である。
+
+- `page` はルート単位の薄い入口として扱う
+- データ取得や URL 状態同期の本体は `feature` 配下の hook / api / ui に寄せる
+- 汎用 UI は `components/ui`、横断処理は `lib` に集約する
+
+#### 7.4.1 ルート全体の論理構成
+```mermaid
+flowchart TD
+  AppProviders["AppProviders"]
+  Router["AppRouterProvider"]
+  PublicLayout["PublicLayout"]
+  AuthGuard["AuthGuard"]
+  AppLayout["AppLayout"]
+
+  HomePage["HomePage<br/>/"]
+  LoginPage["LoginPage<br/>/login"]
+  AuthCallbackPage["AuthCallbackPage<br/>/auth/callback"]
+  LogoutCallbackPage["LogoutCallbackPage<br/>/auth/logout/callback"]
+
+  AppSummaryPage["AppSummaryPage<br/>/app"]
+  SystemLatestPage["SystemLatestPage<br/>/app/systems/:system_code"]
+  WatchlistPage["WatchlistPage<br/>/app/watchlist"]
+
+  AppProviders --> Router
+  Router --> PublicLayout
+  Router --> AuthGuard
+  AuthGuard --> AppLayout
+
+  PublicLayout --> HomePage
+  PublicLayout --> LoginPage
+  PublicLayout --> AuthCallbackPage
+  PublicLayout --> LogoutCallbackPage
+
+  AppLayout --> AppSummaryPage
+  AppLayout --> SystemLatestPage
+  AppLayout --> WatchlistPage
+```
+
+#### 7.4.2 `/app` の論理構成
+```mermaid
+flowchart LR
+  AppSummaryPage["AppSummaryPage<br/>page entry"]
+  AppSummarySection["AppSummarySection<br/>feature UI"]
+  useAppSummaryQuery["useAppSummaryQuery()"]
+  fetchAppSummary["fetchAppSummary()"]
+  apiRequest["apiRequest()"]
+  SummaryStats["SummaryStats"]
+  SystemsList["SystemsList"]
+  StatusPill["StatusPill"]
+  RouterLink["Link to /app/systems/:system_code"]
+
+  AppSummaryPage --> AppSummarySection
+  AppSummarySection --> useAppSummaryQuery
+  useAppSummaryQuery --> fetchAppSummary
+  fetchAppSummary --> apiRequest
+
+  AppSummarySection --> SummaryStats
+  AppSummarySection --> SystemsList
+  SystemsList --> StatusPill
+  SystemsList --> RouterLink
+```
+
+#### 7.4.3 `/app/systems/:system_code` の論理構成
+```mermaid
+flowchart LR
+  SystemLatestPage["SystemLatestPage<br/>page entry"]
+  RouteParams["useParams()<br/>system_code"]
+  SystemLatestPanel["SystemLatestPanel<br/>feature UI"]
+  useSystemLatestQuery["useSystemLatestQuery(systemCode)"]
+  fetchSystemLatest["fetchSystemLatest(systemCode)"]
+  apiRequest["apiRequest()"]
+  SignalsGrid["SignalsGrid"]
+  SignalCard["SignalCard"]
+  StatusPill["StatusPill"]
+
+  SystemLatestPage --> RouteParams
+  SystemLatestPage --> SystemLatestPanel
+  SystemLatestPanel --> useSystemLatestQuery
+  useSystemLatestQuery --> fetchSystemLatest
+  fetchSystemLatest --> apiRequest
+
+  RouteParams --> useSystemLatestQuery
+  SystemLatestPanel --> SignalsGrid
+  SignalsGrid --> SignalCard
+  SignalCard --> StatusPill
+```
+
+#### 7.4.4 `/app/watchlist` の論理構成
+```mermaid
+flowchart LR
+  WatchlistPage["WatchlistPage<br/>page entry"]
+  useWatchlistFilters["useWatchlistFilters()<br/>URL query sync"]
+  WatchlistFilters["WatchlistFilters"]
+  Debounce["debounce"]
+  useWatchlistInfiniteQuery["useWatchlistInfiniteQuery(filters, limit)"]
+  fetchWatchlistPage["fetchWatchlistPage(filters, limit, cursor)"]
+  apiRequest["apiRequest()"]
+  WatchlistCards["WatchlistCards<br/>mobile"]
+  WatchlistTable["WatchlistTable<br/>desktop"]
+  LoadMore["Load more button / next_cursor"]
+
+  WatchlistPage --> useWatchlistFilters
+  WatchlistPage --> WatchlistFilters
+  WatchlistFilters --> Debounce
+  Debounce --> useWatchlistFilters
+
+  WatchlistPage --> useWatchlistInfiniteQuery
+  useWatchlistFilters --> useWatchlistInfiniteQuery
+  useWatchlistInfiniteQuery --> fetchWatchlistPage
+  fetchWatchlistPage --> apiRequest
+
+  WatchlistPage --> WatchlistCards
+  WatchlistPage --> WatchlistTable
+  WatchlistPage --> LoadMore
+  LoadMore --> useWatchlistInfiniteQuery
+```
 
 ## 8. コンポーネント・ディレクトリ設計
 
