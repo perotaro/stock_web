@@ -11,3 +11,13 @@ export function formatJstDateTime(value: string): string {
     timeZone: 'Asia/Tokyo',
   }).format(new Date(value))
 }
+
+/**
+ * ISO 形式の日時を JST 表記付きで整形する。
+ *
+ * @param value ISO 形式の日時文字列。
+ * @returns `YYYY/MM/DD HH:mm JST` 形式の表示用文字列。
+ */
+export function formatJstDateTimeWithZone(value: string): string {
+  return `${formatJstDateTime(value)} JST`
+}
