@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "current_focus": "react",
+  "preferences": {
+    "review_intensity": "normal",
+    "task_size": "medium"
+  },
+  "curriculum": {
+    "ordered_topics": [
+      "jsx-and-components",
+      "props",
+      "state",
+      "event-handling",
+      "conditional-rendering",
+      "list-rendering",
+      "lifting-state-up",
+      "form-handling",
+      "derived-values-and-simple-effects",
+      "custom-hooks",
+      "context",
+      "performance-basics"
+    ],
+    "current_topic": "state",
+    "next_topic": "state",
+    "prefer_natural_implementation": true,
+    "allow_exceptional_concepts_when_needed": true
+  },
+  "tracks": {
+    "react": {
+      "topics_mastered": [
+        "props"
+      ],
+      "topics_in_progress": [
+        "state"
+      ],
+      "topics_blocked": [],
+      "last_studied_at": "2026-04-19",
+      "recent_tasks": [
+        {
+          "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "PublicSummaryMetrics の isPending 分岐で LoadingState を呼び出す",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "共通 ErrorState コンポーネントを props で切り出す",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "共通 EmptyState コンポーネントを props で作る",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-18"
+        },
+        {
+          "goal": "LoadingState に最小限の文字スタイルと余白を付ける",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-18"
+        },
+        {
+          "goal": "公開トップの成功・通信失敗・レスポンス不正をテストで固定する",
+          "learning_theme": "state",
+          "allowed_concepts": [
+            "state",
+            "conditional-rendering",
+            "props",
+            "async test"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-19"
+        }
+      ]
+    }
+  }
+}
