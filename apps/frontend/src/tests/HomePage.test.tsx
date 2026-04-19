@@ -33,7 +33,7 @@ describe('HomePage', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: '日次更新のシグナルを、公開サマリと認証後画面で確認できる。',
+        name: '売買判断を、感覚ではなく戦略で。',
       }),
     ).toBeVisible()
     expect(

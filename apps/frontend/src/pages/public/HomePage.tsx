@@ -35,22 +35,24 @@ export function HomePage() {
   return (
     <div className="space-y-6 md:space-y-8">
       <section className="public-hero-section">
-        <p className="eyebrow eyebrow-on-dark">公開サマリ</p>
-        <h1 className="mt-4 max-w-4xl text-4xl leading-[1.15] font-bold tracking-tight text-[color:var(--color-hero-text)] md:text-6xl">
-          日次更新のシグナルを、公開サマリと認証後画面で確認できる。
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-[color:var(--color-hero-muted)]">
-          公開領域では匿名集計と更新状況のみを表示します。詳細な判定結果や対象一覧はログイン後に確認できます。
-        </p>
+        <div className="mx-auto max-w-5xl">
+          <p className="eyebrow eyebrow-on-dark">Stock Trading System</p>
+          <h1 className="mt-4 max-w-5xl text-4xl leading-[1.15] font-bold tracking-tight text-[color:var(--color-hero-text)] [text-wrap:balance] md:text-6xl">
+            売買判断を、感覚ではなく戦略で。
+          </h1>
+          <p className="mt-5 max-w-3xl text-base leading-7 text-[color:var(--color-hero-muted)] [text-wrap:pretty]">
+            Guppy は、複数の売買戦略を日次で運用し、相場に対する判断を継続的に更新する株売買システムです。公開トップでは、運用状況の匿名集計と最終更新日時を掲載しています。
+          </p>
 
-        <div className="mt-8 border-t border-[color:var(--color-hero-line)] pt-6">
-          <div>
-            <p className="text-xs font-medium tracking-[0.18em] text-[color:var(--color-hero-muted)] uppercase">
-              最終更新日時
-            </p>
-            <p className="mt-2 text-lg font-semibold tracking-tight text-[color:var(--color-hero-text)] md:text-xl">
-              {updatedAtLabel}
-            </p>
+          <div className="mt-8 border-t border-[color:var(--color-hero-line)] pt-6">
+            <div>
+              <p className="text-xs font-medium tracking-[0.18em] text-[color:var(--color-hero-muted)] uppercase">
+                最終更新日時
+              </p>
+              <p className="mt-2 text-lg font-semibold tracking-tight text-[color:var(--color-hero-text)] md:text-xl">
+                {updatedAtLabel}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -59,10 +61,10 @@ export function HomePage() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-ink)]">
-              匿名集計サマリ
+              公開している運用指標
             </h2>
             <p className="mt-2 text-sm leading-7 text-[color:var(--color-muted)]">
-              公開可能な集計値のみを API から取得して表示します。
+              公開トップでは、運用全体の状態を把握できる集計値だけを掲載しています。
             </p>
           </div>
         </div>
@@ -82,16 +84,16 @@ export function HomePage() {
       <section className="public-muted-section grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-ink)]">
-            公開領域で表示する内容
+            公開トップで見られる内容
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-8 text-[color:var(--color-muted)] md:text-base">
-            表示内容は匿名集計に限定しており、個別銘柄、戦略詳細、当日シグナル生データは公開しません。公開トップでは、更新されていることと運用状況の要点だけを短時間で把握できる構成にしています。
+            掲載内容は匿名集計に限定しており、個別銘柄、戦略詳細、当日シグナル生データは公開しません。公開トップでは、運用全体の状態と更新状況の要点だけを把握できる構成にしています。
           </p>
         </div>
 
         <div className="space-y-3">
           <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-ink)]">
-            ログイン後に確認できる内容
+            ログイン後の詳細
           </h2>
           <ul className="space-y-3 text-sm leading-7 text-[color:var(--color-muted)]">
             <li className="border-b border-[color:var(--color-line)] pb-3">
