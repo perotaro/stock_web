@@ -2,8 +2,19 @@ import type { output, ZodType } from 'zod'
 
 import { getClientEnv } from '@/lib/env/clientEnv'
 
+
 const DEFAULT_TIMEOUT_MS = 10_000
 const DEFAULT_RETRY_DELAY_MS = 250
+
+type ApiRequestQueryPrimitive = string | number | boolean
+
+export type ApiRequestQueryValue =
+  | ApiRequestQueryPrimitive
+  | null
+  | undefined
+  | readonly ApiRequestQueryPrimitive[]
+
+export type ApiRequestQuery = Record<string, ApiRequestQueryValue>
 
 export class ApiClientError extends Error {
   readonly status: number | undefined
@@ -35,6 +46,7 @@ type ApiRequestOptions<TSchema extends ZodType> = {
   path: string
   schema: TSchema
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  query?: ApiRequestQuery
   headers?: HeadersInit
   body?: BodyInit | null
   authToken?: string
@@ -48,15 +60,14 @@ type ApiRequestOptions<TSchema extends ZodType> = {
 /**
  * リトライ対象かどうかを判定する。
  *
- * @param status HTTP ステータス。
+ * @param apiError APIエラークラス。
  * @returns リトライ対象なら true。
  */
-function shouldRetryRequest(status?: number): boolean {
-  if (typeof status !== 'number') {
-    return true
-  }
-
-  return status >= 500
+function shouldRetryRequest(apiError: ApiClientError): boolean {
+  
+  if (apiError.code==="network_error") return true
+  if (apiError.code==="response_invalid") return false
+  return (typeof apiError.status =="number" && apiError.status >= 500)
 }
 
 /**
@@ -72,18 +83,80 @@ async function sleep(milliseconds: number): Promise<void> {
 }
 
 /**
- * ベース URL とパスから最終 URL を組み立てる。
+ * クエリ値を URLSearchParams へ追加する。
+ *
+ * @param searchParams 組み立て先の検索パラメータ。
+ * @param key パラメータ名。
+ * @param value パラメータ値。
+ * @returns 何も返さない。
+ */
+function appendQueryParameter(
+  searchParams: URLSearchParams,
+  key: string,
+  value: ApiRequestQueryValue,
+): void {
+  if (value === undefined || value === null) {
+    return
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((entry) => {
+      searchParams.append(key, String(entry))
+    })
+    return
+  }
+
+  searchParams.append(key, String(value))
+}
+
+/**
+ * クエリ文字列を組み立てる。
+ *
+ * @param query クエリパラメータ。
+ * @returns `?` を含むクエリ文字列。
+ */
+function buildQueryString(query?: ApiRequestQuery): string {
+  if (!query) {
+    return ''
+  }
+
+  const searchParams = new URLSearchParams()
+
+  Object.entries(query).forEach(([key, value]) => {
+    appendQueryParameter(searchParams, key, value)
+  })
+
+  const queryString = searchParams.toString()
+  return queryString ? `?${queryString}` : ''
+}
+
+/**
+ * ベース URL、パス、クエリから最終 URL を組み立てる。
  *
  * @param baseUrl ベース URL。
  * @param path API パス。
+ * @param query クエリパラメータ。
  * @returns 完成した URL。
  */
-function buildRequestUrl(baseUrl: string, path: string): string {
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path
+function buildRequestUrl(
+  baseUrl: string,
+  path: string,
+  query?: ApiRequestQuery,
+): string {
+  const requestUrl =
+    path.startsWith('http://') || path.startsWith('https://')
+      ? path
+      : path.startsWith('/')
+        ? `${baseUrl}${path}`
+        : `${baseUrl}/${path}`
+  const queryString = buildQueryString(query)
+
+  if (!queryString) {
+    return requestUrl
   }
 
-  return path.startsWith('/') ? `${baseUrl}${path}` : `${baseUrl}/${path}`
+  const separator = requestUrl.includes('?') ? '&' : '?'
+  return `${requestUrl}${separator}${queryString.slice(1)}`
 }
 
 /**
@@ -134,6 +207,7 @@ export async function apiRequest<TSchema extends ZodType>(
     path,
     schema,
     method = 'GET',
+    query,
     headers,
     body,
     authToken,
@@ -144,7 +218,7 @@ export async function apiRequest<TSchema extends ZodType>(
     signal,
   } = options
 
-  const requestUrl = buildRequestUrl(baseUrl, path)
+  const requestUrl = buildRequestUrl(baseUrl, path, query)
   let currentAttempt = 0
 
   while (currentAttempt <= retryCount) {
@@ -202,7 +276,7 @@ export async function apiRequest<TSchema extends ZodType>(
 
       if (
         currentAttempt >= retryCount ||
-        !shouldRetryRequest(normalizedError.status)
+        !shouldRetryRequest(normalizedError)
       ) {
         throw normalizedError
       }

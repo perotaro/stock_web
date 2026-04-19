@@ -1,4 +1,6 @@
 import type { PublicSummary } from '@/features/public-summary/api/fetchPublicSummary'
+import { LoadingState } from '@/components/ui/LoadingState'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 type PublicSummaryMetricsProps = {
   summary: PublicSummary | undefined
@@ -94,28 +96,6 @@ function LoadingMetrics() {
 }
 
 /**
- * 匿名集計の失敗状態を描画する。
- *
- * @param props 失敗文言と再試行処理。
- * @returns エラー表示。
- */
-function ErrorState(props: { message: string; onRetry: () => void }) {
-  const { message, onRetry } = props
-
-  return (
-    <div
-      className="rounded-[4px] border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-800"
-      role="alert"
-    >
-      <p>{message}</p>
-      <button type="button" onClick={onRetry} className="button-secondary mt-3">
-        再試行
-      </button>
-    </div>
-  )
-}
-
-/**
  * 公開トップ向け匿名集計カード群を描画する。
  *
  * @param props 公開サマリと表示状態。
@@ -124,15 +104,22 @@ function ErrorState(props: { message: string; onRetry: () => void }) {
 export function PublicSummaryMetrics(props: PublicSummaryMetricsProps) {
   const { summary, isPending, errorMessage, onRetry } = props
 
+
   if (isPending) {
-    return <LoadingMetrics />
+    return (
+      <LoadingState title='読み込み中…'>
+        <LoadingMetrics />
+      </LoadingState>
+      
+    )
   }
 
   if (!summary || errorMessage) {
     return (
       <ErrorState
         message={errorMessage ?? '公開サマリを読み込めませんでした。'}
-        onRetry={onRetry}
+        actionLabel='再試行'
+        onAction={onRetry}
       />
     )
   }

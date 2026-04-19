@@ -65,4 +65,36 @@ describe('apiRequest', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
+
+  it('query パラメータを組み立てて呼び出す', async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    )
+
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      apiRequest({
+        path: '/api/v1/watchlist',
+        baseUrl: 'http://localhost:8080',
+        schema: responseSchema,
+        query: {
+          q_ticker: '7203',
+          is_active: true,
+          category_code: ['core', 'income'],
+          next_cursor: undefined,
+        },
+      }),
+    ).resolves.toEqual({ ok: true })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/watchlist?q_ticker=7203&is_active=true&category_code=core&category_code=income',
+      expect.objectContaining({
+        method: 'GET',
+      }),
+    )
+  })
 })

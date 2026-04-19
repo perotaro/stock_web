@@ -1,40 +1,8 @@
 import type { PropsWithChildren } from 'react'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 
-/**
- * 再試行対象かどうかを判定する。
- *
- * @param failureCount 失敗回数。
- * @param error 発生したエラー。
- * @returns 再試行する場合は true。
- */
-function shouldRetryQuery(failureCount: number, error: unknown): boolean {
-  if (failureCount >= 2) {
-    return false
-  }
-
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'status' in error &&
-    typeof error.status === 'number'
-  ) {
-    return error.status >= 500
-  }
-
-  return true
-}
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: shouldRetryQuery,
-      staleTime: 60_000,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+import { getSharedAppQueryClient } from '@/app/providers/queryClient'
 
 /**
  * アプリ全体で共有する Provider をまとめる。
@@ -44,6 +12,7 @@ const queryClient = new QueryClient({
  */
 export function AppProviders(props: PropsWithChildren) {
   const { children } = props
+  const queryClient = getSharedAppQueryClient()
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

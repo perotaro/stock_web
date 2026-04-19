@@ -1,35 +1,12 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { HomePage } from '@/pages/public/HomePage'
-
-/**
- * HomePage を描画する。
- *
- * @returns Testing Library の描画結果。
- */
-function renderHomePage() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  })
-
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        <HomePage />
-      </MemoryRouter>
-    </QueryClientProvider>,
-  )
-}
+import { renderWithProviders } from '@/tests/renderWithProviders'
 
 afterEach(() => {
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('HomePage', () => {
@@ -52,7 +29,7 @@ describe('HomePage', () => {
 
     vi.stubGlobal('fetch', fetchMock)
 
-    renderHomePage()
+    renderWithProviders(<HomePage />)
 
     expect(
       screen.getByRole('heading', {
@@ -74,4 +51,47 @@ describe('HomePage', () => {
       }),
     )
   })
+
+  it('公開サマリを読み込めませんでした。\
+    時間をおいて再試行してください。 が画面に出ることを確認する', async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockRejectedValue(
+      new TypeError('Failed to fetch')
+    )
+    
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderWithProviders(<HomePage />)
+
+    expect(
+      await screen.findByText('公開サマリを読み込めませんでした。時間をおいて再試行してください。')
+    ).toBeVisible()
+
+  })
+  
+  it('公開サマリの形式が不正です。\
+    時間をおいて再試行してください。 が画面に出ることを確認する', async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          operating_days: 7,
+          batch_runs_total: 1284,
+          success_rate: 98.4,
+          updated_at: '2026-04-10T00:00:00Z',          
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },        
+      )
+    )
+
+    vi.stubGlobal('fetch', fetchMock)
+    
+    renderWithProviders(<HomePage />)
+
+    expect(
+      await screen.findByText('公開サマリの形式が不正です。時間をおいて再試行してください。')
+    ).toBeVisible()
+  })
+
 })
