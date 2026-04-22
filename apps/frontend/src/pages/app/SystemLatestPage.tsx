@@ -40,7 +40,7 @@ export function SystemLatestPage() {
       >
         <div className="flex flex-wrap items-center gap-3">
           <StatusPill
-            label={params.systemCode ?? 'unknown-system'}
+            label={params.system_code ?? 'unknown-system'}
             tone="info"
           />
           <StatusPill label="latest only" tone="success" />

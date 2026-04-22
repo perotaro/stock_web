@@ -19,11 +19,11 @@ export function SectionCard(props: SectionCardProps) {
     <section className={`page-panel ${className}`.trim()}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-[color:var(--color-ink)]">
+          <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-ink)]">
             {title}
           </h2>
           {description ? (
-            <p className="mt-2 text-sm leading-7 text-[color:var(--color-muted)]">
+            <p className="mt-2 text-base leading-6 text-[color:var(--color-muted)]">
               {description}
             </p>
           ) : null}

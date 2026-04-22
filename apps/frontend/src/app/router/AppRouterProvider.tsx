@@ -55,7 +55,7 @@ const router = createBrowserRouter([
         element: <AppSummaryPage />,
       },
       {
-        path: 'systems/:systemCode',
+        path: 'systems/:system_code',
         element: <SystemLatestPage />,
       },
       {

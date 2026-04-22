@@ -76,6 +76,42 @@ select {
     @apply sticky top-0 z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-5 px-5 py-5 md:px-8 lg:px-10;
   }
 
+  .global-header {
+    @apply border-b border-[color:var(--color-hero-line)] bg-[color:var(--color-hero-bg)];
+  }
+
+  .global-header-inner {
+    @apply mx-auto flex w-full max-w-none items-center justify-between gap-5 px-5 py-5 md:px-8 lg:px-10;
+  }
+
+  .global-header-brand {
+    @apply inline-flex items-center;
+  }
+
+  .global-header-brand-image {
+    @apply block h-6 w-auto md:h-10 lg:h-11;
+  }
+
+  .global-header-actions {
+    @apply flex flex-wrap items-center justify-end gap-3;
+  }
+
+  .global-header-text-link {
+    @apply inline-flex min-h-10 items-center justify-center rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-surface)] px-4 text-sm font-semibold text-[color:var(--color-ink)] transition hover:border-[color:var(--color-muted)] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-focus)];
+  }
+
+  .global-header-primary {
+    @apply inline-flex min-h-10 items-center justify-center rounded-[4px] border border-[color:var(--color-accent)] bg-[color:var(--color-accent)] px-4 text-sm font-semibold text-[color:var(--color-accent-ink)] transition hover:bg-[color:var(--color-accent-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-focus)];
+  }
+
+  .global-header-nav-link {
+    @apply inline-flex min-h-10 items-center justify-center rounded-[4px] px-4 py-2 text-sm font-medium text-[color:var(--color-hero-text)] transition hover:bg-white/10;
+  }
+
+  .global-header-nav-link--active {
+    @apply bg-white text-[color:var(--color-ink)] shadow-[var(--shadow-soft)];
+  }
+
   .public-shell-header {
     @apply relative;
   }
@@ -125,7 +161,7 @@ select {
   }
 
   .page-panel {
-    @apply rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-soft)] md:p-8;
+    @apply rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-surface)] p-4 shadow-[var(--shadow-soft)] md:p-5;
   }
 
   .hero-panel {
