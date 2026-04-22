@@ -37,7 +37,7 @@
 - バックエンドとは分離デプロイ可能とする。
 - 認証方式は `OIDC`、フロントエンドの認証フローは `Authorization Code Flow + PKCE` を採用する。
 - 認証基盤は `Cognito User Pools` を第一候補とするが、`Auth0` 等の同等 OIDC プロバイダへ置換可能な構成とする。
-- 公開トップページはポートフォリオページを兼ねるが、技術詳細はトップページ本文に載せず、公開 GitHub で補足する。
+- 公開トップページはポートフォリオページを兼ねるが、技術詳細はトップページ本文に載せない。
 - 認証後画面は初期段階では参照専用とし、画面からのバッチ起動機能は初期スコープ外とする。
 - 日付境界・時刻表示・集計意味は JST 基準とする。
 
@@ -173,16 +173,18 @@ Frontend SPA
 | `/app` | 認証必須 | システム横断サマリ表示 | `GET /api/v1/summary` |
 | `/app/systems/:system_code` | 認証必須 | システム別最新実行結果表示 | `GET /api/v1/systems/{system_code}/latest` |
 | `/app/watchlist` | 認証必須 | 対象銘柄一覧、検索・絞り込み | `GET /api/v1/watchlist` |
-| `/logout` | 認証必須 | ログアウト開始 | なし |
+| `/logout` | 公開 | ログアウト開始 | なし |
 | `/auth/logout/callback` | 内部 | ログアウト後遷移の完了、公開トップへの復帰 | なし |
 
 ### 7.2 レイアウト設計
 - `PublicLayout`
-  - 公開トップとログイン導線を保持する
-  - ヘッダは最小限とし、`/login` と GitHub への外部導線を置く
+  - 公開トップ、ログイン導線、ログアウト導線を保持する
+  - ヘッダは全ページ共通の `GlobalHeader` を使い、公開トップでは `ログイン`、遷移ページでは戻り導線を置く
 - `AppLayout`
   - ログイン後の共通ヘッダ、ナビゲーション、ログアウト導線を保持する
   - `/app` `/app/systems/:system_code` `/app/watchlist` を共通レイアウト配下に置く
+  - `PublicLayout` と同じ `GlobalHeader` を使い、右側アクションだけを `Summary` `Watchlist` `Logout` に切り替える
+  - システム詳細の現在地はページヘッダで補う
 - `AuthGuard`
   - 未認証時は `/login` へ誘導する
   - ただし実際のアクセス制御は API Gateway JWT Authorizer が担い、フロントエンドのガードは UX 向上のための導線制御とする
@@ -201,6 +203,11 @@ Frontend SPA
 #### `/login`
 - 画面表示後に OIDC ログインへリダイレクトする
 - リダイレクト前の説明文と、失敗時の再試行ボタンを置く
+
+#### `/logout`
+- ログアウト開始前の遷移ページとして扱う
+- ログイン不要で開けるが、機密情報は表示しない
+- ログアウト継続導線と公開トップへの戻り導線だけを置く
 
 #### `/app`
 - システム横断サマリを表示する
@@ -238,6 +245,7 @@ flowchart TD
 
   HomePage["HomePage<br/>/"]
   LoginPage["LoginPage<br/>/login"]
+  LogoutPage["LogoutPage<br/>/logout"]
   AuthCallbackPage["AuthCallbackPage<br/>/auth/callback"]
   LogoutCallbackPage["LogoutCallbackPage<br/>/auth/logout/callback"]
 
@@ -252,6 +260,7 @@ flowchart TD
 
   PublicLayout --> HomePage
   PublicLayout --> LoginPage
+  PublicLayout --> LogoutPage
   PublicLayout --> AuthCallbackPage
   PublicLayout --> LogoutCallbackPage
 
