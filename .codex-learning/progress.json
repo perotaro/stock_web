@@ -20,8 +20,8 @@
       "context",
       "performance-basics"
     ],
-    "current_topic": "state",
-    "next_topic": "state",
+    "current_topic": "list-rendering",
+    "next_topic": "list-rendering",
     "prefer_natural_implementation": true,
     "allow_exceptional_concepts_when_needed": true
   },
@@ -31,10 +31,11 @@
         "props"
       ],
       "topics_in_progress": [
-        "state"
+        "state",
+        "list-rendering"
       ],
       "topics_blocked": [],
-      "last_studied_at": "2026-04-19",
+      "last_studied_at": "2026-04-21",
       "recent_tasks": [
         {
           "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
@@ -132,6 +133,85 @@
           ],
           "status": "pass",
           "reviewed_at": "2026-04-19"
+        },
+        {
+          "goal": "ページ冒頭に Summary タイトルと短い説明だけを持つ PageHeader 相当のブロックを作る",
+          "learning_theme": "conditional-rendering",
+          "allowed_concepts": [
+            "props",
+            "conditional-rendering",
+            "list-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app を 2 カラムのプレースホルダーから、要約カード -> システム一覧の縦積みレイアウトへ直す",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "要約カード群を、React の map + key を守ったカード UI に仕上げる",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "認証後の共通ヘッダから Summary と Watchlist を外し、Logout だけにする",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "props",
+            "jsx-and-components"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app のページ内ナビと要約カードを、見た目としてもページ内ナビ・カード群と分かる形に整える",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "props",
+            "jsx-and-components",
+            "list-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
         }
       ]
     }
