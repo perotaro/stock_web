@@ -99,6 +99,54 @@ def test_public_summary_endpoint_returns_expected_payload() -> None:
     }
 
 
+def test_app_summary_endpoint_returns_expected_payload() -> None:
+    """認証後トップ向け API が固定レスポンスを返すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(base_url, "/api/v1/summary")
+
+    assert status_code == HTTPStatus.OK
+    assert body == {
+        "system_count": 3,
+        "latest_run_at": "2026-04-10T06:30:00+09:00",
+        "status_counts": {
+            "succeeded": 1,
+            "failed": 1,
+            "not_run": 1,
+        },
+        "systems": [
+            {
+                "system_code": "DMP",
+                "system_name": "Dynamic Momentum Pullback",
+                "latest_status": "SUCCEEDED",
+                "latest_run_at": "2026-04-10T06:30:00+09:00",
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+            {
+                "system_code": "TGB",
+                "system_name": "Trend Guard Breakout",
+                "latest_status": "FAILED",
+                "latest_run_at": "2026-04-10T06:20:00+09:00",
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+            {
+                "system_code": "RVS",
+                "system_name": "Range Volatility Switch",
+                "latest_status": "NOT_RUN",
+                "latest_run_at": None,
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+        ],
+    }
+
+
 def test_root_endpoint_points_to_public_summary_api() -> None:
     """ルートが公開トップ向け API を案内することを確認する。
 
@@ -150,10 +198,10 @@ def test_unknown_path_returns_not_implemented() -> None:
     """
 
     with run_test_server() as base_url:
-        status_code, body = request_json(base_url, "/api/v1/summary")
+        status_code, body = request_json(base_url, "/api/v1/unknown")
 
     assert status_code == HTTPStatus.NOT_IMPLEMENTED
     assert body == {
         "message": "Backend API is not implemented yet.",
-        "path": "/api/v1/summary",
+        "path": "/api/v1/unknown",
     }

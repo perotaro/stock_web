@@ -108,7 +108,7 @@ docker compose logs -f backend_dev
 
 - 既定ポートは `8080`
 - `DYNAMODB_ENDPOINT_URL` の既定値は `http://host.docker.internal:8000`
-- 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
+- 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` `GET /api/v1/public/summary` `GET /api/v1/summary` を固定レスポンスで確認できます
 - 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
 
 ## テスト・静的解析

@@ -7,7 +7,7 @@ import os
 from collections.abc import Mapping
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any, TypedDict
+from typing import Any, Literal, TypedDict
 from urllib.parse import urlsplit
 
 
@@ -22,6 +22,33 @@ class PublicSummaryResponse(TypedDict):
     success_rate: float
     avg_duration_sec: float
     updated_at: str
+
+
+class AppSummaryStatusCountsResponse(TypedDict):
+    """認証後トップ向けサマリ件数のレスポンス。"""
+
+    succeeded: int
+    failed: int
+    not_run: int
+
+
+class AppSummarySystemResponse(TypedDict):
+    """認証後トップ向けシステム別最新状態のレスポンス。"""
+
+    system_code: str
+    system_name: str
+    latest_status: Literal["SUCCEEDED", "FAILED", "NOT_RUN"]
+    latest_run_at: str | None
+    updated_at: str
+
+
+class AppSummaryResponse(TypedDict):
+    """認証後トップ向けシステム横断サマリ API のレスポンス。"""
+
+    system_count: int
+    latest_run_at: str | None
+    status_counts: AppSummaryStatusCountsResponse
+    systems: list[AppSummarySystemResponse]
 
 
 def build_json_response(body: Mapping[str, Any]) -> bytes:
@@ -56,6 +83,50 @@ def build_public_summary_response() -> PublicSummaryResponse:
     }
 
 
+def build_app_summary_response() -> AppSummaryResponse:
+    """認証後トップ向けシステム横断サマリレスポンスを返す。
+
+    Args:
+        なし。
+
+    Returns:
+        ローカル開発用の固定レスポンス。
+    """
+
+    return {
+        "system_count": 3,
+        "latest_run_at": "2026-04-10T06:30:00+09:00",
+        "status_counts": {
+            "succeeded": 1,
+            "failed": 1,
+            "not_run": 1,
+        },
+        "systems": [
+            {
+                "system_code": "DMP",
+                "system_name": "Dynamic Momentum Pullback",
+                "latest_status": "SUCCEEDED",
+                "latest_run_at": "2026-04-10T06:30:00+09:00",
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+            {
+                "system_code": "TGB",
+                "system_name": "Trend Guard Breakout",
+                "latest_status": "FAILED",
+                "latest_run_at": "2026-04-10T06:20:00+09:00",
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+            {
+                "system_code": "RVS",
+                "system_name": "Range Volatility Switch",
+                "latest_status": "NOT_RUN",
+                "latest_run_at": None,
+                "updated_at": "2026-04-10T06:31:00+09:00",
+            },
+        ],
+    }
+
+
 class LocalDevRequestHandler(BaseHTTPRequestHandler):
     """ローカル開発用の HTTP リクエストを処理する。"""
 
@@ -86,6 +157,10 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/v1/public/summary":
             self._send_json(HTTPStatus.OK, build_public_summary_response())
+            return
+
+        if path == "/api/v1/summary":
+            self._send_json(HTTPStatus.OK, build_app_summary_response())
             return
 
         if path == "/":
