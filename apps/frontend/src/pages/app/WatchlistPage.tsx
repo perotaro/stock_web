@@ -1,6 +1,7 @@
 import { SectionCard } from '@/components/ui/SectionCard'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { formatJstDateTime } from '@/lib/utils/formatDate'
+import { AppSectionNav } from '@/features/app-summary/components/AppSectionNav'
 
 const watchlistRows = [
   {
@@ -27,6 +28,7 @@ const watchlistRows = [
 export function WatchlistPage() {
   return (
     <div className="space-y-6">
+      <AppSectionNav currentSection="Watchlist" />
       <SectionCard
         title="Watchlist"
         description="モバイルではカード、タブレット以上では表を使う方針に沿って、横スクロールに依存しない骨格を先に用意しています。"
