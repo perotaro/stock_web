@@ -35,7 +35,7 @@
         "list-rendering"
       ],
       "topics_blocked": [],
-      "last_studied_at": "2026-04-21",
+      "last_studied_at": "2026-04-24",
       "recent_tasks": [
         {
           "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
@@ -212,6 +212,44 @@
           ],
           "status": "pass with notes",
           "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app のシステム一覧を API データから map で描画し、状態と詳細リンクを表示する",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering",
+            "Link",
+            "small helper"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks",
+            "new local state"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-22"
+        },
+        {
+          "goal": "/app と /app/watchlist のページ内ナビを共通コンポーネントにまとめる",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering",
+            "Link",
+            "small helper"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks",
+            "new local state"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-24"
         }
       ]
     }
