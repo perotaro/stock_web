@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-type AppSectionNavProps = { currentSection: 'Summary' | 'Watchlist' }
+type AppSectionNavProps = { currentSection?: 'Summary' | 'Watchlist' }
 type NavItem = {
   label: 'Summary' | 'Watchlist'
   to: '/app' | '/app/watchlist'
@@ -14,11 +14,10 @@ const naviElements: NavItem[] = [
 /**
  * ログイン後画面のNavを描画する
  *
- * @param props 現在セクションを示すprops
+ * @param props 現在セクションを示す props。未指定時は全項目をリンク表示する。
  * @returns Nav
  */
-
-export function AppSectionNav(props: AppSectionNavProps) {
+export function AppSectionNav(props: AppSectionNavProps = {}) {
   const { currentSection } = props
 
   return (
