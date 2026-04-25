@@ -84,6 +84,14 @@ describe('SystemLatestPage', () => {
     const articles = within(signalsSection).getAllByRole('article')
     expect(articles).toHaveLength(3)
 
+    const topSignal = within(signalsSection).getByRole('article', {
+      name: '1. Apple Inc.',
+    })
+
+    expect(topSignal).toHaveClass('bg-[color:var(--color-surface)]')
+    expect(topSignal).toHaveClass('border-[color:var(--color-accent)]')
+    expect(topSignal).not.toHaveClass('bg-[color:var(--color-accent-soft)]')
+
     expect(articles[0]).toHaveTextContent('Apple Inc.')
     expect(articles[1]).toHaveTextContent('Microsoft Corporation')
     expect(articles[2]).toHaveTextContent('NVIDIA Corporation')

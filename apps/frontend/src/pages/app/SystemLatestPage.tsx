@@ -147,7 +147,7 @@ function RunMetadataList(props: RunMetadataListProps) {
           key={item.label}
           className="rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-subtle-surface)] p-4"
         >
-          <dt className="text-xs tracking-[0.18em] text-[color:var(--color-muted)] uppercase">
+          <dt className="text-xs font-medium text-[color:var(--color-muted)]">
             {item.label}
           </dt>
           <dd className="mt-3 text-base font-semibold break-words text-[color:var(--color-ink)]">
@@ -193,10 +193,10 @@ function SignalCard(props: SignalCardProps) {
   return (
     <article
       aria-label={`${signal.priority_rank}. ${signal.name}`}
-      className={`rounded-[4px] border p-5 shadow-[var(--shadow-soft)] ${
+      className={`rounded-[4px] border bg-[color:var(--color-surface)] p-5 shadow-[var(--shadow-soft)] ${
         isBuySignal
-          ? 'border-[color:var(--color-accent)] bg-[color:var(--color-accent-soft)]'
-          : 'border-[color:var(--color-line)] bg-[color:var(--color-surface)]'
+          ? 'border-[color:var(--color-accent)]'
+          : 'border-[color:var(--color-line)]'
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -204,7 +204,7 @@ function SignalCard(props: SignalCardProps) {
           label={signal.decision}
           tone={getDecisionTone(signal.decision)}
         />
-        <p className="text-xs font-medium tracking-[0.18em] text-[color:var(--color-muted)] uppercase">
+        <p className="text-xs font-medium text-[color:var(--color-muted)]">
           優先度 {signal.priority_rank}
         </p>
       </div>
@@ -212,7 +212,7 @@ function SignalCard(props: SignalCardProps) {
       <h3 className="mt-5 text-xl font-semibold tracking-tight text-[color:var(--color-ink)]">
         {signal.name}
       </h3>
-      <p className="mt-2 text-sm font-medium tracking-[0.14em] text-[color:var(--color-muted)] uppercase">
+      <p className="mt-2 text-sm font-medium text-[color:var(--color-muted)]">
         {signal.ticker}
       </p>
       {signal.reason ? (

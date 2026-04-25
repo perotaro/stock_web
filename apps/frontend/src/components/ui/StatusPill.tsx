@@ -24,7 +24,7 @@ export function StatusPill(props: StatusPillProps) {
 
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-[0.14em] uppercase ${toneClassMap[tone]}`}
+      className={`inline-flex rounded-[4px] px-3 py-1 text-xs leading-5 font-semibold ${toneClassMap[tone]}`}
     >
       {label}
     </span>

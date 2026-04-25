@@ -114,7 +114,9 @@ describe('LoadingState', () => {
 
     const status = screen.getByRole('status')
 
-    expect(within(status).getByText('システム一覧を読み込んでいます…')).toBeVisible()
+    expect(
+      within(status).getByText('システム一覧を読み込んでいます…'),
+    ).toBeVisible()
     expect(within(status).getByText('ロード中')).toBeVisible()
   })
 })
@@ -153,9 +155,12 @@ describe('StatusPill', () => {
   it('tone 未指定時は info の見た目でラベルを表示する', () => {
     renderWithProviders(<StatusPill label="稼働中" />)
 
-    expect(screen.getByText('稼働中')).toHaveClass(
-      'bg-[color:var(--color-info-surface)]',
-    )
+    const pill = screen.getByText('稼働中')
+
+    expect(pill).toHaveClass('rounded-[4px]')
+    expect(pill).toHaveClass('bg-[color:var(--color-info-surface)]')
+    expect(pill).not.toHaveClass('rounded-full')
+    expect(pill).not.toHaveClass('uppercase')
   })
 
   it('tone に応じた見た目でラベルを表示する', () => {
