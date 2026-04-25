@@ -9,30 +9,31 @@
     "ordered_topics": [
       "jsx-and-components",
       "props",
+      "list-rendering",
       "state",
       "event-handling",
-      "conditional-rendering",
-      "list-rendering",
-      "lifting-state-up",
       "form-handling",
+      "conditional-rendering",
+      "lifting-state-up",
       "derived-values-and-simple-effects",
       "custom-hooks",
       "context",
       "performance-basics"
     ],
-    "current_topic": "list-rendering",
-    "next_topic": "list-rendering",
+    "current_topic": "state",
+    "next_topic": "state",
     "prefer_natural_implementation": true,
     "allow_exceptional_concepts_when_needed": true
   },
   "tracks": {
     "react": {
       "topics_mastered": [
-        "props"
+        "props",
+        "list-rendering"
       ],
       "topics_in_progress": [
         "state",
-        "list-rendering"
+        "event-handling"
       ],
       "topics_blocked": [],
       "last_studied_at": "2026-04-24",

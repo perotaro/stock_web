@@ -27,11 +27,21 @@ const watchlistRows = [
  */
 export function WatchlistPage() {
   return (
-    <div className="space-y-6">
-      <AppSectionNav currentSection="Watchlist" />
+    <div className="space-y-12">
+      <div className="space-y-4">
+        <header className="space-y-2">
+          <h1 className="text-4xl leading-[1.15] font-bold tracking-tight text-[color:var(--color-ink)] md:text-[40px]">
+            Watchlist
+          </h1>
+          <p className="max-w-2xl text-base leading-6 text-[color:var(--color-muted)]">
+            監視対象の銘柄を絞り込み条件付きで確認
+          </p>
+        </header>
+        <AppSectionNav currentSection="Watchlist" />
+      </div>
       <SectionCard
-        title="Watchlist"
-        description="モバイルではカード、タブレット以上では表を使う方針に沿って、横スクロールに依存しない骨格を先に用意しています。"
+        title="検索条件と一覧"
+        description="Ticker・システム・カテゴリ・稼働状態で監視対象を確認します。モバイルではカード、タブレット以上では表を使う骨格です。"
       >
         <form className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="field-shell">
