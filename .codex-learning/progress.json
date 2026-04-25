@@ -20,7 +20,7 @@
       "context",
       "performance-basics"
     ],
-    "current_topic": "state",
+    "current_topic": "list-rendering",
     "next_topic": "state",
     "prefer_natural_implementation": true,
     "allow_exceptional_concepts_when_needed": true
@@ -36,7 +36,7 @@
         "event-handling"
       ],
       "topics_blocked": [],
-      "last_studied_at": "2026-04-24",
+      "last_studied_at": "2026-04-25",
       "recent_tasks": [
         {
           "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
@@ -251,6 +251,25 @@
           ],
           "status": "pass",
           "reviewed_at": "2026-04-24"
+        },
+        {
+          "goal": "SystemLatestPage のシグナルカードが優先度順に表示されることをテストする",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "Testing Library",
+            "within"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "state",
+            "custom-hooks",
+            "API fetch",
+            "Tailwind class change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-25"
         }
       ]
     }
