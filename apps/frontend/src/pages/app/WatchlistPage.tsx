@@ -1,135 +1,329 @@
-import { SectionCard } from '@/components/ui/SectionCard'
-import { StatusPill } from '@/components/ui/StatusPill'
-import { formatJstDateTime } from '@/lib/utils/formatDate'
 import { AppSectionNav } from '@/features/app-summary/components/AppSectionNav'
 
-const watchlistRows = [
+const watchlistPreviewItems = [
   {
-    ticker: '7203',
-    systemCode: 'alpha-growth',
-    categoryCode: 'core',
+    ticker: 'AAPL',
+    categoryCode: 'growth',
+    systems: ['DMP', 'TGB'],
+    latestDecisions: ['BUY', 'NO_SIGNAL'],
     isActive: true,
-    updatedAt: '2026-04-08T05:10:00+09:00',
+    updatedAt: '2026/04/20 9:05',
   },
   {
-    ticker: '9432',
-    systemCode: 'dividend-core',
-    categoryCode: 'income',
+    ticker: 'MSFT',
+    categoryCode: 'core',
+    systems: ['DMP'],
+    latestDecisions: ['NO_SIGNAL'],
     isActive: true,
-    updatedAt: '2026-04-08T04:15:00+09:00',
+    updatedAt: '2026/04/20 9:04',
+  },
+  {
+    ticker: 'NVDA',
+    categoryCode: 'growth',
+    systems: ['TGB'],
+    latestDecisions: ['BUY'],
+    isActive: true,
+    updatedAt: '2026/04/20 9:03',
   },
 ] as const
+
+type WatchlistItem = {
+  ticker: string
+  categoryCode: string
+  systems: readonly string[]
+  latestDecisions: readonly string[]
+  isActive: boolean
+  updatedAt: string
+}
+
+type WatchlistResultsPanelProps = {
+  items: readonly WatchlistItem[]
+}
+
+type CodePillProps = {
+  label: string
+}
+
+type DecisionPillProps = {
+  decision: string
+}
+
+type WatchlistResultCardProps = {
+  item: WatchlistItem
+}
+
+/**
+ * active 状態を画面表示用ラベルへ変換する。
+ *
+ * @param isActive API が返す active 状態。
+ * @returns active または inactive の表示ラベル。
+ */
+function formatActiveLabel(isActive: boolean): string {
+  return isActive ? 'active' : 'inactive'
+}
+
+/**
+ * 判定結果に対応する CSS クラスを返す。
+ *
+ * @param decision 表示対象の判定文字列。
+ * @returns 判定の tone を表す CSS クラス名。
+ */
+function getDecisionToneClassName(decision: string): string {
+  if (decision === 'BUY') {
+    return 'watchlist-decision-pill--success'
+  }
+
+  if (decision === 'NO_SIGNAL') {
+    return 'watchlist-decision-pill--info'
+  }
+
+  return 'watchlist-decision-pill--warning'
+}
+
+/**
+ * システムコードの pill を描画する。
+ *
+ * @param props 表示するコード文字列を含む props。
+ * @returns システムコード用の pill。
+ */
+function CodePill(props: CodePillProps) {
+  const { label } = props
+
+  return <span className="watchlist-code-pill">{label}</span>
+}
+
+/**
+ * 判定結果の pill を描画する。
+ *
+ * @param props 表示する判定文字列を含む props。
+ * @returns 判定結果用の pill。
+ */
+function DecisionPill(props: DecisionPillProps) {
+  const { decision } = props
+
+  return (
+    <span
+      className={`watchlist-decision-pill ${getDecisionToneClassName(
+        decision,
+      )}`}
+    >
+      {decision}
+    </span>
+  )
+}
+
+/**
+ * Watchlist のフィルタ領域を描画する。
+ *
+ * @returns フィルタ UI を置くセクション。
+ */
+function WatchlistFilterPanel() {
+  return (
+    <section
+      className="watchlist-panel"
+      aria-labelledby="watchlist-filter-title"
+    >
+      <div className="watchlist-section-head">
+        <h2 id="watchlist-filter-title" className="watchlist-section-title">
+          フィルタ
+        </h2>
+        <p className="watchlist-sort-note">updated_at_desc 固定</p>
+      </div>
+      <form className="watchlist-filter-grid" aria-label="Watchlist filters">
+        <label className="watchlist-field">
+          <span>Ticker</span>
+          <input
+            className="watchlist-field-control"
+            placeholder="AAPL"
+            defaultValue="AAPL"
+          />
+        </label>
+        <label className="watchlist-field">
+          <span>System Code</span>
+          <input
+            className="watchlist-field-control"
+            placeholder="DMP"
+            defaultValue="DMP"
+          />
+        </label>
+        <label className="watchlist-field">
+          <span>Category Code</span>
+          <input
+            className="watchlist-field-control"
+            placeholder="growth"
+            defaultValue="growth"
+          />
+        </label>
+        <label className="watchlist-field">
+          <span>Active</span>
+          <select className="watchlist-field-control" defaultValue="true">
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </label>
+      </form>
+    </section>
+  )
+}
+
+/**
+ * モバイル向けの Watchlist 結果カードを描画する。
+ *
+ * @param props 表示対象の Watchlist item を含む props。
+ * @returns 1 銘柄分の結果カード。
+ */
+function WatchlistResultCard(props: WatchlistResultCardProps) {
+  const { item } = props
+
+  return (
+    <article className="watchlist-result-card" aria-label={item.ticker}>
+      <div className="watchlist-card-head">
+        <h3 className="watchlist-ticker">{item.ticker}</h3>
+        <span className="watchlist-active-pill">
+          {formatActiveLabel(item.isActive)}
+        </span>
+      </div>
+
+      <dl className="watchlist-card-details">
+        <div className="watchlist-card-row">
+          <dt>Category</dt>
+          <dd>{item.categoryCode}</dd>
+        </div>
+        <div className="watchlist-card-row">
+          <dt>Systems</dt>
+          <dd className="watchlist-pill-list">
+            {item.systems.map((systemCode) => (
+              <CodePill
+                key={`${item.ticker}-${systemCode}`}
+                label={systemCode}
+              />
+            ))}
+          </dd>
+        </div>
+        <div className="watchlist-card-row">
+          <dt>Latest Decisions</dt>
+          <dd className="watchlist-pill-list">
+            {item.latestDecisions.map((decision) => (
+              <DecisionPill
+                key={`${item.ticker}-${decision}`}
+                decision={decision}
+              />
+            ))}
+          </dd>
+        </div>
+        <div className="watchlist-card-row">
+          <dt>updated_at</dt>
+          <dd>{item.updatedAt}</dd>
+        </div>
+      </dl>
+    </article>
+  )
+}
+
+/**
+ * Watchlist の結果一覧領域を描画する。
+ *
+ * @param props 表示対象の Watchlist items を含む props。
+ * @returns 結果一覧のカードと表。
+ */
+function WatchlistResultsPanel(props: WatchlistResultsPanelProps) {
+  const { items } = props
+
+  return (
+    <section
+      className="watchlist-panel"
+      aria-labelledby="watchlist-results-title"
+    >
+      <div className="watchlist-section-head">
+        <h2 id="watchlist-results-title" className="watchlist-section-title">
+          結果一覧
+        </h2>
+      </div>
+
+      <div className="watchlist-card-list" aria-label="Watchlist cards">
+        {items.map((item) => (
+          <WatchlistResultCard key={item.ticker} item={item} />
+        ))}
+      </div>
+
+      <div className="watchlist-table-shell">
+        <table className="watchlist-table">
+          <thead>
+            <tr>
+              <th scope="col">Ticker</th>
+              <th scope="col">Active</th>
+              <th scope="col">Category</th>
+              <th scope="col">Systems</th>
+              <th scope="col">Latest Decisions</th>
+              <th scope="col">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.ticker}>
+                <td className="watchlist-table-ticker">{item.ticker}</td>
+                <td>
+                  <span className="watchlist-active-pill">
+                    {formatActiveLabel(item.isActive)}
+                  </span>
+                </td>
+                <td>{item.categoryCode}</td>
+                <td>
+                  <div className="watchlist-pill-list">
+                    {item.systems.map((systemCode) => (
+                      <CodePill
+                        key={`${item.ticker}-${systemCode}`}
+                        label={systemCode}
+                      />
+                    ))}
+                  </div>
+                </td>
+                <td>
+                  <div className="watchlist-pill-list">
+                    {item.latestDecisions.map((decision) => (
+                      <DecisionPill
+                        key={`${item.ticker}-${decision}`}
+                        decision={decision}
+                      />
+                    ))}
+                  </div>
+                </td>
+                <td>{item.updatedAt}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="watchlist-load-more">
+        <button className="watchlist-load-more-button" type="button">
+          さらに読み込む
+        </button>
+      </div>
+    </section>
+  )
+}
 
 /**
  * Watchlist の一覧画面を描画する。
  *
- * @returns 検索・絞り込み UI のプレースホルダー。
+ * @returns 絞り込み条件と結果一覧を配置するページ。
  */
 export function WatchlistPage() {
   return (
-    <div className="space-y-12">
-      <div className="space-y-4">
-        <header className="space-y-2">
-          <h1 className="text-4xl leading-[1.15] font-bold tracking-tight text-[color:var(--color-ink)] md:text-[40px]">
-            Watchlist
-          </h1>
-          <p className="max-w-2xl text-base leading-6 text-[color:var(--color-muted)]">
+    <div className="watchlist-page">
+      <div className="watchlist-page-head">
+        <header className="watchlist-page-header">
+          <h1 className="watchlist-page-title">Watchlist</h1>
+          <p className="watchlist-page-lead">
             監視対象の銘柄を絞り込み条件付きで確認
           </p>
         </header>
         <AppSectionNav currentSection="Watchlist" />
       </div>
-      <SectionCard
-        title="検索条件と一覧"
-        description="Ticker・システム・カテゴリ・稼働状態で監視対象を確認します。モバイルではカード、タブレット以上では表を使う骨格です。"
-      >
-        <form className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <label className="field-shell">
-            <span className="field-label">Ticker</span>
-            <input className="field-input" placeholder="7203" defaultValue="" />
-          </label>
-          <label className="field-shell">
-            <span className="field-label">System Code</span>
-            <input
-              className="field-input"
-              placeholder="alpha-growth"
-              defaultValue=""
-            />
-          </label>
-          <label className="field-shell">
-            <span className="field-label">Category Code</span>
-            <input className="field-input" placeholder="core" defaultValue="" />
-          </label>
-          <label className="field-shell">
-            <span className="field-label">is_active</span>
-            <select className="field-input" defaultValue="true">
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </select>
-          </label>
-        </form>
 
-        <div className="mt-6 grid gap-4 lg:hidden">
-          {watchlistRows.map((row) => (
-            <article
-              key={`${row.systemCode}-${row.ticker}`}
-              className="rounded-3xl border border-white/60 bg-white/75 p-5"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-semibold text-[color:var(--color-ink)]">
-                    {row.ticker}
-                  </h2>
-                  <p className="mt-2 text-sm text-[color:var(--color-muted)]">
-                    {row.systemCode} / {row.categoryCode}
-                  </p>
-                </div>
-                <StatusPill
-                  label={row.isActive ? 'active' : 'inactive'}
-                  tone="success"
-                />
-              </div>
-              <p className="mt-4 text-sm leading-7 text-[color:var(--color-muted)]">
-                updated_at: {formatJstDateTime(row.updatedAt)}
-              </p>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-6 hidden overflow-hidden rounded-3xl border border-white/60 bg-white/75 lg:block">
-          <table className="min-w-full border-collapse text-left text-sm">
-            <thead className="bg-[color:var(--color-subtle-surface)] text-[color:var(--color-muted)]">
-              <tr>
-                <th className="px-5 py-4 font-medium">Ticker</th>
-                <th className="px-5 py-4 font-medium">System</th>
-                <th className="px-5 py-4 font-medium">Category</th>
-                <th className="px-5 py-4 font-medium">Active</th>
-                <th className="px-5 py-4 font-medium">Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {watchlistRows.map((row) => (
-                <tr
-                  key={`${row.systemCode}-${row.ticker}`}
-                  className="border-t border-white/60"
-                >
-                  <td className="px-5 py-4 font-medium text-[color:var(--color-ink)]">
-                    {row.ticker}
-                  </td>
-                  <td className="px-5 py-4">{row.systemCode}</td>
-                  <td className="px-5 py-4">{row.categoryCode}</td>
-                  <td className="px-5 py-4">
-                    {row.isActive ? 'true' : 'false'}
-                  </td>
-                  <td className="px-5 py-4">
-                    {formatJstDateTime(row.updatedAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </SectionCard>
+      <WatchlistFilterPanel />
+      <WatchlistResultsPanel items={watchlistPreviewItems} />
     </div>
   )
 }

@@ -21,7 +21,7 @@
       "performance-basics"
     ],
     "current_topic": "list-rendering",
-    "next_topic": "state",
+    "next_topic": "list-rendering",
     "prefer_natural_implementation": true,
     "allow_exceptional_concepts_when_needed": true
   },
@@ -33,10 +33,11 @@
       ],
       "topics_in_progress": [
         "state",
-        "event-handling"
+        "event-handling",
+        "form-handling"
       ],
       "topics_blocked": [],
-      "last_studied_at": "2026-04-25",
+      "last_studied_at": "2026-04-26",
       "recent_tasks": [
         {
           "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
@@ -270,6 +271,42 @@
           ],
           "status": "pass with notes",
           "reviewed_at": "2026-04-25"
+        },
+        {
+          "goal": "/app/watchlist のフィルタフォームを JSX と通常 CSS Grid で作る",
+          "learning_theme": "form-handling",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "form-handling",
+            "CSS Grid"
+          ],
+          "disallowed_concepts": [
+            "state",
+            "useEffect",
+            "custom-hooks",
+            "API fetch",
+            "Tailwind utility"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-26"
+        },
+        {
+          "goal": "/app/watchlist の結果一覧に静的データ 3 件を map で表示する",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "list-rendering",
+            "semantic HTML",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "state",
+            "useEffect",
+            "custom-hooks",
+            "API fetch",
+            "pagination"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-26"
         }
       ]
     }
