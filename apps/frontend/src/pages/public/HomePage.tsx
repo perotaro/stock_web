@@ -37,11 +37,12 @@ export function HomePage() {
       <section className="public-hero-section">
         <div className="mx-auto max-w-5xl">
           <p className="eyebrow eyebrow-on-dark">Stock Trading System</p>
-          <h1 className="mt-4 max-w-5xl text-4xl leading-[1.15] font-bold tracking-tight text-[color:var(--color-hero-text)] [text-wrap:balance] md:text-6xl">
+          <h1 className="mt-4 max-w-5xl text-4xl leading-[1.15] font-bold tracking-tight [text-wrap:balance] text-[color:var(--color-hero-text)] md:text-6xl">
             売買判断を、感覚ではなく戦略で。
           </h1>
-          <p className="mt-5 max-w-3xl text-base leading-7 text-[color:var(--color-hero-muted)] [text-wrap:pretty]">
-            Guppy は、複数の売買戦略を日次で運用し、相場に対する判断を継続的に更新する株売買システムです。公開トップでは、運用状況の匿名集計と最終更新日時を掲載しています。
+          <p className="mt-5 max-w-3xl text-base leading-7 [text-wrap:pretty] text-[color:var(--color-hero-muted)]">
+            Guppy
+            は、複数の売買戦略を日次で運用し、相場に対する判断を継続的に更新する株売買システムです。公開トップでは、運用状況の匿名集計と最終更新日時を掲載しています。
           </p>
 
           <div className="mt-8 border-t border-[color:var(--color-hero-line)] pt-6">

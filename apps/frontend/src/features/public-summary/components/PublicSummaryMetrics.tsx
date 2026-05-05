@@ -104,13 +104,11 @@ function LoadingMetrics() {
 export function PublicSummaryMetrics(props: PublicSummaryMetricsProps) {
   const { summary, isPending, errorMessage, onRetry } = props
 
-
   if (isPending) {
     return (
-      <LoadingState title='読み込み中…'>
+      <LoadingState title="読み込み中…">
         <LoadingMetrics />
       </LoadingState>
-      
     )
   }
 
@@ -118,7 +116,7 @@ export function PublicSummaryMetrics(props: PublicSummaryMetricsProps) {
     return (
       <ErrorState
         message={errorMessage ?? '公開サマリを読み込めませんでした。'}
-        actionLabel='再試行'
+        actionLabel="再試行"
         onAction={onRetry}
       />
     )

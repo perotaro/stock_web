@@ -50,7 +50,11 @@ export function GlobalHeader(props: GlobalHeaderProps) {
     <header className="global-header">
       <div className="global-header-inner">
         <Link to="/" className="global-header-brand">
-          <img src="/guppy_logo.png" alt="Guppy" className="global-header-brand-image" />
+          <img
+            src="/guppy_logo.png"
+            alt="Guppy"
+            className="global-header-brand-image"
+          />
         </Link>
 
         <nav className="global-header-actions" aria-label="Global">

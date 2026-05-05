@@ -2,7 +2,6 @@ import type { output, ZodType } from 'zod'
 
 import { getClientEnv } from '@/lib/env/clientEnv'
 
-
 const DEFAULT_TIMEOUT_MS = 10_000
 const DEFAULT_RETRY_DELAY_MS = 250
 
@@ -64,10 +63,9 @@ type ApiRequestOptions<TSchema extends ZodType> = {
  * @returns リトライ対象なら true。
  */
 function shouldRetryRequest(apiError: ApiClientError): boolean {
-  
-  if (apiError.code==="network_error") return true
-  if (apiError.code==="response_invalid") return false
-  return (typeof apiError.status =="number" && apiError.status >= 500)
+  if (apiError.code === 'network_error') return true
+  if (apiError.code === 'response_invalid') return false
+  return typeof apiError.status == 'number' && apiError.status >= 500
 }
 
 /**

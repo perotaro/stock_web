@@ -54,20 +54,21 @@ describe('HomePage', () => {
 
   it('公開サマリを読み込めませんでした。\
     時間をおいて再試行してください。 が画面に出ることを確認する', async () => {
-    const fetchMock = vi.fn<typeof fetch>().mockRejectedValue(
-      new TypeError('Failed to fetch')
-    )
-    
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockRejectedValue(new TypeError('Failed to fetch'))
+
     vi.stubGlobal('fetch', fetchMock)
 
     renderWithProviders(<HomePage />)
 
     expect(
-      await screen.findByText('公開サマリを読み込めませんでした。時間をおいて再試行してください。')
+      await screen.findByText(
+        '公開サマリを読み込めませんでした。時間をおいて再試行してください。',
+      ),
     ).toBeVisible()
-
   })
-  
+
   it('公開サマリの形式が不正です。\
     時間をおいて再試行してください。 が画面に出ることを確認する', async () => {
     const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
@@ -76,22 +77,23 @@ describe('HomePage', () => {
           operating_days: 7,
           batch_runs_total: 1284,
           success_rate: 98.4,
-          updated_at: '2026-04-10T00:00:00Z',          
+          updated_at: '2026-04-10T00:00:00Z',
         }),
         {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
-        },        
-      )
+        },
+      ),
     )
 
     vi.stubGlobal('fetch', fetchMock)
-    
+
     renderWithProviders(<HomePage />)
 
     expect(
-      await screen.findByText('公開サマリの形式が不正です。時間をおいて再試行してください。')
+      await screen.findByText(
+        '公開サマリの形式が不正です。時間をおいて再試行してください。',
+      ),
     ).toBeVisible()
   })
-
 })
