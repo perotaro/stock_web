@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from typing import cast
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -114,12 +115,12 @@ def test_app_summary_endpoint_returns_expected_payload() -> None:
 
     assert status_code == HTTPStatus.OK
     assert body == {
-        "system_count": 3,
+        "system_count": 2,
         "latest_run_at": "2026-04-10T06:30:00+09:00",
         "status_counts": {
             "succeeded": 1,
             "failed": 1,
-            "not_run": 1,
+            "not_run": 0,
         },
         "systems": [
             {
@@ -136,14 +137,99 @@ def test_app_summary_endpoint_returns_expected_payload() -> None:
                 "latest_run_at": "2026-04-10T06:20:00+09:00",
                 "updated_at": "2026-04-10T06:31:00+09:00",
             },
-            {
-                "system_code": "RVS",
-                "system_name": "Range Volatility Switch",
-                "latest_status": "NOT_RUN",
-                "latest_run_at": None,
-                "updated_at": "2026-04-10T06:31:00+09:00",
-            },
         ],
+    }
+
+
+def test_system_latest_endpoint_returns_dmp_payload() -> None:
+    """DMP のシステム別最新結果 API が固定レスポンスを返すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(
+            base_url,
+            "/api/v1/systems/DMP/latest",
+        )
+
+    signals = cast(list[dict[str, object]], body["signals"])
+    assert status_code == HTTPStatus.OK
+    assert body["system_code"] == "DMP"
+    assert body["system_name"] == "Dynamic Momentum Pullback"
+    assert body["latest_run_id"] == "DMP-20260410-063000"
+    assert body["latest_run_at"] == "2026-04-10T06:30:00+09:00"
+    assert body["updated_at"] == "2026-04-10T06:31:00+09:00"
+    assert len(signals) >= 5
+    assert signals[0] == {
+        "priority_rank": 1,
+        "ticker": "AAPL",
+        "name": "Apple Inc.",
+        "decision": "BUY",
+        "reason": "EMA20 support and ATR contraction",
+        "run_id": "DMP-20260410-063000",
+    }
+    assert [signal["priority_rank"] for signal in signals] == [1, 2, 3, 4, 5]
+
+
+def test_system_latest_endpoint_returns_tgb_payload() -> None:
+    """TGB のシステム別最新結果 API が固定レスポンスを返すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(
+            base_url,
+            "/api/v1/systems/TGB/latest",
+        )
+
+    signals = cast(list[dict[str, object]], body["signals"])
+    assert status_code == HTTPStatus.OK
+    assert body["system_code"] == "TGB"
+    assert body["system_name"] == "Trend Guard Breakout"
+    assert body["latest_run_id"] == "TGB-20260410-062000"
+    assert body["latest_run_at"] == "2026-04-10T06:20:00+09:00"
+    assert len(signals) >= 5
+    assert signals[0] == {
+        "priority_rank": 1,
+        "ticker": "AVGO",
+        "name": "Broadcom Inc.",
+        "decision": "BUY",
+        "reason": "Breakout strength remained above the guard band",
+        "run_id": "TGB-20260410-062000",
+    }
+    assert [signal["priority_rank"] for signal in signals] == [1, 2, 3, 4, 5]
+
+
+def test_system_latest_endpoint_returns_not_found_for_unknown_system() -> None:
+    """未知のシステムコードに 404 を返すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(
+            base_url,
+            "/api/v1/systems/UNKNOWN/latest",
+        )
+
+    assert status_code == HTTPStatus.NOT_FOUND
+    assert body == {
+        "code": "not_found",
+        "message": "対象データが存在しません。",
     }
 
 
