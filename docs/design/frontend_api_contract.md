@@ -272,6 +272,7 @@
 - 必須
 
 #### 6.4.3 リクエスト
+
 | 種別 | 名前 | 型 | 必須 | 既定値 | 説明 |
 |---|---|---|---|---|---|
 | Query | `q_ticker` | `string` | 任意 | なし | 銘柄コード完全一致 |
@@ -281,6 +282,18 @@
 | Query | `sort` | `'updated_at_desc'` | 任意 | `updated_at_desc` | 並び順 |
 | Query | `limit` | `number` | 任意 | `50` | 1回の取得件数。`1` 以上 `100` 以下 |
 | Query | `cursor` | `string` | 任意 | なし | 次ページ取得用の opaque cursor |
+
+##### 6.4.3.1 フロント入力値と Query Parameter の対応
+
+- 対応
+  - filterValues.ticker : `q_ticker`
+  - filterValues.systemCode : `system_code`
+  - filterValues.categoryCode : `category_code`
+  - filterValues.isActive : `is_active`
+- 補足
+  - 空文字は query parameter に含めない
+  - preview data はクライアント側で絞り込まず、API query でサーバー側に条件を渡す
+  - 初回表示の `is_active=true` を UI 側既定値として持つ
 
 #### 6.4.4 正常レスポンス
 ```json

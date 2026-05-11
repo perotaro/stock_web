@@ -233,6 +233,152 @@ def test_system_latest_endpoint_returns_not_found_for_unknown_system() -> None:
     }
 
 
+def test_watchlist_endpoint_returns_sixty_items() -> None:
+    """watchlist API が 60 件分の固定レスポンスを返すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(base_url, "/api/v1/watchlist")
+
+    items = body["items"]
+    assert status_code == HTTPStatus.OK
+    assert isinstance(items, list)
+    assert len(items) == 60
+    assert body["next_cursor"] is None
+    assert items[0] == {
+        "ticker": "AAPL",
+        "is_active": True,
+        "category_code": "MEGA_TECH",
+        "systems": ["DMP", "TGB"],
+        "latest_decisions_by_system": {
+            "DMP": "BUY",
+            "TGB": "NO_SIGNAL",
+        },
+        "updated_at": "2026-04-10T06:31:00+09:00",
+    }
+    assert items[-1]["ticker"] == "BKNG"
+    assert set(items[-1]) == {
+        "ticker",
+        "is_active",
+        "category_code",
+        "systems",
+        "latest_decisions_by_system",
+        "updated_at",
+    }
+
+
+def test_watchlist_endpoint_applies_filter_query_params() -> None:
+    """watchlist API が検索条件を反映することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(
+            base_url,
+            "/api/v1/watchlist?"
+            "q_ticker=AAPL&"
+            "system_code=DMP&"
+            "category_code=MEGA_TECH&"
+            "is_active=true&"
+            "sort=updated_at_desc&"
+            "limit=10",
+        )
+
+    assert status_code == HTTPStatus.OK
+    assert body["next_cursor"] is None
+    assert body["items"] == [
+        {
+            "ticker": "AAPL",
+            "is_active": True,
+            "category_code": "MEGA_TECH",
+            "systems": ["DMP", "TGB"],
+            "latest_decisions_by_system": {
+                "DMP": "BUY",
+                "TGB": "NO_SIGNAL",
+            },
+            "updated_at": "2026-04-10T06:31:00+09:00",
+        },
+    ]
+
+
+def test_watchlist_endpoint_applies_pagination_query_params() -> None:
+    """watchlist API が limit と cursor を反映することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        first_status_code, first_body = request_json(
+            base_url,
+            "/api/v1/watchlist?is_active=true&sort=updated_at_desc&limit=5",
+        )
+        second_status_code, second_body = request_json(
+            base_url,
+            "/api/v1/watchlist?"
+            "is_active=true&sort=updated_at_desc&limit=5&cursor=offset:5",
+        )
+
+    assert first_status_code == HTTPStatus.OK
+    assert first_body["next_cursor"] == "offset:5"
+    first_items = cast(list[dict[str, object]], first_body["items"])
+    assert [item["ticker"] for item in first_items] == [
+        "CAT",
+        "NEE",
+        "RTX",
+        "UBER",
+        "PFE",
+    ]
+
+    assert second_status_code == HTTPStatus.OK
+    assert second_body["next_cursor"] == "offset:10"
+    second_items = cast(list[dict[str, object]], second_body["items"])
+    assert [item["ticker"] for item in second_items] == [
+        "LOW",
+        "GS",
+        "HON",
+        "UNP",
+        "AXP",
+    ]
+
+
+def test_watchlist_endpoint_rejects_invalid_query_params() -> None:
+    """watchlist API が不正な query parameter を拒否することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    with run_test_server() as base_url:
+        status_code, body = request_json(
+            base_url,
+            "/api/v1/watchlist?limit=0",
+        )
+
+    assert status_code == HTTPStatus.BAD_REQUEST
+    assert body == {
+        "code": "invalid_query",
+        "message": "limit は 1 以上 100 以下の整数を指定してください。",
+    }
+
+
 def test_root_endpoint_points_to_public_summary_api() -> None:
     """ルートが公開トップ向け API を案内することを確認する。
 

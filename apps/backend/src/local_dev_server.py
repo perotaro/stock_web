@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Literal, TypedDict
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 
 DEFAULT_PORT = 8080
@@ -71,6 +71,28 @@ class SystemLatestResponse(TypedDict):
     latest_run_at: str | None
     updated_at: str
     signals: list[SystemLatestSignalResponse]
+
+
+class WatchlistItemResponse(TypedDict):
+    """watchlist 一覧 API の銘柄レスポンス。"""
+
+    ticker: str
+    is_active: bool
+    category_code: str
+    systems: list[str]
+    latest_decisions_by_system: dict[str, str]
+    updated_at: str
+
+
+class WatchlistResponse(TypedDict):
+    """watchlist 一覧 API のレスポンス。"""
+
+    items: list[WatchlistItemResponse]
+    next_cursor: str | None
+
+
+class WatchlistQueryError(ValueError):
+    """watchlist の query parameter が不正な場合の例外。"""
 
 
 def build_json_response(body: Mapping[str, Any]) -> bytes:
@@ -288,6 +310,272 @@ def extract_system_latest_code(path: str) -> str | None:
     return system_code or None
 
 
+def build_watchlist_items() -> list[WatchlistItemResponse]:
+    """watchlist 一覧のローカル開発用データを返す。
+
+    Args:
+        なし。
+
+    Returns:
+        ローカル開発用の 60 件分の銘柄データ。
+    """
+
+    tickers = [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "TSLA",
+        "AVGO",
+        "LLY",
+        "JPM",
+        "V",
+        "UNH",
+        "XOM",
+        "MA",
+        "COST",
+        "PG",
+        "JNJ",
+        "HD",
+        "ABBV",
+        "WMT",
+        "NFLX",
+        "BAC",
+        "KO",
+        "CRM",
+        "MRK",
+        "PEP",
+        "AMD",
+        "CVX",
+        "ADBE",
+        "TMO",
+        "ORCL",
+        "CSCO",
+        "ACN",
+        "MCD",
+        "LIN",
+        "ABT",
+        "GE",
+        "WFC",
+        "QCOM",
+        "INTU",
+        "TXN",
+        "IBM",
+        "VZ",
+        "AMGN",
+        "PM",
+        "ISRG",
+        "DIS",
+        "NOW",
+        "CAT",
+        "SPGI",
+        "NEE",
+        "RTX",
+        "UBER",
+        "PFE",
+        "LOW",
+        "GS",
+        "HON",
+        "UNP",
+        "AXP",
+        "BKNG",
+    ]
+    category_codes = [
+        "MEGA_TECH",
+        "FINANCIAL",
+        "HEALTHCARE",
+        "CONSUMER",
+        "INDUSTRIAL",
+        "ENERGY",
+    ]
+    system_sets = [
+        ["DMP", "TGB"],
+        ["DMP"],
+        ["TGB", "RVS"],
+        ["DMP", "RVS"],
+    ]
+
+    items: list[WatchlistItemResponse] = []
+    for index, ticker in enumerate(tickers):
+        systems = system_sets[index % len(system_sets)]
+        latest_decisions_by_system = {
+            system: "BUY" if (index + system_index) % 3 == 0 else "NO_SIGNAL"
+            for system_index, system in enumerate(systems)
+        }
+        items.append(
+            {
+                "ticker": ticker,
+                "is_active": index % 10 != 9,
+                "category_code": category_codes[index % len(category_codes)],
+                "systems": systems,
+                "latest_decisions_by_system": latest_decisions_by_system,
+                "updated_at": (
+                    "2026-04-10T"
+                    f"{6 + (index // 12):02d}:{31 - (index % 12):02d}:00+09:00"
+                ),
+            },
+        )
+
+    return items
+
+
+def get_query_value(
+    query_params: Mapping[str, list[str]],
+    name: str,
+) -> str | None:
+    """query parameter の先頭値を返す。
+
+    Args:
+        query_params: 解析済みの query parameter。
+        name: 取得する query parameter 名。
+
+    Returns:
+        値があれば先頭値、なければ None。
+    """
+
+    values = query_params.get(name)
+    if values is None or len(values) == 0:
+        return None
+    return values[0]
+
+
+def parse_watchlist_is_active(value: str | None) -> bool | None:
+    """watchlist の is_active query を boolean に変換する。
+
+    Args:
+        value: query parameter の文字列値。
+
+    Returns:
+        変換した boolean。未指定なら None。
+
+    Raises:
+        WatchlistQueryError: true/false 以外が指定された場合。
+    """
+
+    if value is None:
+        return None
+    if value == "true":
+        return True
+    if value == "false":
+        return False
+    raise WatchlistQueryError("is_active は true または false を指定してください。")
+
+
+def parse_watchlist_limit(value: str | None) -> int | None:
+    """watchlist の limit query を整数に変換する。
+
+    Args:
+        value: query parameter の文字列値。
+
+    Returns:
+        変換した 1 以上 100 以下の整数。未指定なら None。
+
+    Raises:
+        WatchlistQueryError: 整数以外、または範囲外が指定された場合。
+    """
+
+    if value is None:
+        return None
+    try:
+        limit = int(value)
+    except ValueError as error:
+        raise WatchlistQueryError(
+            "limit は 1 以上 100 以下の整数を指定してください。",
+        ) from error
+    if limit < 1 or limit > 100:
+        raise WatchlistQueryError("limit は 1 以上 100 以下の整数を指定してください。")
+    return limit
+
+
+def parse_watchlist_cursor(value: str | None) -> int:
+    """watchlist の cursor query を開始位置に変換する。
+
+    Args:
+        value: query parameter の文字列値。
+
+    Returns:
+        ページング開始位置。
+
+    Raises:
+        WatchlistQueryError: `offset:<number>` 形式以外が指定された場合。
+    """
+
+    if value is None:
+        return 0
+    prefix = "offset:"
+    if not value.startswith(prefix):
+        raise WatchlistQueryError("cursor は offset:<number> 形式を指定してください。")
+    offset_text = value[len(prefix) :]
+    try:
+        offset = int(offset_text)
+    except ValueError as error:
+        raise WatchlistQueryError(
+            "cursor は offset:<number> 形式を指定してください。",
+        ) from error
+    if offset < 0:
+        raise WatchlistQueryError("cursor は 0 以上の offset を指定してください。")
+    return offset
+
+
+def build_watchlist_response(
+    query_params: Mapping[str, list[str]],
+) -> WatchlistResponse:
+    """query parameter を反映した watchlist 一覧レスポンスを返す。
+
+    Args:
+        query_params: 解析済みの query parameter。
+
+    Returns:
+        フィルタリングとページングを反映したレスポンス。
+
+    Raises:
+        WatchlistQueryError: query parameter が不正な場合。
+    """
+
+    q_ticker = get_query_value(query_params, "q_ticker")
+    system_code = get_query_value(query_params, "system_code")
+    category_code = get_query_value(query_params, "category_code")
+    sort = get_query_value(query_params, "sort")
+    is_active = parse_watchlist_is_active(
+        get_query_value(query_params, "is_active"),
+    )
+    limit = parse_watchlist_limit(get_query_value(query_params, "limit"))
+    offset = parse_watchlist_cursor(get_query_value(query_params, "cursor"))
+
+    if sort not in (None, "updated_at_desc"):
+        raise WatchlistQueryError("sort は updated_at_desc を指定してください。")
+
+    items = build_watchlist_items()
+    if q_ticker is not None:
+        items = [item for item in items if item["ticker"] == q_ticker]
+    if system_code is not None:
+        items = [item for item in items if system_code in item["systems"]]
+    if category_code is not None:
+        items = [
+            item for item in items if item["category_code"] == category_code
+        ]
+    if is_active is not None:
+        items = [item for item in items if item["is_active"] is is_active]
+    if sort == "updated_at_desc":
+        items = sorted(items, key=lambda item: item["updated_at"], reverse=True)
+
+    if limit is None:
+        return {
+            "items": items[offset:],
+            "next_cursor": None,
+        }
+
+    next_offset = offset + limit
+    return {
+        "items": items[offset:next_offset],
+        "next_cursor": (
+            f"offset:{next_offset}" if next_offset < len(items) else None
+        ),
+    }
+
+
 class LocalDevRequestHandler(BaseHTTPRequestHandler):
     """ローカル開発用の HTTP リクエストを処理する。"""
 
@@ -300,7 +588,8 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
             なし。
         """
 
-        path = urlsplit(self.path).path
+        parsed_url = urlsplit(self.path)
+        path = parsed_url.path
 
         if path == "/healthz":
             self._send_json(
@@ -337,6 +626,21 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
 
+            self._send_json(HTTPStatus.OK, response)
+            return
+
+        if path == "/api/v1/watchlist":
+            try:
+                response = build_watchlist_response(parse_qs(parsed_url.query))
+            except WatchlistQueryError as error:
+                self._send_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {
+                        "code": "invalid_query",
+                        "message": str(error),
+                    },
+                )
+                return
             self._send_json(HTTPStatus.OK, response)
             return
 
