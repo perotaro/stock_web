@@ -1,26 +1,15 @@
 import { useParams } from 'react-router-dom'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { LoadingState } from '@/components/ui/LoadingState'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { AppSectionNav } from '@/features/app-summary/components/AppSectionNav'
+import type { SystemLatestSignal } from '@/features/system-latest/api/fetchSystemLatest'
+import { useSystemLatestQuery } from '@/features/system-latest/hooks/useSystemLatestQuery'
+import { ApiClientError } from '@/lib/api/httpClient'
 import { formatJstDateTimeWithZone } from '@/lib/utils/formatDate'
-
-type SystemLatestSignal = {
-  priority_rank: number
-  ticker: string
-  name: string
-  decision: string
-  reason: string | null
-}
-
-type SystemLatestPreview = {
-  system_code: string
-  system_name: string
-  latest_run_id: string | null
-  latest_run_at: string | null
-  updated_at: string
-  signals: SystemLatestSignal[]
-}
 
 type SystemLatestHeaderProps = {
   systemCode: string
@@ -40,37 +29,6 @@ type SignalsGridProps = {
 
 type SignalCardProps = {
   signal: SystemLatestSignal
-}
-
-const previewSystemLatest: SystemLatestPreview = {
-  system_code: 'DMP',
-  system_name: 'Dynamic Momentum Pullback',
-  latest_run_id: 'DMP-20260410-063000',
-  latest_run_at: '2026-04-10T06:30:00+09:00',
-  updated_at: '2026-04-10T06:31:00+09:00',
-  signals: [
-    {
-      priority_rank: 1,
-      ticker: 'AAPL',
-      name: 'Apple Inc.',
-      decision: 'BUY',
-      reason: 'EMA20 support and ATR contraction',
-    },
-    {
-      priority_rank: 2,
-      ticker: 'MSFT',
-      name: 'Microsoft Corporation',
-      decision: 'NO_SIGNAL',
-      reason: 'Breakout pending',
-    },
-    {
-      priority_rank: 3,
-      ticker: 'NVDA',
-      name: 'NVIDIA Corporation',
-      decision: 'BUY',
-      reason: 'Relative strength improved after consolidation',
-    },
-  ],
 }
 
 /**
@@ -103,6 +61,47 @@ function getDecisionTone(decision: string): 'info' | 'success' | 'warning' {
   }
 
   return 'warning'
+}
+
+/**
+ * システム別最新結果の取得失敗時メッセージを返す。
+ *
+ * @param error 発生した例外。
+ * @returns 利用者向けの簡潔な文言。
+ */
+function getSystemLatestErrorMessage(error: unknown): string {
+  if (error instanceof ApiClientError && error.status === 404) {
+    return '対象システムが見つかりませんでした。'
+  }
+
+  if (error instanceof ApiClientError && error.code === 'response_invalid') {
+    return 'システム別最新結果の形式が不正です。時間をおいて再試行してください。'
+  }
+
+  return 'システム別最新結果を読み込めませんでした。時間をおいて再試行してください。'
+}
+
+/**
+ * ローディング中のシグナルカード骨格を描画する。
+ *
+ * @returns スケルトン風のシグナルカード群。
+ */
+function LoadingSignalsGrid() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 3 }, (_, index) => (
+        <div
+          key={`system-latest-skeleton-${index}`}
+          className="rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-surface)] p-5 shadow-[var(--shadow-soft)]"
+        >
+          <div className="h-5 w-20 rounded-[2px] bg-[color:var(--color-subtle-surface)]" />
+          <div className="mt-5 h-6 w-40 rounded-[2px] bg-[color:var(--color-subtle-surface)]" />
+          <div className="mt-3 h-4 w-16 rounded-[2px] bg-[color:var(--color-subtle-surface)]" />
+          <div className="mt-5 h-4 w-full rounded-[2px] bg-[color:var(--color-subtle-surface)]" />
+        </div>
+      ))}
+    </div>
+  )
 }
 
 /**
@@ -231,36 +230,102 @@ function SignalCard(props: SignalCardProps) {
  */
 export function SystemLatestPage() {
   const params = useParams()
-  const systemCode = params.system_code ?? previewSystemLatest.system_code
+  const systemCode = params.system_code ?? ''
+  const systemLatestQuery = useSystemLatestQuery(systemCode)
+  const systemLatest = systemLatestQuery.data
+
+  if (systemCode.length === 0) {
+    return (
+      <SectionCard
+        title="システム別最新結果"
+        description="最新 1 回分の実行結果を確認します。"
+      >
+        <ErrorState message="対象システムコードが指定されていません。" />
+      </SectionCard>
+    )
+  }
+
+  const errorMessage =
+    systemLatestQuery.error !== null
+      ? getSystemLatestErrorMessage(systemLatestQuery.error)
+      : undefined
 
   return (
     <div className="space-y-12">
       <div className="space-y-4">
         <SystemLatestHeader
           systemCode={systemCode}
-          systemName={previewSystemLatest.system_name}
-          latestRunAt={previewSystemLatest.latest_run_at}
+          systemName={systemLatest?.system_name ?? systemCode}
+          latestRunAt={systemLatest?.latest_run_at ?? null}
         />
         <AppSectionNav />
       </div>
 
-      <SectionCard
-        title="実行メタ"
-        description="最新 1 回分の実行 ID、実行日時、更新日時を確認します。"
-      >
-        <RunMetadataList
-          latestRunId={previewSystemLatest.latest_run_id}
-          latestRunAt={previewSystemLatest.latest_run_at}
-          updatedAt={previewSystemLatest.updated_at}
-        />
-      </SectionCard>
+      {systemLatestQuery.isPending ? (
+        <div className="space-y-12">
+          <SectionCard
+            title="実行メタ"
+            description="最新 1 回分の実行 ID、実行日時、更新日時を確認します。"
+          >
+            <LoadingState title="実行メタを読み込んでいます…" />
+          </SectionCard>
 
-      <SectionCard
-        title="シグナル一覧"
-        description="API 返却順を保ち、BUY 判定を最短で視認できるカードとして表示します。"
-      >
-        <SignalsGrid signals={previewSystemLatest.signals} />
-      </SectionCard>
+          <SectionCard
+            title="シグナル一覧"
+            description="優先度順に銘柄判定を確認します。"
+          >
+            <LoadingState title="シグナル一覧を読み込んでいます…">
+              <LoadingSignalsGrid />
+            </LoadingState>
+          </SectionCard>
+        </div>
+      ) : null}
+
+      {!systemLatestQuery.isPending && (!systemLatest || errorMessage) ? (
+        <SectionCard
+          title="システム別最新結果"
+          description="最新 1 回分の実行結果を確認します。"
+        >
+          <ErrorState
+            message={
+              errorMessage ?? 'システム別最新結果を読み込めませんでした。'
+            }
+            actionLabel="再試行"
+            onAction={() => {
+              void systemLatestQuery.refetch()
+            }}
+          />
+        </SectionCard>
+      ) : null}
+
+      {!systemLatestQuery.isPending && systemLatest && !errorMessage ? (
+        <>
+          <SectionCard
+            title="実行メタ"
+            description="最新 1 回分の実行 ID、実行日時、更新日時を確認します。"
+          >
+            <RunMetadataList
+              latestRunId={systemLatest.latest_run_id}
+              latestRunAt={systemLatest.latest_run_at}
+              updatedAt={systemLatest.updated_at}
+            />
+          </SectionCard>
+
+          <SectionCard
+            title="シグナル一覧"
+            description="優先度順に銘柄判定を確認します。"
+          >
+            {systemLatest.signals.length > 0 ? (
+              <SignalsGrid signals={systemLatest.signals} />
+            ) : (
+              <EmptyState
+                title="表示できるシグナルがありません"
+                description="最新実行の銘柄判定はまだ登録されていません。"
+              />
+            )}
+          </SectionCard>
+        </>
+      ) : null}
     </div>
   )
 }
