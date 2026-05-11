@@ -1,307 +1,28 @@
+import { useCallback, useEffect, useState } from 'react'
 import { AppSectionNav } from '@/features/app-summary/components/AppSectionNav'
+import { WatchlistFilterPanel } from '@/features/watchlist/components/WatchlistFilterPanel'
+import { WatchlistResultsPanel } from '@/features/watchlist/components/WatchlistResultsPanel'
+import { fetchWatchlistItemsPage } from '@/features/watchlist/api/fetchWatchlistItemsPage'
+import {
+  type WatchlistFilterValues,
+  type WatchlistResultValues,
+} from '@/features/watchlist/types'
+import { buildWatchlistQuery } from '@/features/watchlist/api/buildWatchlistQuery'
+import { areWatchlistQueriesEqual } from '@/features/watchlist/api/areWatchlistQueriesEqual'
 
-const watchlistPreviewItems = [
-  {
-    ticker: 'AAPL',
-    categoryCode: 'growth',
-    systems: ['DMP', 'TGB'],
-    latestDecisions: ['BUY', 'NO_SIGNAL'],
-    isActive: true,
-    updatedAt: '2026/04/20 9:05',
-  },
-  {
-    ticker: 'MSFT',
-    categoryCode: 'core',
-    systems: ['DMP'],
-    latestDecisions: ['NO_SIGNAL'],
-    isActive: true,
-    updatedAt: '2026/04/20 9:04',
-  },
-  {
-    ticker: 'NVDA',
-    categoryCode: 'growth',
-    systems: ['TGB'],
-    latestDecisions: ['BUY'],
-    isActive: true,
-    updatedAt: '2026/04/20 9:03',
-  },
-] as const
-
-type WatchlistItem = {
-  ticker: string
-  categoryCode: string
-  systems: readonly string[]
-  latestDecisions: readonly string[]
-  isActive: boolean
-  updatedAt: string
+const initWatchlistValues: WatchlistFilterValues = {
+  ticker: '',
+  systemCode: '',
+  categoryCode: '',
+  isActive: 'true',
 }
 
-type WatchlistResultsPanelProps = {
-  items: readonly WatchlistItem[]
-}
-
-type CodePillProps = {
-  label: string
-}
-
-type DecisionPillProps = {
-  decision: string
-}
-
-type WatchlistResultCardProps = {
-  item: WatchlistItem
-}
-
-/**
- * active 状態を画面表示用ラベルへ変換する。
- *
- * @param isActive API が返す active 状態。
- * @returns active または inactive の表示ラベル。
- */
-function formatActiveLabel(isActive: boolean): string {
-  return isActive ? 'active' : 'inactive'
-}
-
-/**
- * 判定結果に対応する CSS クラスを返す。
- *
- * @param decision 表示対象の判定文字列。
- * @returns 判定の tone を表す CSS クラス名。
- */
-function getDecisionToneClassName(decision: string): string {
-  if (decision === 'BUY') {
-    return 'watchlist-decision-pill--success'
-  }
-
-  if (decision === 'NO_SIGNAL') {
-    return 'watchlist-decision-pill--info'
-  }
-
-  return 'watchlist-decision-pill--warning'
-}
-
-/**
- * システムコードの pill を描画する。
- *
- * @param props 表示するコード文字列を含む props。
- * @returns システムコード用の pill。
- */
-function CodePill(props: CodePillProps) {
-  const { label } = props
-
-  return <span className="watchlist-code-pill">{label}</span>
-}
-
-/**
- * 判定結果の pill を描画する。
- *
- * @param props 表示する判定文字列を含む props。
- * @returns 判定結果用の pill。
- */
-function DecisionPill(props: DecisionPillProps) {
-  const { decision } = props
-
-  return (
-    <span
-      className={`watchlist-decision-pill ${getDecisionToneClassName(
-        decision,
-      )}`}
-    >
-      {decision}
-    </span>
-  )
-}
-
-/**
- * Watchlist のフィルタ領域を描画する。
- *
- * @returns フィルタ UI を置くセクション。
- */
-function WatchlistFilterPanel() {
-  return (
-    <section
-      className="watchlist-panel"
-      aria-labelledby="watchlist-filter-title"
-    >
-      <div className="watchlist-section-head">
-        <h2 id="watchlist-filter-title" className="watchlist-section-title">
-          フィルタ
-        </h2>
-        <p className="watchlist-sort-note">updated_at_desc 固定</p>
-      </div>
-      <form className="watchlist-filter-grid" aria-label="Watchlist filters">
-        <label className="watchlist-field">
-          <span>Ticker</span>
-          <input
-            className="watchlist-field-control"
-            placeholder="AAPL"
-            defaultValue="AAPL"
-          />
-        </label>
-        <label className="watchlist-field">
-          <span>System Code</span>
-          <input
-            className="watchlist-field-control"
-            placeholder="DMP"
-            defaultValue="DMP"
-          />
-        </label>
-        <label className="watchlist-field">
-          <span>Category Code</span>
-          <input
-            className="watchlist-field-control"
-            placeholder="growth"
-            defaultValue="growth"
-          />
-        </label>
-        <label className="watchlist-field">
-          <span>Active</span>
-          <select className="watchlist-field-control" defaultValue="true">
-            <option value="true">true</option>
-            <option value="false">false</option>
-          </select>
-        </label>
-      </form>
-    </section>
-  )
-}
-
-/**
- * モバイル向けの Watchlist 結果カードを描画する。
- *
- * @param props 表示対象の Watchlist item を含む props。
- * @returns 1 銘柄分の結果カード。
- */
-function WatchlistResultCard(props: WatchlistResultCardProps) {
-  const { item } = props
-
-  return (
-    <article className="watchlist-result-card" aria-label={item.ticker}>
-      <div className="watchlist-card-head">
-        <h3 className="watchlist-ticker">{item.ticker}</h3>
-        <span className="watchlist-active-pill">
-          {formatActiveLabel(item.isActive)}
-        </span>
-      </div>
-
-      <dl className="watchlist-card-details">
-        <div className="watchlist-card-row">
-          <dt>Category</dt>
-          <dd>{item.categoryCode}</dd>
-        </div>
-        <div className="watchlist-card-row">
-          <dt>Systems</dt>
-          <dd className="watchlist-pill-list">
-            {item.systems.map((systemCode) => (
-              <CodePill
-                key={`${item.ticker}-${systemCode}`}
-                label={systemCode}
-              />
-            ))}
-          </dd>
-        </div>
-        <div className="watchlist-card-row">
-          <dt>Latest Decisions</dt>
-          <dd className="watchlist-pill-list">
-            {item.latestDecisions.map((decision) => (
-              <DecisionPill
-                key={`${item.ticker}-${decision}`}
-                decision={decision}
-              />
-            ))}
-          </dd>
-        </div>
-        <div className="watchlist-card-row">
-          <dt>updated_at</dt>
-          <dd>{item.updatedAt}</dd>
-        </div>
-      </dl>
-    </article>
-  )
-}
-
-/**
- * Watchlist の結果一覧領域を描画する。
- *
- * @param props 表示対象の Watchlist items を含む props。
- * @returns 結果一覧のカードと表。
- */
-function WatchlistResultsPanel(props: WatchlistResultsPanelProps) {
-  const { items } = props
-
-  return (
-    <section
-      className="watchlist-panel"
-      aria-labelledby="watchlist-results-title"
-    >
-      <div className="watchlist-section-head">
-        <h2 id="watchlist-results-title" className="watchlist-section-title">
-          結果一覧
-        </h2>
-      </div>
-
-      <div className="watchlist-card-list" aria-label="Watchlist cards">
-        {items.map((item) => (
-          <WatchlistResultCard key={item.ticker} item={item} />
-        ))}
-      </div>
-
-      <div className="watchlist-table-shell">
-        <table className="watchlist-table">
-          <thead>
-            <tr>
-              <th scope="col">Ticker</th>
-              <th scope="col">Active</th>
-              <th scope="col">Category</th>
-              <th scope="col">Systems</th>
-              <th scope="col">Latest Decisions</th>
-              <th scope="col">Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.ticker}>
-                <td className="watchlist-table-ticker">{item.ticker}</td>
-                <td>
-                  <span className="watchlist-active-pill">
-                    {formatActiveLabel(item.isActive)}
-                  </span>
-                </td>
-                <td>{item.categoryCode}</td>
-                <td>
-                  <div className="watchlist-pill-list">
-                    {item.systems.map((systemCode) => (
-                      <CodePill
-                        key={`${item.ticker}-${systemCode}`}
-                        label={systemCode}
-                      />
-                    ))}
-                  </div>
-                </td>
-                <td>
-                  <div className="watchlist-pill-list">
-                    {item.latestDecisions.map((decision) => (
-                      <DecisionPill
-                        key={`${item.ticker}-${decision}`}
-                        decision={decision}
-                      />
-                    ))}
-                  </div>
-                </td>
-                <td>{item.updatedAt}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="watchlist-load-more">
-        <button className="watchlist-load-more-button" type="button">
-          さらに読み込む
-        </button>
-      </div>
-    </section>
-  )
+const initResultValues: WatchlistResultValues = {
+  items: [],
+  nextCursor: null,
+  isLoading: true,
+  isLoadingMore: false,
+  errorMessage: null,
 }
 
 /**
@@ -310,6 +31,151 @@ function WatchlistResultsPanel(props: WatchlistResultsPanelProps) {
  * @returns 絞り込み条件と結果一覧を配置するページ。
  */
 export function WatchlistPage() {
+  const [filterValues, setFilterValues] =
+    useState<WatchlistFilterValues>(initWatchlistValues)
+  const [isApplied, setIsApplied] = useState(false)
+  const [appliedQuery, setQuery] = useState(
+    buildWatchlistQuery(initWatchlistValues),
+  )
+  const [resultValues, setResultValues] =
+    useState<WatchlistResultValues>(initResultValues)
+
+  /**
+   * 適用済み query で Watchlist API を読み込む。
+   *
+   * @returns なし
+   */
+  const loadWatchlist = useCallback(async () => {
+    setResultValues((current) => ({
+      ...current,
+      isLoading: true,
+      errorMessage: null,
+    }))
+    try {
+      const watchlistItemsPage = await fetchWatchlistItemsPage(appliedQuery)
+      setResultValues({
+        items: watchlistItemsPage.items,
+        nextCursor: watchlistItemsPage.nextCursor,
+        isLoading: false,
+        isLoadingMore: false,
+        errorMessage: null,
+      })
+    } catch (error) {
+      setResultValues((current) => ({
+        ...current,
+        isLoading: false,
+        isLoadingMore: false,
+        errorMessage: String(error),
+      }))
+    }
+  }, [appliedQuery])
+
+  useEffect(() => {
+    void loadWatchlist()
+  }, [loadWatchlist])
+
+  /**
+   * フィルタ条件を初期状態へ戻す。
+   *
+   * @returns なし
+   */
+  const handleResetFilters = () => {
+    setFilterValues(initWatchlistValues)
+    setIsApplied(false)
+    setQuery(buildWatchlistQuery(initWatchlistValues))
+  }
+
+  //初期値からフィルタが変化しているか
+  const hasInputFilterChanges =
+    filterValues.ticker !== '' ||
+    filterValues.systemCode !== '' ||
+    filterValues.categoryCode !== '' ||
+    filterValues.isActive !== initWatchlistValues.isActive
+
+  // フィルタ条件入力か検索ボタン押下でフィルタリセット可能にする
+  const canResetFilters = hasInputFilterChanges || isApplied
+
+  /**
+   * フィルタ適用時のイベント制御。
+   *
+   * @param event submit押下時のイベント
+   * @returns なし
+   */
+  const handleApplyFilters = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsApplied(true)
+    setQuery(buildWatchlistQuery(filterValues))
+  }
+
+  /**
+   * フィルタ条件変更時のイベント制御
+   *
+   * @param field フィルタの項目名
+   * @param value 検索内容
+   * @returns なし
+   */
+  const handleFilterValueChange = (
+    field: keyof WatchlistFilterValues,
+    value: string,
+  ) => {
+    setFilterValues({ ...filterValues, [field]: value })
+    setIsApplied(false)
+  }
+
+  const currentQuery = buildWatchlistQuery(filterValues)
+  const isApplyDisabled = areWatchlistQueriesEqual(currentQuery, appliedQuery)
+
+  const hasPendingFilterChanges = !isApplyDisabled
+
+  /**
+   * 次ページの Watchlist items を読み込んで現在の一覧へ追記する。
+   *
+   * @returns なし
+   */
+  const handleLoadMore = async () => {
+    if (resultValues.nextCursor === null || resultValues.isLoadingMore) {
+      return
+    }
+
+    const cursor = resultValues.nextCursor
+
+    setResultValues((current) => ({
+      ...current,
+      isLoadingMore: true,
+      errorMessage: null,
+    }))
+
+    try {
+      const nextPage = await fetchWatchlistItemsPage({
+        ...appliedQuery,
+        cursor,
+      })
+
+      setResultValues((current) => ({
+        ...current,
+        items: [...current.items, ...nextPage.items],
+        nextCursor: nextPage.nextCursor,
+        isLoadingMore: false,
+        errorMessage: null,
+      }))
+    } catch (error) {
+      setResultValues((current) => ({
+        ...current,
+        isLoadingMore: false,
+        errorMessage: String(error),
+      }))
+    }
+  }
+
+  /**
+   * エラー表示から現在の適用済み query で Watchlist API を再取得する。
+   *
+   * @returns なし
+   */
+  const handleRetry = () => {
+    void loadWatchlist()
+  }
+
   return (
     <div className="watchlist-page">
       <div className="watchlist-page-head">
@@ -322,8 +188,35 @@ export function WatchlistPage() {
         <AppSectionNav currentSection="Watchlist" />
       </div>
 
-      <WatchlistFilterPanel />
-      <WatchlistResultsPanel items={watchlistPreviewItems} />
+      <WatchlistFilterPanel
+        filterValues={filterValues}
+        filterHandlers={{
+          onTickerChange: (value) => handleFilterValueChange('ticker', value),
+          onSystemCodeChange: (value) =>
+            handleFilterValueChange('systemCode', value),
+          onCategoryCodeChange: (value) =>
+            handleFilterValueChange('categoryCode', value),
+          onIsActiveChange: (value) =>
+            handleFilterValueChange('isActive', value),
+        }}
+        isResetDisabled={!canResetFilters}
+        hasInputFilterChanges={hasInputFilterChanges}
+        isApplied={isApplied}
+        isApplyDisabled={isApplyDisabled}
+        onResetFilters={handleResetFilters}
+        onApplyFilters={handleApplyFilters}
+      />
+      <WatchlistResultsPanel
+        items={resultValues.items}
+        nextCursor={resultValues.nextCursor}
+        hasPendingFilterChanges={hasPendingFilterChanges}
+        appliedQuery={appliedQuery}
+        isLoading={resultValues.isLoading}
+        isLoadingMore={resultValues.isLoadingMore}
+        errorMessage={resultValues.errorMessage}
+        onLoadMore={handleLoadMore}
+        onRetry={handleRetry}
+      />
     </div>
   )
 }
