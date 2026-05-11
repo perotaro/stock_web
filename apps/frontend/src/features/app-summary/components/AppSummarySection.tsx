@@ -11,7 +11,7 @@ import { ApiClientError } from '@/lib/api/httpClient'
  *
  * @returns スケルトン風の要約カード群。
  */
-function LoadingSummaryStats() {
+export function LoadingSummaryStats() {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       {Array.from({ length: 5 }, (_, index) => (
