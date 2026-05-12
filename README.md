@@ -170,6 +170,16 @@ root/
 
 開発環境は devcontainer 前提です。`compose.yml` には devcontainer がアタッチする `dev_web` サービス定義があり、`dev_web` と `backend_dev` はどちらもバッチ側 compose が起動している共有 `DynamoDB Local` を参照する既定値になっています。必要に応じて、このリポジトリ単体で DynamoDB Local を使えるようにコメント付きの設定も残しています。
 
+### Git フック
+
+コミット前に `.env` 系の環境変数ファイルがステージされていないことを確認するため、初回セットアップ時に次を実行してください。
+
+```bash
+git config core.hooksPath .githooks
+```
+
+このフックは `.env`, `.env.local`, `.env.production`, `local.env` などのコミットを中止します。共有用テンプレートである `.env.example`, `.env.sample`, `.env.template` は対象外です。
+
 あわせて、ローカルでバックエンドを起動するための `backend_dev` サービスを `compose.yml` に用意しています。`DynamoDB Local` はこのリポジトリ内では起動せず、バッチ側 compose で起動している共有インスタンスを利用する前提です。
 
 ### バックエンド実行コンテナ

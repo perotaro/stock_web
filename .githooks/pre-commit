@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -eu
+
+staged_env_files="$(
+  git diff --cached --name-only --diff-filter=ACMR |
+    awk '
+      function basename(path, parts, count) {
+        count = split(path, parts, "/")
+        return parts[count]
+      }
+
+      {
+        file = basename($0)
+        is_env_file = file == ".env" || file ~ /^\.env\./ || file ~ /\.env$/
+        is_template = file ~ /^\.env\.(example|sample|template)$/ || file ~ /^(example|sample|template)\.env$/
+
+        if (is_env_file && !is_template) {
+          print $0
+        }
+      }
+    '
+)"
+
+if [ -n "$staged_env_files" ]; then
+  echo "コミット対象に環境変数ファイルが含まれているため、コミットを中止します。"
+  echo "機密情報を含む可能性があるため、以下のファイルをステージから外してください。"
+  printf "%s\n" "$staged_env_files" | sed 's/^/  - /'
+  echo
+  echo "例: git restore --staged <file>"
+  exit 1
+fi
