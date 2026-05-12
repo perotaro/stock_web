@@ -3,7 +3,7 @@
   "current_focus": "react",
   "preferences": {
     "review_intensity": "normal",
-    "task_size": "medium"
+    "task_size": "large"
   },
   "curriculum": {
     "ordered_topics": [
@@ -20,8 +20,8 @@
       "context",
       "performance-basics"
     ],
-    "current_topic": "state",
-    "next_topic": "state",
+    "current_topic": "derived-values-and-simple-effects",
+    "next_topic": "derived-values-and-simple-effects",
     "prefer_natural_implementation": true,
     "allow_exceptional_concepts_when_needed": true
   },
@@ -36,7 +36,8 @@
         "event-handling",
         "form-handling",
         "conditional-rendering",
-        "lifting-state-up"
+        "lifting-state-up",
+        "derived-values-and-simple-effects"
       ],
       "topics_blocked": [],
       "last_studied_at": "2026-05-10",
@@ -1363,6 +1364,26 @@
           ],
           "status": "pass",
           "reviewed_at": "2026-05-11"
+        },
+        {
+          "goal": "OIDC モードの LoginPage で認証リダイレクト開始と失敗時の再試行導線を実装する",
+          "learning_theme": "derived-values-and-simple-effects",
+          "allowed_concepts": [
+            "useEffect",
+            "useRef",
+            "useState",
+            "event-handling",
+            "conditional-rendering",
+            "useAuth"
+          ],
+          "disallowed_concepts": [
+            "custom-hooks",
+            "Provider / Context change",
+            "env design change",
+            "test expectation change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-12"
         }
       ]
     }
