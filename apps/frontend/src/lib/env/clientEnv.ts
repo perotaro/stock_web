@@ -1,23 +1,27 @@
 import { z } from 'zod'
 
+const authModeSchema = z.enum(['oidc', 'dev-bypass'])
+
 const clientEnvSchema = z.object({
   VITE_API_BASE_URL: z.string().min(1),
+  VITE_AUTH_MODE: authModeSchema.default('dev-bypass'),
   VITE_OIDC_AUTHORITY: z.string().url(),
   VITE_OIDC_CLIENT_ID: z.string().min(1),
   VITE_OIDC_REDIRECT_URI: z.string().url(),
   VITE_OIDC_POST_LOGOUT_REDIRECT_URI: z.string().url(),
   VITE_OIDC_SCOPE: z.string().min(1),
-  VITE_ENABLE_DEV_AUTH_BYPASS: z.enum(['true', 'false']).default('true'),
 })
+
+export type AuthMode = z.infer<typeof authModeSchema>
 
 type ClientEnv = {
   apiBaseUrl: string
+  authMode: AuthMode
   oidcAuthority: string
   oidcClientId: string
   oidcRedirectUri: string
   oidcPostLogoutRedirectUri: string
   oidcScope: string
-  enableDevAuthBypass: boolean
 }
 
 let cachedClientEnv: ClientEnv | undefined
@@ -30,6 +34,24 @@ let cachedClientEnv: ClientEnv | undefined
  */
 function normalizeBaseUrl(value: string): string {
   return value.endsWith('/') ? value.slice(0, -1) : value
+}
+
+/**
+ * 認証モードが実行環境で許可されているか検証する。
+ *
+ * @param authMode 検証対象の認証モード。
+ * @param isProduction 本番ビルドとして扱うかどうか。
+ * @returns 何も返さない。
+ */
+export function assertAllowedAuthMode(
+  authMode: AuthMode,
+  isProduction: boolean,
+): void {
+  if (isProduction && authMode === 'dev-bypass') {
+    throw new Error(
+      '本番環境で dev-bypass 認証は使用できません。VITE_AUTH_MODE=oidc を指定してください。',
+    )
+  }
 }
 
 /**
@@ -52,15 +74,17 @@ export function getClientEnv(): ClientEnv {
     )
   }
 
+  assertAllowedAuthMode(parsedEnv.data.VITE_AUTH_MODE, import.meta.env.PROD)
+
   cachedClientEnv = {
     apiBaseUrl: normalizeBaseUrl(parsedEnv.data.VITE_API_BASE_URL),
+    authMode: parsedEnv.data.VITE_AUTH_MODE,
     oidcAuthority: parsedEnv.data.VITE_OIDC_AUTHORITY,
     oidcClientId: parsedEnv.data.VITE_OIDC_CLIENT_ID,
     oidcRedirectUri: parsedEnv.data.VITE_OIDC_REDIRECT_URI,
     oidcPostLogoutRedirectUri:
       parsedEnv.data.VITE_OIDC_POST_LOGOUT_REDIRECT_URI,
     oidcScope: parsedEnv.data.VITE_OIDC_SCOPE,
-    enableDevAuthBypass: parsedEnv.data.VITE_ENABLE_DEV_AUTH_BYPASS === 'true',
   }
 
   return cachedClientEnv

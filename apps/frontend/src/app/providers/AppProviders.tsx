@@ -1,8 +1,11 @@
 import type { PropsWithChildren } from 'react'
 
 import { QueryClientProvider } from '@tanstack/react-query'
+import { AuthProvider } from 'react-oidc-context'
 
 import { getSharedAppQueryClient } from '@/app/providers/queryClient'
+import { buildOidcAuthProviderConfig } from '@/features/auth/authProviderConfig'
+import { getClientEnv } from '@/lib/env/clientEnv'
 
 /**
  * アプリ全体で共有する Provider をまとめる。
@@ -13,8 +16,12 @@ import { getSharedAppQueryClient } from '@/app/providers/queryClient'
 export function AppProviders(props: PropsWithChildren) {
   const { children } = props
   const queryClient = getSharedAppQueryClient()
+  const clientEnv = getClientEnv()
+  const authProviderConfig = buildOidcAuthProviderConfig(clientEnv)
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <AuthProvider {...authProviderConfig}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </AuthProvider>
   )
 }

@@ -1,5 +1,6 @@
 import type { output, ZodType } from 'zod'
 
+import { getCurrentAccessToken } from '@/features/auth/accessTokenStore'
 import { getClientEnv } from '@/lib/env/clientEnv'
 
 const DEFAULT_TIMEOUT_MS = 10_000
@@ -193,6 +194,21 @@ function createRequestController(
 }
 
 /**
+ * 認証モードに応じた既定の Access Token を返す。
+ *
+ * @returns OIDC モードで保持済みの Access Token。
+ */
+function getDefaultAuthToken(): string | undefined {
+  const clientEnv = getClientEnv()
+
+  if (clientEnv.authMode !== 'oidc') {
+    return undefined
+  }
+
+  return getCurrentAccessToken()
+}
+
+/**
  * Zod 検証付きで JSON API を呼び出す。
  *
  * @param options リクエスト条件。
@@ -208,7 +224,7 @@ export async function apiRequest<TSchema extends ZodType>(
     query,
     headers,
     body,
-    authToken,
+    authToken = getDefaultAuthToken(),
     baseUrl = getClientEnv().apiBaseUrl,
     retryCount = 1,
     retryDelayMs = DEFAULT_RETRY_DELAY_MS,

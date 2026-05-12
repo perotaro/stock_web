@@ -1,0 +1,1 @@
+export const DEV_AUTH_TRANSITION_DELAY_MS = 350

@@ -199,7 +199,7 @@ npm run dev
 - 既定ポートは `http://localhost:5173`
 - `VITE_API_BASE_URL` は既定で `/api`
 - `FRONTEND_API_PROXY_TARGET` を設定すると、Vite 開発サーバからバックエンドへ `/api` をプロキシできます
-- OIDC 実接続前の画面開発を進めるため、既定では `VITE_ENABLE_DEV_AUTH_BYPASS=true` を用意しています
+- OIDC 実接続前の画面開発を進めるため、既定では `VITE_AUTH_MODE=dev-bypass` を用意しています
 
 Docker Compose でフロントとバックエンドを一緒に起動する場合は次を使えます。
 

@@ -6,7 +6,7 @@
 - 実行基盤: Vite 開発サーバ + 静的ビルド
 - ルーティング: React Router
 - データ取得: `fetch` ベースの API クライアント + Zod 検証 + TanStack Query を前提とする
-- 認証: OIDC 前提。開発時のみ `VITE_ENABLE_DEV_AUTH_BYPASS` によるローカルバイパスを許容する
+- 認証: OIDC 前提。開発時のみ `VITE_AUTH_MODE=dev-bypass` によるローカルバイパスを許容する
 - 主な画面: `/` `/login` `/auth/callback` `/auth/logout/callback` `/logout` `/app` `/app/systems/:system_code` `/app/watchlist`
 - 主責務: ルーティング、認証導線、API レスポンスの表示、入力値や環境変数の検証、エラー表示
 - データ前提: 公開サマリ・システム別最新結果・ウォッチリストなどの業務データはバックエンド API が提供する
@@ -51,7 +51,7 @@
 
 - `.env.local` などのローカル環境ファイルをコミットしない。機密値や URL をコンポーネントにハードコードしない
 - `import.meta.env` を各所で直接読まず、`src/lib/env/clientEnv.ts` を単一の参照元として扱う
-- `VITE_ENABLE_DEV_AUTH_BYPASS=true` を本番前提の実装やレビューの免罪符にしない
+- `VITE_AUTH_MODE=dev-bypass` を本番前提の実装やレビューの免罪符にしない
 - 認証必須画面や認証必須 API を、Guard や認証状態の確認なしで公開導線に露出しない
 - アクセストークンや個人情報を `console.log`、URL、DOM 属性、永続ストレージへ不用意に出力しない
 - バックエンドが持つ業務判定や機密ロジックをフロントエンドへ複製しない

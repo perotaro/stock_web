@@ -27,9 +27,11 @@ npm run build
 
 `.env.example` に最低限の開発用設定を用意しています。設計書で定義した `VITE_API_BASE_URL` と OIDC 関連設定に加えて、Vite 開発サーバ向けの `FRONTEND_API_PROXY_TARGET` を使えます。
 
-## ローカル認証バイパス
+## 認証モード
 
-現時点では OIDC 実接続前の開発を止めないため、`VITE_ENABLE_DEV_AUTH_BYPASS=true` を既定値にしています。`/app` 配下の画面導線を先に実装できるようにするための設定で、本番向け設定では `false` にしてください。
+現時点では OIDC 実接続前の開発を止めないため、ローカルでは `VITE_AUTH_MODE=dev-bypass` を既定値にしています。`/login` の遷移中表示後に Cognito へは遷移せず、`/app` 配下の画面へ進めるための設定です。
+
+本番向け設定では `VITE_AUTH_MODE=oidc` を指定し、`/login` から Cognito Hosted UI へ遷移させます。本番ビルドまたは本番実行時に `dev-bypass` が指定された場合は、起動時に失敗させます。
 
 ## Docker Compose での起動
 
