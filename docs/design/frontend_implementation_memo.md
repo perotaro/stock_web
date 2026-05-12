@@ -30,7 +30,7 @@
 6. watchlist `/app/watchlist`
 
 補足:
-- `VITE_ENABLE_DEV_AUTH_BYPASS` を使って画面実装を先行できる前提なら、この順が最も進めやすい。
+- `VITE_AUTH_MODE=dev-bypass` を使って画面実装を先行できる前提なら、この順が最も進めやすい。
 - OIDC 本接続を最初から通す必要がある場合は、`5. 認証導線` を `2. 公開トップ` の直後へ前倒ししてよい。
 
 ## 5. フェーズ別メモ
@@ -114,6 +114,8 @@ Path parameter を持つ詳細画面の基本形を作る。
 ### 5.5 認証導線
 OIDC 連携と Guard の本実装をまとめて入れる。
 
+認証導線は `/login` を共通の認証開始ルートとして扱う。本番では遷移中表示後に Cognito Hosted UI へリダイレクトし、ローカル開発では Cognito を使わず遷移中表示後に `/app` へ進める。開発用スタブ文言や `/app` への直接遷移ボタンは本番 UI に含めない。
+
 対象:
 - `src/features/auth`
 - `src/app/providers/AppProviders.tsx`
@@ -125,8 +127,9 @@ OIDC 連携と Guard の本実装をまとめて入れる。
 
 主な作業:
 - OIDC 設定生成処理を feature 配下へ分離する
+- `VITE_AUTH_MODE=oidc|dev-bypass` を導入し、本番で `dev-bypass` が使われた場合は失敗させる
 - callback 後の遷移、logout 後の遷移を実装する
-- `dev bypass` 時と通常 OIDC 時の分岐を明示する
+- `dev-bypass` 時と通常 OIDC 時の分岐を明示する
 - private API 呼び出しで Access Token を付与できるようにする
 
 完了条件:

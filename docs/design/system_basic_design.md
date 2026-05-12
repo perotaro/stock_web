@@ -156,6 +156,8 @@ EventBridge Scheduler
 - フロントエンドは Authorization Code Flow + PKCE を採用する
 
 ### 8.2 認証フロー
+本番環境では Cognito User Pools などの OIDC Provider を利用する。ローカル開発環境では Cognito に接続せず、開発用の認証バイパスで認証後画面へ遷移することを許容する。
+
 ```text
 1. 利用者が /login にアクセスする
 2. フロントエンドが OIDC ログイン画面へ遷移する
@@ -164,6 +166,8 @@ EventBridge Scheduler
 5. API Gateway JWT Authorizer がトークンを検証する
 6. 検証済みリクエストのみ Lambda に到達する
 ```
+
+ローカル開発時は `/login` の遷移中表示後に `/app` へ遷移する。ただし、この経路は画面開発用の簡略フローであり、本番の認証・認可仕様を代替しない。本番環境では開発用認証バイパスを使用不可とする。
 
 ### 8.3 境界方針
 - 公開 API は認証不要とする
@@ -206,6 +210,7 @@ Backend API -> Frontend 向け JSON 応答
 
 ## 11. 環境設計方針
 - 環境ごとに callback URL、logout URL、許可ドメインを分離する
+- 環境ごとに認証モードを明示し、本番は `oidc`、ローカル開発は `dev-bypass` を使用する
 - 機密値は Secrets Manager または SSM Parameter Store に置く
 - 公開リポジトリに秘密情報を含めない
 - JST を基準タイムゾーンとして扱う
