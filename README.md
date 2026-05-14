@@ -195,6 +195,27 @@ docker compose logs -f backend_dev
 - 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
 - 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
 
+### 共有 DynamoDB Local への接続確認
+
+このリポジトリの開発コンテナは、別リポジトリの Docker Compose で起動している共有 `DynamoDB Local` を参照する前提です。接続先は既定で次の環境変数に設定しています。
+
+```env
+DYNAMODB_ENDPOINT_URL=http://host.docker.internal:8000
+AWS_ACCESS_KEY_ID=local
+AWS_SECRET_ACCESS_KEY=local
+AWS_DEFAULT_REGION=ap-northeast-1
+```
+
+疎通確認は開発コンテナ内で次を実行します。
+
+```bash
+aws dynamodb list-tables \
+  --endpoint-url http://host.docker.internal:8000 \
+  --region ap-northeast-1
+```
+
+`TableNames` が返れば接続できています。`curl http://host.docker.internal:8000` で `MissingAuthenticationToken` が返る場合も、`DynamoDB Local` までは到達できています。これは未署名の HTTP リクエストで DynamoDB API を呼んだためです。
+
 フロントエンドは `apps/frontend` に Vite ベースの開発環境を追加済みです。公開トップ、ログイン導線、認証後画面のルーティング骨格、env 検証、API クライアント、Vitest / Playwright の設定が入っています。
 
 ### フロントエンド実行
