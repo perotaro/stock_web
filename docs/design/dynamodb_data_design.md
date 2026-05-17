@@ -56,7 +56,7 @@
 公開返却属性（APIでそのまま返す）:
 - `operating_days` number
 - `batch_runs_total` number
-- `success_rate` number
+- `success_rate` number（`0..1` の比率。API 返却時に `0..100` の百分率へ変換する）
 - `avg_duration_sec` number
 - `updated_at` string (ISO8601, JST表記)
 - `period_timezone` string (`Asia/Tokyo`)
@@ -71,6 +71,7 @@
 
 意図:
 - `batch_runs_total` は累計値、`success_rate`/`avg_duration_sec` は当月値という異なる時間軸を同一レコードで保持する。
+- `success_rate` は保存時は比率で保持し、API 契約に合わせてバックエンドで百分率へ変換する。
 - バッチ完了のたびに内部集計属性を増分更新し、過去全件スキャンを避ける。
 - 公開サマリ更新ジョブ（毎日12:00 JST）は、主に `updated_at` と表示値の整合確認を行う。
 

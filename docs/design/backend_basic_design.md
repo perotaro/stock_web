@@ -56,7 +56,8 @@
 Client
   -> API Gateway (HTTP API)
       -> Lambda Handler
-          -> Service
+          -> UseCase
+              -> Parser / Assembler / CursorCodec
               -> Repository
                   -> DynamoDB read model
 
@@ -174,7 +175,8 @@ Client
 ### 8.2 API ごとの設計方針
 
 #### `GET /api/v1/public/summary`
-- 保存済みの匿名集計値をそのまま返す
+- 保存済みの匿名集計値を返す
+- DynamoDB 上の `success_rate` は `0..1` の比率で保持し、API レスポンスでは `0..100` の百分率へ変換する
 - 集計の再計算は行わない
 - 個別銘柄、閾値、当日シグナル生データは返さない
 
@@ -267,24 +269,39 @@ Client
 - `handler`
   - API Gateway event を受ける入口
   - 入力値を取り出す
-  - service を呼ぶ
+  - usecase を呼ぶ
   - HTTP レスポンスを返す
-- `service`
-  - API 単位の振る舞いを表現する
-  - repository の結果からレスポンスを組み立てる
+- `usecase`
+  - API 単位のユースケース実行手順を調整する
+  - parser、repository、assembler、cursor codec を組み合わせる
+- `parser`
+  - path / query parameter の parse、既定値補完、入力検証を行う
+- `assembler`
+  - repository の結果から API レスポンスを組み立てる
+  - 集計や表示用値変換を行う
 - `repository`
   - DynamoDB アクセスを閉じ込める
   - Query 条件や GetItem 条件を管理する
+  - DynamoDB item を domain DTO に変換して返す
+  - API レスポンス shape への最終整形は行わない
 - `domain`
-  - レスポンス DTO、値オブジェクト、列挙型を置く
+  - DynamoDB item、API response、query、cursor などの pydantic DTO を置く
+  - 現時点では振る舞いを持つ rich domain model ではなく、層間で受け渡す schema model として扱う
 - `lib`
-  - validator、response、error、settings、logger を置く
+  - validator、response、error、settings、cursor codec、logger を置く
 
 ### 10.4 依存方向
-- `handler` -> `service`
-- `service` -> `repository` / `domain`
-- `repository` -> `lib`
-- `domain` は下位層に依存しない
+- `handler` -> `usecase` / `lib`
+- `usecase` -> `parser` / `repository Protocol` / `assembler` / `domain` / `lib`
+- `parser` -> `domain` / `lib`
+- `assembler` -> `domain`
+- `repository implementation` -> `domain` / `lib` / `boto3`
+- `lib.cursor_codec` -> `domain.cursor`
+- `domain` は `handler` / `usecase` / `parser` / `assembler` / `repository` / `lib` に依存しない
+
+repository implementation は DynamoDB item を domain DTO に変換して返す。ただし repository は API response model を返さない。API response への最終変換、表示用値変換、公開禁止項目の除外は assembler が担当する。
+
+本設計は、古典的なレイヤードアーキテクチャを土台にしつつ、repository Protocol による差し替え、DTO 分離、parser / assembler 分離を取り入れた実用的なレイヤード構成とする。厳密な Clean Architecture / Onion Architecture として、domain entity に振る舞いや不変条件を集約する段階までは踏み込まない。
 
 ### 10.5 想定ディレクトリ構成
 ```text
@@ -299,7 +316,9 @@ apps/backend/
 │  │  │  └─ get_system_latest.py
 │  │  └─ watchlist/
 │  │     └─ get_watchlist.py
-│  ├─ services/
+│  ├─ usecases/
+│  ├─ parsers/
+│  ├─ assemblers/
 │  ├─ repositories/
 │  ├─ domain/
 │  ├─ middleware/
@@ -314,6 +333,9 @@ apps/backend/
 - `lib/errors.py`
 - `lib/validators.py`
 - `lib/settings.py`
+- `lib/cursor_codec.py`
+- `parsers/watchlist_query_parser.py`
+- `assemblers/public_summary_assembler.py`
 - `middleware/logger.py`
 - `repositories/dynamodb_client.py`
 
@@ -395,9 +417,12 @@ infra/cdk/
 
 ### 14.1 テスト対象
 - handler
-- service
+- usecase
+- parser
+- assembler
 - repository
 - validator
+- cursor codec
 - エラー応答
 
 ### 14.2 最低限の確認項目
