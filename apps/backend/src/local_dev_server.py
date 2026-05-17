@@ -538,9 +538,10 @@ def build_watchlist_response(
     system_code = get_query_value(query_params, "system_code")
     category_code = get_query_value(query_params, "category_code")
     sort = get_query_value(query_params, "sort")
-    is_active = parse_watchlist_is_active(
+    parsed_is_active = parse_watchlist_is_active(
         get_query_value(query_params, "is_active"),
     )
+    is_active = True if parsed_is_active is None else parsed_is_active
     limit = parse_watchlist_limit(get_query_value(query_params, "limit"))
     offset = parse_watchlist_cursor(get_query_value(query_params, "cursor"))
 
@@ -553,13 +554,9 @@ def build_watchlist_response(
     if system_code is not None:
         items = [item for item in items if system_code in item["systems"]]
     if category_code is not None:
-        items = [
-            item for item in items if item["category_code"] == category_code
-        ]
-    if is_active is not None:
-        items = [item for item in items if item["is_active"] is is_active]
-    if sort == "updated_at_desc":
-        items = sorted(items, key=lambda item: item["updated_at"], reverse=True)
+        items = [item for item in items if item["category_code"] == category_code]
+    items = [item for item in items if item["is_active"] is is_active]
+    items = sorted(items, key=lambda item: item["updated_at"], reverse=True)
 
     if limit is None:
         return {
@@ -570,9 +567,7 @@ def build_watchlist_response(
     next_offset = offset + limit
     return {
         "items": items[offset:next_offset],
-        "next_cursor": (
-            f"offset:{next_offset}" if next_offset < len(items) else None
-        ),
+        "next_cursor": (f"offset:{next_offset}" if next_offset < len(items) else None),
     }
 
 
@@ -631,7 +626,9 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/v1/watchlist":
             try:
-                response = build_watchlist_response(parse_qs(parsed_url.query))
+                watchlist_response = build_watchlist_response(
+                    parse_qs(parsed_url.query)
+                )
             except WatchlistQueryError as error:
                 self._send_json(
                     HTTPStatus.BAD_REQUEST,
@@ -641,7 +638,7 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
                     },
                 )
                 return
-            self._send_json(HTTPStatus.OK, response)
+            self._send_json(HTTPStatus.OK, watchlist_response)
             return
 
         if path == "/":
@@ -675,8 +672,7 @@ class LocalDevRequestHandler(BaseHTTPRequestHandler):
         """
 
         print(
-            f"[backend_dev] {self.address_string()} - "
-            f"{format % args}",
+            f"[backend_dev] {self.address_string()} - {format % args}",
             flush=True,
         )
 
@@ -709,8 +705,7 @@ def run_server() -> None:
     port = int(os.getenv("BACKEND_PORT", str(DEFAULT_PORT)))
     server = ThreadingHTTPServer(("0.0.0.0", port), LocalDevRequestHandler)
     print(
-        "[backend_dev] Local backend placeholder server started "
-        f"on port {port}.",
+        f"[backend_dev] Local backend placeholder server started on port {port}.",
         flush=True,
     )
     server.serve_forever()

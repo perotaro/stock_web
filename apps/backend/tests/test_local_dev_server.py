@@ -233,8 +233,8 @@ def test_system_latest_endpoint_returns_not_found_for_unknown_system() -> None:
     }
 
 
-def test_watchlist_endpoint_returns_sixty_items() -> None:
-    """watchlist API が 60 件分の固定レスポンスを返すことを確認する。
+def test_watchlist_endpoint_uses_default_filters_and_sort_order() -> None:
+    """watchlist API が既定条件で有効銘柄を更新日時降順に返すことを確認する。
 
     Args:
         なし。
@@ -249,10 +249,10 @@ def test_watchlist_endpoint_returns_sixty_items() -> None:
     items = body["items"]
     assert status_code == HTTPStatus.OK
     assert isinstance(items, list)
-    assert len(items) == 60
+    assert len(items) == 54
     assert body["next_cursor"] is None
     assert items[0] == {
-        "ticker": "AAPL",
+        "ticker": "CAT",
         "is_active": True,
         "category_code": "MEGA_TECH",
         "systems": ["DMP", "TGB"],
@@ -260,9 +260,9 @@ def test_watchlist_endpoint_returns_sixty_items() -> None:
             "DMP": "BUY",
             "TGB": "NO_SIGNAL",
         },
-        "updated_at": "2026-04-10T06:31:00+09:00",
+        "updated_at": "2026-04-10T10:31:00+09:00",
     }
-    assert items[-1]["ticker"] == "BKNG"
+    assert items[-1]["ticker"] == "UNH"
     assert set(items[-1]) == {
         "ticker",
         "is_active",
