@@ -4,6 +4,8 @@
 !.env.example
 !*.env.example
 .serena
+__pycache__/
+*.py[cod]
 apps/backend/src/__pycache__/*.pyc
 node_modules/
 apps/frontend/dist/
