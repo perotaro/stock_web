@@ -15,7 +15,7 @@
 
 ### 2.2 GSI
 - `GSI`（Global Secondary Index）: 別の切り口で検索するための副インデックス。
-- 例: watchlistを `is_active=true` かつ `updated_at` 降順で取りたい場合、`GSI1PK=is_active`, `GSI1SK=updated_at_epoch` を作る。
+- 例: watchlistを `is_active=true` かつ `updated_at` 降順で取りたい場合、`is_active`, `updated_at_epoch` を key にした GSI を作る。
 
 ### 2.3 このプロジェクトでの使い分け
 - 少量マスタ: 単純PK中心（`systems`, `categories` など）
@@ -171,9 +171,9 @@
 
 - PK: `ticker`
 - SK: なし
-- GSI1:
-1. `GSI1PK = is_active`（`true`/`false`）
-2. `GSI1SK = updated_at_epoch`（number）
+- GSI `gsi_active_updated_at`:
+1. partition key: `is_active`（string: `true` / `false`）
+2. sort key: `updated_at_epoch`（number）
 
 意図:
 - デフォルトの `is_active=true` で高速絞り込み。
@@ -304,7 +304,7 @@
 ### 6.4 `GET /api/v1/watchlist`
 1. `is_active` 未指定なら `true` を補完
 2. `q_ticker` 指定時は `PK=ticker` で `GetItem` し、追加条件があれば Lambda 側で判定
-3. `q_ticker` 未指定時は `md_watchlist` の GSI1 を `is_active` で `Query`、`ScanIndexForward=false`
+3. `q_ticker` 未指定時は `md_watchlist` の `gsi_active_updated_at` を `is_active` で `Query`、`ScanIndexForward=false`
 4. `system_code/category_code` は FilterExpression で適用し、`limit` 件に達するまで必要な範囲を読み進める
 5. `LastEvaluatedKey` を API の `next_cursor` に変換して返す
 

@@ -19,6 +19,10 @@ from lib.errors import InvalidCursorError, InvalidQueryError
 from lib.response import ApiResponseBuilder
 from lib.settings import BackendSettings, SettingsError
 from parsers.watchlist_query_parser import WatchlistQueryParser
+from repositories.watchlist_repository import (
+    extract_dynamodb_error,
+    format_dynamodb_bool_key,
+)
 from usecases.get_public_summary import GetPublicSummaryUseCase
 
 
@@ -276,6 +280,49 @@ def test_watchlist_repository_page_model_accepts_items() -> None:
 
     assert page.items[0].ticker == "AAPL"
     assert page.last_evaluated_key == {"ticker": "AAPL"}
+
+
+def test_extract_dynamodb_error_returns_client_error_code() -> None:
+    """DynamoDB ClientError から安全なログ情報を取り出すことを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    from botocore.exceptions import ClientError  # type: ignore[import-untyped]
+
+    error = ClientError(
+        {
+            "Error": {
+                "Code": "ValidationException",
+                "Message": "The table does not have the specified index: GSI1",
+            },
+        },
+        "Query",
+    )
+
+    assert extract_dynamodb_error(error) == {
+        "type": "ClientError",
+        "code": "ValidationException",
+        "message": "The table does not have the specified index: GSI1",
+    }
+
+
+def test_format_dynamodb_bool_key_returns_lowercase_string() -> None:
+    """DynamoDB の文字列 boolean key に変換することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    assert format_dynamodb_bool_key(True) == "true"
+    assert format_dynamodb_bool_key(False) == "false"
 
 
 def _raise_invalid_query() -> dict[str, Any]:

@@ -84,6 +84,7 @@ apps/backend/
 │  ├─ repositories/  # DynamoDB の key / Query / GetItem / Scan を閉じ込める
 │  ├─ domain/        # pydantic DTO。DynamoDB item、API response、query、cursor を表す
 │  ├─ lib/           # settings、errors、response、cursor codec などの共通処理
+│  ├─ main.py        # 結合確認用 HTTP ルーター
 │  └─ local_dev_server.py
 ├─ tests/
 │  ├─ test_local_dev_server.py
@@ -117,7 +118,7 @@ handler に DynamoDB の key 構造、`success_rate` の変換、cursor 署名�
 
 repository implementation は DynamoDB item を domain DTO に変換して返します。ただし API response model は返さず、API 契約への最終整形は assembler が担当します。
 
-`watchlist` は `q_ticker` 指定時に `GetItem`、未指定時に `GSI1` query を使います。`system_code` と `category_code` は初期実装では FilterExpression で適用します。
+`watchlist` は `q_ticker` 指定時に `GetItem`、未指定時に `gsi_active_updated_at` query を使います。`system_code` と `category_code` は初期実装では FilterExpression で適用します。
 
 ### domain / lib
 
@@ -171,7 +172,11 @@ local 環境値の例:
 ```bash
 export ENV_NAME=local
 export AWS_REGION=ap-northeast-1
-export DYNAMODB_ENDPOINT_URL=http://localhost:8000
+export DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
+export PUBLIC_SUMMARY_TABLE_NAME=md_public_summary
+export SYSTEM_LATEST_STATUS_TABLE_NAME=md_system_latest_status
+export SYSTEM_LATEST_SIGNALS_TABLE_NAME=md_system_latest_signals
+export WATCHLIST_TABLE_NAME=md_watchlist
 export ALLOWED_ORIGINS=http://localhost:5173
 export COGNITO_ISSUER_URL=http://localhost:9000/dummy
 export COGNITO_AUDIENCE=guppy-web-local
@@ -188,10 +193,23 @@ docker compose logs -f backend_dev
 ```
 
 - 既定ポートは `8080`
-- `DYNAMODB_ENDPOINT_URL` の既定値は `http://host.docker.internal:8000`
-- `apps/backend/src/local_dev_server.py` はフロントエンド開発用の固定レスポンスサーバーです
-- Lambda 向け本実装は `src/handlers/**` から起動します
-- ローカルサーバーの cursor は開発用の `offset:<number>` 形式です。本実装の `watchlist` cursor は HMAC 署名付き opaque string です
+- `DYNAMODB_ENDPOINT_URL` の既定値は `http://dynamodb-local:8000`
+- `backend_dev` は `apps/backend/src/main.py` を起動し、HTTP request を Lambda handler に委譲します
+- `apps/backend/src/local_dev_server.py` はフロントエンド開発用の固定レスポンスサーバーとして残しています
+- 固定レスポンスサーバーを使いたい場合は、明示的に `python apps/backend/src/local_dev_server.py` を実行してください
+- `main.py` の `watchlist` cursor は HMAC 署名付き opaque string です。`local_dev_server.py` の `offset:<number>` cursor とは互換性がありません
+
+結合用 HTTP ルーターの確認例:
+
+```bash
+curl http://localhost:8080/healthz
+curl http://localhost:8080/api/v1/public/summary
+curl http://localhost:8080/api/v1/summary
+curl 'http://localhost:8080/api/v1/systems/DMP/latest'
+curl 'http://localhost:8080/api/v1/watchlist?limit=10&is_active=true'
+```
+
+`main.py` は API Gateway JWT Authorizer をローカルで再現しません。認証必須 API も、ローカル結合では handler に直接委譲されます。認証境界は API Gateway / IaC 側の設定と handler テストで確認してください。
 
 ## テスト・静的解析
 
@@ -228,7 +246,7 @@ API は read-only です。以下の read model が別リポジトリのバッ�
 | `GET /api/v1/public/summary` | `md_public_summary` | `summary_scope=PUBLIC`, `summary_key=CURRENT` の `GetItem` |
 | `GET /api/v1/summary` | `md_system_latest_status` | 全件 `Scan`。システム数が少ない前提 |
 | `GET /api/v1/systems/{system_code}/latest` | `md_system_latest_signals` | `system_code` を PK に `Query` |
-| `GET /api/v1/watchlist` | `md_watchlist` | `q_ticker` は `GetItem`、一覧は `GSI1` query |
+| `GET /api/v1/watchlist` | `md_watchlist` | `q_ticker` は `GetItem`、一覧は `gsi_active_updated_at` query |
 
 ## 参照ドキュメント
 

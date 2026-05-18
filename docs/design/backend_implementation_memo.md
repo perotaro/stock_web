@@ -102,8 +102,8 @@ payload 例:
   "v": 1,
   "exclusive_start_key": {
     "ticker": "AAPL",
-    "GSI1PK": true,
-    "GSI1SK": 1772237460
+    "is_active": "true",
+    "updated_at_epoch": 1772237460
   },
   "filters": {
     "is_active": true,
@@ -128,8 +128,8 @@ cursor は、以下の内部 JSON を `base64url` でエンコードした opaqu
     "v": 1,
     "exclusive_start_key": {
       "ticker": "AAPL",
-      "GSI1PK": true,
-      "GSI1SK": 1772237460
+      "is_active": "true",
+      "updated_at_epoch": 1772237460
     },
     "filters": {
       "is_active": true,
