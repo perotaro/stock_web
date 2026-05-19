@@ -192,8 +192,8 @@ docker compose logs -f backend_dev
 - 既定ポートは `http://localhost:8080`
 - `DYNAMODB_ENDPOINT_URL` の既定値は `http://host.docker.internal:8000`
 - Linux でも `extra_hosts: host.docker.internal:host-gateway` で共有 DynamoDB Local に到達できるようにしています
-- 現時点では `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーが起動し、`GET /healthz` で疎通確認できます
-- 将来、本実装のローカル起動処理を `apps/backend/src/main.py` に置いた場合は、そちらを優先して起動します
+- `backend_dev` は `apps/backend/src/main.py` の結合確認用サーバーを優先して起動します
+- `apps/backend/src/local_dev_server.py` のプレースホルダーサーバーを起動したい場合は、`apps/backend/scripts/run_local_dev.sh` を実行してください
 
 ### 共有 DynamoDB Local への接続確認
 

@@ -195,8 +195,7 @@ docker compose logs -f backend_dev
 - 既定ポートは `8080`
 - `DYNAMODB_ENDPOINT_URL` の既定値は `http://dynamodb-local:8000`
 - `backend_dev` は `apps/backend/src/main.py` を起動し、HTTP request を Lambda handler に委譲します
-- `apps/backend/src/local_dev_server.py` はフロントエンド開発用の固定レスポンスサーバーとして残しています
-- 固定レスポンスサーバーを使いたい場合は、明示的に `python apps/backend/src/local_dev_server.py` を実行してください
+- `apps/backend/src/local_dev_server.py` のフロントエンド開発用固定レスポンスサーバーを使いたい場合は、`apps/backend/scripts/run_local_dev.sh` を実行してください
 - `main.py` の `watchlist` cursor は HMAC 署名付き opaque string です。`local_dev_server.py` の `offset:<number>` cursor とは互換性がありません
 
 結合用 HTTP ルーターの確認例:
