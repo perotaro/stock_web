@@ -40,7 +40,7 @@
         "derived-values-and-simple-effects"
       ],
       "topics_blocked": [],
-      "last_studied_at": "2026-05-10",
+      "last_studied_at": "2026-05-19",
       "recent_tasks": [
         {
           "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
@@ -1384,6 +1384,33 @@
           ],
           "status": "pass with notes",
           "reviewed_at": "2026-05-12"
+        },
+        {
+          "goal": "WatchlistPage の手書き async state を TanStack Query の useInfiniteQuery に置き換える",
+          "learning_theme": "TanStack Query + server state",
+          "allowed_concepts": [
+            "TanStack Query",
+            "useInfiniteQuery",
+            "query key",
+            "queryFn",
+            "pageParam",
+            "getNextPageParam",
+            "fetchNextPage",
+            "isPending",
+            "isFetchingNextPage",
+            "error",
+            "component test"
+          ],
+          "disallowed_concepts": [
+            "manual items state",
+            "manual nextCursor state",
+            "manual loading state",
+            "manual loading more state",
+            "manual errorMessage state",
+            "cursor in query key"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-19"
         }
       ]
     }
