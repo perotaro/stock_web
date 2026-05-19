@@ -1,3 +1,5 @@
+import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss'
+
 /**
  * Prettier の整形設定を返す。
  *
@@ -9,5 +11,5 @@ export default {
   tabWidth: 2,
   trailingComma: 'all',
   useTabs: false,
-  plugins: ['prettier-plugin-tailwindcss'],
+  plugins: [prettierPluginTailwindcss],
 }
