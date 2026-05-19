@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { AppSectionNav } from '@/features/app-summary/components/AppSectionNav'
 import { WatchlistFilterPanel } from '@/features/watchlist/components/WatchlistFilterPanel'
 import { WatchlistResultsPanel } from '@/features/watchlist/components/WatchlistResultsPanel'
 import { fetchWatchlistItemsPage } from '@/features/watchlist/api/fetchWatchlistItemsPage'
-import {
-  type WatchlistFilterValues,
-  type WatchlistResultValues,
-} from '@/features/watchlist/types'
+import { type WatchlistFilterValues } from '@/features/watchlist/types'
 import { buildWatchlistQuery } from '@/features/watchlist/api/buildWatchlistQuery'
 import { areWatchlistQueriesEqual } from '@/features/watchlist/api/areWatchlistQueriesEqual'
 
@@ -15,14 +13,6 @@ const initWatchlistValues: WatchlistFilterValues = {
   systemCode: '',
   categoryCode: '',
   isActive: 'true',
-}
-
-const initResultValues: WatchlistResultValues = {
-  items: [],
-  nextCursor: null,
-  isLoading: true,
-  isLoadingMore: false,
-  errorMessage: null,
 }
 
 /**
@@ -37,42 +27,24 @@ export function WatchlistPage() {
   const [appliedQuery, setQuery] = useState(
     buildWatchlistQuery(initWatchlistValues),
   )
-  const [resultValues, setResultValues] =
-    useState<WatchlistResultValues>(initResultValues)
 
-  /**
-   * 適用済み query で Watchlist API を読み込む。
-   *
-   * @returns なし
-   */
-  const loadWatchlist = useCallback(async () => {
-    setResultValues((current) => ({
-      ...current,
-      isLoading: true,
-      errorMessage: null,
-    }))
-    try {
-      const watchlistItemsPage = await fetchWatchlistItemsPage(appliedQuery)
-      setResultValues({
-        items: watchlistItemsPage.items,
-        nextCursor: watchlistItemsPage.nextCursor,
-        isLoading: false,
-        isLoadingMore: false,
-        errorMessage: null,
-      })
-    } catch (error) {
-      setResultValues((current) => ({
-        ...current,
-        isLoading: false,
-        isLoadingMore: false,
-        errorMessage: String(error),
-      }))
-    }
-  }, [appliedQuery])
+  const { data, isPending, isFetchingNextPage, error, fetchNextPage, refetch } =
+    useInfiniteQuery({
+      queryKey: ['watchlistItems', appliedQuery],
+      queryFn: ({ pageParam }) => {
+        return fetchWatchlistItemsPage({
+          ...appliedQuery,
+          ...(pageParam === null ? {} : { cursor: pageParam }),
+        })
+      },
+      initialPageParam: null as string | null,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    })
 
-  useEffect(() => {
-    void loadWatchlist()
-  }, [loadWatchlist])
+  const items = data?.pages.flatMap((page) => page.items) ?? []
+  const errorMessage = error === null ? null : String(error)
+  const lastPage = data?.pages.at(-1)
+  const nextCursor = lastPage?.nextCursor ?? null
 
   /**
    * フィルタ条件を初期状態へ戻す。
@@ -128,52 +100,21 @@ export function WatchlistPage() {
   const hasPendingFilterChanges = !isApplyDisabled
 
   /**
-   * 次ページの Watchlist items を読み込んで現在の一覧へ追記する。
+   * TanStack Query に次ページ取得を依頼する。
    *
    * @returns なし
    */
-  const handleLoadMore = async () => {
-    if (resultValues.nextCursor === null || resultValues.isLoadingMore) {
-      return
-    }
-
-    const cursor = resultValues.nextCursor
-
-    setResultValues((current) => ({
-      ...current,
-      isLoadingMore: true,
-      errorMessage: null,
-    }))
-
-    try {
-      const nextPage = await fetchWatchlistItemsPage({
-        ...appliedQuery,
-        cursor,
-      })
-
-      setResultValues((current) => ({
-        ...current,
-        items: [...current.items, ...nextPage.items],
-        nextCursor: nextPage.nextCursor,
-        isLoadingMore: false,
-        errorMessage: null,
-      }))
-    } catch (error) {
-      setResultValues((current) => ({
-        ...current,
-        isLoadingMore: false,
-        errorMessage: String(error),
-      }))
-    }
+  const handleLoadMore = () => {
+    void fetchNextPage()
   }
 
   /**
-   * エラー表示から現在の適用済み query で Watchlist API を再取得する。
+   * エラー表示から現在の query key で Watchlist API を再取得する。
    *
    * @returns なし
    */
   const handleRetry = () => {
-    void loadWatchlist()
+    void refetch()
   }
 
   return (
@@ -207,13 +148,13 @@ export function WatchlistPage() {
         onApplyFilters={handleApplyFilters}
       />
       <WatchlistResultsPanel
-        items={resultValues.items}
-        nextCursor={resultValues.nextCursor}
+        items={items}
+        nextCursor={nextCursor}
         hasPendingFilterChanges={hasPendingFilterChanges}
         appliedQuery={appliedQuery}
-        isLoading={resultValues.isLoading}
-        isLoadingMore={resultValues.isLoadingMore}
-        errorMessage={resultValues.errorMessage}
+        isLoading={isPending}
+        isLoadingMore={isFetchingNextPage}
+        errorMessage={errorMessage}
         onLoadMore={handleLoadMore}
         onRetry={handleRetry}
       />

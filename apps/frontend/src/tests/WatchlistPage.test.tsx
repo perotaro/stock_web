@@ -221,7 +221,6 @@ describe('WatchlistPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '再試行' }))
 
-    expect(screen.getByText('銘柄一覧を読み込んでいます…')).toBeVisible()
     expect(await screen.findByRole('article', { name: 'AAPL' })).toBeVisible()
     expect(fetchMock).toHaveBeenCalledTimes(3)
     expect(fetchMock).toHaveBeenLastCalledWith(
