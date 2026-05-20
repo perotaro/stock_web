@@ -314,7 +314,7 @@
       "ticker": "MSFT",
       "is_active": true,
       "category_code": "MEGA_TECH",
-      "systems": ["DMP"],
+      "systems": ["DMP", "TGB"],
       "latest_decisions_by_system": {
         "DMP": "NO_SIGNAL"
       },
@@ -333,7 +333,7 @@
 | `items[].is_active` | `boolean` | 必須 | 有効フラグ |
 | `items[].category_code` | `string` | 必須 | カテゴリコード |
 | `items[].systems` | `array[string]` | 必須 | 該当銘柄を扱うシステムコード一覧 |
-| `items[].latest_decisions_by_system` | `record<string, string>` | 必須 | システムごとの最新判定。初期運用で返却される値は `BUY` または `NO_SIGNAL` |
+| `items[].latest_decisions_by_system` | `record<string, string>` | 必須 | システムごとの最新判定。初期運用で返却される値は `BUY` または `NO_SIGNAL`。`systems[]` に含まれる system の key が常に存在するとは限らない |
 | `items[].updated_at` | `string` | 必須 | 最終更新日時 |
 | `next_cursor` | `string \| null` | 必須 | 次ページ取得用 cursor。末尾ページでは `null` |
 
@@ -345,6 +345,7 @@
 - `next_cursor != null` の場合のみ追加取得導線を表示する。
 - モバイルではカード表示、タブレット以上では表形式表示にする。
 - `latest_decisions_by_system` は初期運用では `BUY` / `NO_SIGNAL` を想定するが、将来的な追加ステータスも表示できるようにする。
+- `systems[]` に含まれる system に対応する decision が `latest_decisions_by_system` に存在しない場合、フロントエンドは API 契約違反ではなく「未判定」として表示する。
 - `items = []` は正常系の空状態として扱う。
 
 ## 7. ステータスコード別方針

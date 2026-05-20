@@ -27,7 +27,10 @@ const activeWatchlistItem: WatchlistItem = {
   ticker: 'AAPL',
   categoryCode: 'growth',
   systems: ['DMP', 'TGB'],
-  latestDecisions: ['BUY', 'NO_SIGNAL'],
+  latestDecisionsBySystem: [
+    { systemCode: 'DMP', decision: 'BUY' },
+    { systemCode: 'TGB', decision: 'NO_SIGNAL' },
+  ],
   isActive: true,
   updatedAt: '2026/04/20 9:05',
 }
@@ -35,8 +38,11 @@ const activeWatchlistItem: WatchlistItem = {
 const inactiveWatchlistItem: WatchlistItem = {
   ticker: 'TSLA',
   categoryCode: 'speculative',
-  systems: ['RSI'],
-  latestDecisions: ['SELL'],
+  systems: ['RSI', 'DMP'],
+  latestDecisionsBySystem: [
+    { systemCode: 'RSI', decision: 'SELL' },
+    { systemCode: 'DMP', decision: null },
+  ],
   isActive: false,
   updatedAt: '2026/04/20 9:01',
 }
@@ -344,6 +350,8 @@ describe('WatchlistResultCard', () => {
     expect(within(card).getByText('speculative')).toBeVisible()
     expect(within(card).getByText('RSI')).toBeVisible()
     expect(within(card).getByText('SELL')).toBeVisible()
+    expect(within(card).getByText('DMP:')).toBeVisible()
+    expect(within(card).getByText('未判定')).toBeVisible()
     expect(within(card).getByText('2026/04/20 9:01')).toBeVisible()
   })
 })
@@ -361,6 +369,7 @@ describe('WatchlistPills', () => {
         <DecisionPill decision="BUY" />
         <DecisionPill decision="NO_SIGNAL" />
         <DecisionPill decision="SELL" />
+        <DecisionPill decision={null} />
       </>,
     )
 
@@ -371,6 +380,9 @@ describe('WatchlistPills', () => {
       'watchlist-decision-pill--info',
     )
     expect(screen.getByText('SELL')).toHaveClass(
+      'watchlist-decision-pill--warning',
+    )
+    expect(screen.getByText('未判定')).toHaveClass(
       'watchlist-decision-pill--warning',
     )
   })

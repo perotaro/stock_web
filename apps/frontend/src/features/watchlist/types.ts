@@ -1,8 +1,13 @@
+export type WatchlistSystemDecision = {
+  systemCode: string
+  decision: string | null
+}
+
 export type WatchlistItem = {
   ticker: string
   categoryCode: string
   systems: readonly string[]
-  latestDecisions: readonly string[]
+  latestDecisionsBySystem: readonly WatchlistSystemDecision[]
   isActive: boolean
   updatedAt: string
 }

@@ -206,12 +206,13 @@ export function WatchlistResultsPanel(props: WatchlistResultsPanelProps) {
                 </td>
                 <td>
                   <div className="watchlist-pill-list">
-                    {item.latestDecisions.map((decision) => (
-                      <DecisionPill
-                        key={`${item.ticker}-${decision}`}
-                        decision={decision}
-                      />
-                    ))}
+                    {item.latestDecisionsBySystem.map(
+                      ({ systemCode, decision }) => (
+                        <span key={`${item.ticker}-${systemCode}`}>
+                          {systemCode}: <DecisionPill decision={decision} />
+                        </span>
+                      ),
+                    )}
                   </div>
                 </td>
                 <td>{item.updatedAt}</td>

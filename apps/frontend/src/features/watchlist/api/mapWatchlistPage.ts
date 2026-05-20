@@ -24,15 +24,10 @@ export function mapWatchlistPage(page: WatchlistPageSchema): WatchlistItem[] {
       isActive: is_active,
       categoryCode: category_code,
       updatedAt: updated_at,
-      latestDecisions: systems.map((system) => {
-        const decision = latest_decisions_by_system[system]
-        if (decision === undefined) {
-          throw new Error(
-            `watchlist decision が見つかりません: ticker=${ticker}, system=${system}`,
-          )
-        }
-        return decision
-      }),
+      latestDecisionsBySystem: systems.map((system) => ({
+        systemCode: system,
+        decision: latest_decisions_by_system[system] ?? null,
+      })),
     }
   })
 }

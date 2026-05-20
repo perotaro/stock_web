@@ -47,7 +47,10 @@ describe('fetchWatchlistItemsPage', () => {
           ticker: 'AAPL',
           categoryCode: 'MEGA_TECH',
           systems: ['DMP', 'TGB'],
-          latestDecisions: ['BUY', 'NO_SIGNAL'],
+          latestDecisionsBySystem: [
+            { systemCode: 'DMP', decision: 'BUY' },
+            { systemCode: 'TGB', decision: 'NO_SIGNAL' },
+          ],
           isActive: true,
           updatedAt: '2026-04-10T06:31:00+09:00',
         },
@@ -87,7 +90,7 @@ describe('fetchWatchlistItemsPage', () => {
     })
   })
 
-  it('decision が欠落している場合は reject する', async () => {
+  it('decision が欠落している場合は未判定として変換する', async () => {
     const response = {
       items: [
         {
@@ -116,6 +119,21 @@ describe('fetchWatchlistItemsPage', () => {
       fetchWatchlistItemsPage({
         is_active: true,
       }),
-    ).rejects.toThrow('TGB')
+    ).resolves.toEqual({
+      items: [
+        {
+          ticker: 'AAPL',
+          categoryCode: 'MEGA_TECH',
+          systems: ['DMP', 'TGB'],
+          latestDecisionsBySystem: [
+            { systemCode: 'DMP', decision: 'BUY' },
+            { systemCode: 'TGB', decision: null },
+          ],
+          isActive: true,
+          updatedAt: '2026-04-10T06:31:00+09:00',
+        },
+      ],
+      nextCursor: null,
+    })
   })
 })

@@ -44,11 +44,10 @@ export function WatchlistResultCard(props: WatchlistResultCardProps) {
         <div className="watchlist-card-row">
           <dt>Latest Decisions</dt>
           <dd className="watchlist-pill-list">
-            {item.latestDecisions.map((decision) => (
-              <DecisionPill
-                key={`${item.ticker}-${decision}`}
-                decision={decision}
-              />
+            {item.latestDecisionsBySystem.map(({ systemCode, decision }) => (
+              <span key={`${item.ticker}-${systemCode}`}>
+                {systemCode}: <DecisionPill decision={decision} />
+              </span>
             ))}
           </dd>
         </div>

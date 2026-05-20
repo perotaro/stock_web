@@ -7,7 +7,7 @@ type CodePillProps = {
 }
 
 type DecisionPillProps = {
-  decision: string
+  decision: string | null
 }
 
 /**
@@ -26,6 +26,16 @@ function getDecisionToneClassName(decision: string): string {
   }
 
   return 'watchlist-decision-pill--warning'
+}
+
+/**
+ * 判定結果を画面表示用ラベルへ変換する。
+ *
+ * @param decision API が返す判定結果。未判定の場合は null。
+ * @returns 判定結果の表示ラベル。
+ */
+function formatDecisionLabel(decision: string | null): string {
+  return decision ?? '未判定'
 }
 
 /**
@@ -58,14 +68,13 @@ export function CodePill(props: CodePillProps) {
  */
 export function DecisionPill(props: DecisionPillProps) {
   const { decision } = props
+  const label = formatDecisionLabel(decision)
 
   return (
     <span
-      className={`watchlist-decision-pill ${getDecisionToneClassName(
-        decision,
-      )}`}
+      className={`watchlist-decision-pill ${getDecisionToneClassName(label)}`}
     >
-      {decision}
+      {label}
     </span>
   )
 }

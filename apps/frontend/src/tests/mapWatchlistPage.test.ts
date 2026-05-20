@@ -40,7 +40,10 @@ describe('mapWatchlistPage', () => {
         systems: ['DMP', 'TGB'],
         isActive: true,
         categoryCode: 'MEGA_TECH',
-        latestDecisions: ['BUY', 'NO_SIGNAL'],
+        latestDecisionsBySystem: [
+          { systemCode: 'DMP', decision: 'BUY' },
+          { systemCode: 'TGB', decision: 'NO_SIGNAL' },
+        ],
         updatedAt: '2026-04-10T06:31:00+09:00',
       },
       {
@@ -48,7 +51,7 @@ describe('mapWatchlistPage', () => {
         systems: ['DMP'],
         isActive: true,
         categoryCode: 'MEGA_TECH',
-        latestDecisions: ['NO_SIGNAL'],
+        latestDecisionsBySystem: [{ systemCode: 'DMP', decision: 'NO_SIGNAL' }],
         updatedAt: '2026-04-10T06:15:00+09:00',
       },
     ])
@@ -63,7 +66,7 @@ describe('mapWatchlistPage', () => {
     expect(mapWatchlistPage(watchlistPage)).toEqual([])
   })
 
-  it('systems に対応する decision がない場合は例外を投げる', () => {
+  it('systems に対応する decision がない場合は未判定として変換する', () => {
     const watchlistPage: WatchlistPageSchema = {
       items: [
         {
@@ -80,7 +83,18 @@ describe('mapWatchlistPage', () => {
       next_cursor: null,
     }
 
-    expect(() => mapWatchlistPage(watchlistPage)).toThrow('TGB')
-    expect(() => mapWatchlistPage(watchlistPage)).toThrow('AAPL')
+    expect(mapWatchlistPage(watchlistPage)).toEqual([
+      {
+        ticker: 'AAPL',
+        systems: ['DMP', 'TGB'],
+        isActive: true,
+        categoryCode: 'MEGA_TECH',
+        latestDecisionsBySystem: [
+          { systemCode: 'DMP', decision: 'BUY' },
+          { systemCode: 'TGB', decision: null },
+        ],
+        updatedAt: '2026-04-10T06:31:00+09:00',
+      },
+    ])
   })
 })

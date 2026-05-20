@@ -550,7 +550,7 @@ MSFT
 | `items[].ticker` | Ticker | 一覧の主見出し |
 | `items[].category_code` | Category | 補助ラベルまたは列として表示する |
 | `items[].systems[]` | Systems | コード pill 群で表示する |
-| `items[].latest_decisions_by_system` | Latest Decisions | 判定 pill 群で表示する |
+| `items[].latest_decisions_by_system` | Latest Decisions | system と判定を対応させて表示する。判定がない system は「未判定」と表示する |
 | `items[].is_active` | Active 状態 | status pill で表示する |
 | `items[].updated_at` | 更新日時 | JST で表示する |
 | `next_cursor` | 追加取得導線 | `null` でない場合のみ `さらに読み込む` を表示する |
@@ -601,8 +601,8 @@ updated_at_desc 固定で表示
 [ 結果一覧 ]
 ------------------------------------------------
 Ticker   Active   Category   Systems       Latest Decisions        Updated
-AAPL     active   growth     [ DMP ][ TGB ] [ BUY ][ NO_SIGNAL ]   2026-04-20 09:05
-MSFT     active   core       [ DMP ]       [ NO_SIGNAL ]           2026-04-20 09:04
+AAPL     active   growth     [ DMP ][ TGB ] DMP: [ BUY ] TGB: [ NO_SIGNAL ]   2026-04-20 09:05
+MSFT     active   core       [ DMP ][ TGB ] DMP: [ NO_SIGNAL ] TGB: [ 未判定 ] 2026-04-20 09:04
 NVDA     active   growth     [ TGB ]       [ BUY ]                 2026-04-20 09:03
 ------------------------------------------------
 [ さらに読み込む ]
@@ -652,7 +652,7 @@ AAPL
 [ active ]
 Category growth
 Systems [ DMP ] [ TGB ]
-Latest Decisions [ BUY ] [ NO_SIGNAL ]
+Latest Decisions DMP: [ BUY ] TGB: [ NO_SIGNAL ]
 updated_at 2026-04-20 09:05
 ------------------------------
 
@@ -660,8 +660,8 @@ updated_at 2026-04-20 09:05
 MSFT
 [ active ]
 Category core
-Systems [ DMP ]
-Latest Decisions [ NO_SIGNAL ]
+Systems [ DMP ] [ TGB ]
+Latest Decisions DMP: [ NO_SIGNAL ] TGB: [ 未判定 ]
 updated_at 2026-04-20 09:04
 ------------------------------
 

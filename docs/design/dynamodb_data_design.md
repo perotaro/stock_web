@@ -186,7 +186,7 @@
 - `is_active`
 - `category_code`
 - `systems` (list[string])
-- `latest_decisions_by_system` (map)
+- `latest_decisions_by_system` (map。`systems` に含まれる system の最新判定が未作成の場合、その system の key は存在しないことがある)
 - `updated_at`
 - `updated_at_epoch`
 
