@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import base64
 import json
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -205,6 +207,72 @@ def test_cursor_codec_rejects_filter_mismatch() -> None:
 
     with pytest.raises(InvalidCursorError):
         codec.assert_filters_match(decoded, parser.to_cursor_filters(second_query))
+
+
+def test_cursor_codec_preserves_dynamodb_number_key_type() -> None:
+    """cursor codec が DynamoDB number key を数値として復元することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    parser = WatchlistQueryParser()
+    query = parser.parse({"limit": "10"})
+    codec = CursorCodec("test-secret")
+    decoded = codec.decode(
+        codec.encode(
+            WatchlistCursorPayload(
+                exclusive_start_key={
+                    "ticker": "AAPL",
+                    "is_active": "true",
+                    "updated_at_epoch": Decimal("1772237460"),
+                },
+                filters=parser.to_cursor_filters(query),
+            ),
+        ),
+    )
+
+    assert decoded.exclusive_start_key == {
+        "ticker": "AAPL",
+        "is_active": "true",
+        "updated_at_epoch": 1772237460,
+    }
+
+
+def test_cursor_codec_normalizes_legacy_string_number_key() -> None:
+    """cursor codec が旧形式の文字列 number key を補正することを確認する。
+
+    Args:
+        なし。
+
+    Returns:
+        なし。
+    """
+
+    parser = WatchlistQueryParser()
+    query = parser.parse({"limit": "10"})
+    codec = CursorCodec("test-secret")
+    payload = WatchlistCursorPayload(
+        exclusive_start_key={
+            "ticker": "AAPL",
+            "is_active": "true",
+            "updated_at_epoch": "1772237460",
+        },
+        filters=parser.to_cursor_filters(query),
+    ).model_dump(mode="json")
+    raw = json.dumps(
+        {"payload": payload, "sig": codec._sign(payload)},  # noqa: SLF001
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    cursor = base64.urlsafe_b64encode(raw.encode("utf-8")).decode("ascii")
+
+    decoded = codec.decode(cursor)
+
+    assert decoded.exclusive_start_key["updated_at_epoch"] == 1772237460
 
 
 def test_response_builder_returns_safe_error_body_with_request_id() -> None:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+from decimal import Decimal
 import hashlib
 import hmac
 import json
@@ -39,7 +40,7 @@ class CursorCodec:
             API に返す opaque cursor 文字列。
         """
 
-        payload_dict = payload.model_dump(mode="json")
+        payload_dict = normalize_cursor_payload(payload.model_dump(mode="python"))
         envelope = {
             "payload": payload_dict,
             "sig": self._sign(payload_dict),
@@ -82,6 +83,9 @@ class CursorCodec:
             raise InvalidCursorError() from error
         if decoded.v != 1:
             raise InvalidCursorError()
+        decoded.exclusive_start_key = normalize_exclusive_start_key(
+            decoded.exclusive_start_key,
+        )
         return decoded
 
     def assert_filters_match(
@@ -121,3 +125,67 @@ class CursorCodec:
             normalized.encode("utf-8"),
             hashlib.sha256,
         ).hexdigest()
+
+
+def normalize_cursor_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """cursor payload を JSON 化しても DynamoDB key 型が崩れない形へ変換する。
+
+    Args:
+        payload: pydantic から取得した cursor payload。
+
+    Returns:
+        JSON 署名・エンコード用に正規化した payload。
+    """
+
+    normalized = normalize_json_value(payload)
+    if not isinstance(normalized, dict):
+        raise InvalidCursorError()
+    exclusive_start_key = normalized.get("exclusive_start_key")
+    if isinstance(exclusive_start_key, dict):
+        normalized["exclusive_start_key"] = normalize_exclusive_start_key(
+            exclusive_start_key,
+        )
+    return normalized
+
+
+def normalize_json_value(value: Any) -> Any:
+    """JSON 化対象の値を再帰的に安定した型へ変換する。
+
+    Args:
+        value: JSON 化する値。
+
+    Returns:
+        Decimal を数値へ変換し、list と dict を再帰的に正規化した値。
+    """
+
+    if isinstance(value, Decimal):
+        if value == value.to_integral_value():
+            return int(value)
+        return float(value)
+    if isinstance(value, dict):
+        return {key: normalize_json_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [normalize_json_value(item) for item in value]
+    return value
+
+
+def normalize_exclusive_start_key(key: dict[str, Any]) -> dict[str, Any]:
+    """DynamoDB ExclusiveStartKey に渡す key の型を補正する。
+
+    Args:
+        key: cursor に含まれる LastEvaluatedKey。
+
+    Returns:
+        DynamoDB Query に渡せる型へ補正した key。
+    """
+
+    normalized = normalize_json_value(key)
+    if not isinstance(normalized, dict):
+        raise InvalidCursorError()
+    updated_at_epoch = normalized.get("updated_at_epoch")
+    if isinstance(updated_at_epoch, str):
+        try:
+            normalized["updated_at_epoch"] = int(updated_at_epoch)
+        except ValueError as error:
+            raise InvalidCursorError() from error
+    return normalized
