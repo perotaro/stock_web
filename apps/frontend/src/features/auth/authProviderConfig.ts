@@ -2,6 +2,7 @@ import type { AuthProviderProps } from 'react-oidc-context'
 
 import { WebStorageStateStore } from 'oidc-client-ts'
 
+import { resetCurrentAccessToken } from '@/features/auth/accessTokenStore'
 import type { AuthMode } from '@/lib/env/clientEnv'
 
 type OidcAuthProviderConfigInput = {
@@ -32,8 +33,39 @@ export function buildOidcAuthProviderConfig(
     automaticSilentRenew: input.authMode === 'oidc',
     loadUserInfo: true,
     userStore: new WebStorageStateStore({ store: window.sessionStorage }),
+    matchSignoutCallback: (settings) =>
+      isPostLogoutRedirectCallback(
+        window.location.href,
+        settings.post_logout_redirect_uri,
+      ),
     onSigninCallback: () => {
       window.history.replaceState({}, document.title, '/auth/callback')
     },
+    onSignoutCallback: () => {
+      resetCurrentAccessToken()
+      window.history.replaceState({}, document.title, '/auth/logout/callback')
+    },
   }
+}
+
+/**
+ * 現在の URL が OIDC ログアウト後リダイレクト先かを判定する。
+ *
+ * @param currentHref 現在の完全な URL。
+ * @param postLogoutRedirectUri OIDC Provider に登録したログアウト後リダイレクト URI。
+ * @returns ログアウト後コールバックとして扱う場合は true。
+ */
+function isPostLogoutRedirectCallback(
+  currentHref: string,
+  postLogoutRedirectUri: string | undefined,
+): boolean {
+  if (!postLogoutRedirectUri) return false
+
+  const currentUrl = new URL(currentHref)
+  const callbackUrl = new URL(postLogoutRedirectUri)
+
+  return (
+    currentUrl.origin === callbackUrl.origin &&
+    currentUrl.pathname === callbackUrl.pathname
+  )
 }
