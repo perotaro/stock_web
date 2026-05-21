@@ -6,6 +6,7 @@ aws-lambda-typing==2.20.0
 
 # Test
 pytest==9.0.2
+pytest-cov==7.1.0
 pytest-mock==3.15.1
 moto[dynamodb]==5.1.22
 

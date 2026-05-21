@@ -16,3 +16,5 @@ apps/backend/tests/__pycache__/*.pyc
 docs/temp/*
 .agents/skills/oop-design-mentor/*
 .mypy_cache/*
+.coverage
+apps/frontend/coverage/
