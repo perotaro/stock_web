@@ -157,6 +157,9 @@ pip install -r apps/backend/requirements.txt
 |---|---|---|
 | `ENV_NAME` | 実行環境名。`prd` の場合は危険値検証を強化する | `local` |
 | `AWS_REGION` | DynamoDB client の region | `ap-northeast-1` |
+| `AWS_ACCESS_KEY_ID` | DynamoDB Local 接続用のダミー access key | `local` |
+| `AWS_SECRET_ACCESS_KEY` | DynamoDB Local 接続用のダミー secret key | `local` |
+| `AWS_DEFAULT_REGION` | AWS CLI / SDK が参照する既定 region | `ap-northeast-1` |
 | `DYNAMODB_ENDPOINT_URL` | DynamoDB Local などの endpoint override | 未指定 |
 | `PUBLIC_SUMMARY_TABLE_NAME` | 公開サマリテーブル | `md_public_summary` |
 | `SYSTEM_LATEST_STATUS_TABLE_NAME` | システム最新状態テーブル | `md_system_latest_status` |
@@ -172,6 +175,9 @@ local 環境値の例:
 ```bash
 export ENV_NAME=local
 export AWS_REGION=ap-northeast-1
+export AWS_ACCESS_KEY_ID=local
+export AWS_SECRET_ACCESS_KEY=local
+export AWS_DEFAULT_REGION=ap-northeast-1
 export DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
 export PUBLIC_SUMMARY_TABLE_NAME=md_public_summary
 export SYSTEM_LATEST_STATUS_TABLE_NAME=md_system_latest_status
@@ -185,7 +191,7 @@ export CURSOR_SIGNING_SECRET=local-dev-cursor-secret
 
 ## ローカル実行コンテナ
 
-ルートの [`compose.yml`](/workspace/compose.yml) には `backend_dev` サービスを用意しています。`DynamoDB Local` はこのリポジトリ内では起動せず、バッチ側 compose が起動している共有インスタンスを利用する前提です。
+ルートの [`compose.yml`](../../compose.yml) には `backend_dev` サービスを用意しています。`DynamoDB Local` はこのリポジトリ内では起動せず、バッチ側 compose が起動している共有インスタンスを利用する前提です。
 
 ```bash
 docker compose up -d backend_dev
@@ -209,6 +215,18 @@ curl 'http://localhost:8080/api/v1/watchlist?limit=10&is_active=true'
 ```
 
 `main.py` は API Gateway JWT Authorizer をローカルで再現しません。認証必須 API も、ローカル結合では handler に直接委譲されます。認証境界は API Gateway / IaC 側の設定と handler テストで確認してください。
+
+### DynamoDB Local への接続確認
+
+開発コンテナ内から DynamoDB Local に接続できるか確認する場合は、次を実行します。
+
+```bash
+aws dynamodb list-tables \
+  --endpoint-url http://dynamodb-local:8000 \
+  --region ap-northeast-1
+```
+
+`TableNames` が返れば接続できています。`curl http://dynamodb-local:8000` で `MissingAuthenticationToken` が返る場合も、DynamoDB Local までは到達できています。これは未署名の HTTP リクエストで DynamoDB API を呼んだためです。
 
 ## テスト・静的解析
 

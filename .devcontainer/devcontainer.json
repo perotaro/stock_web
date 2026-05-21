@@ -24,7 +24,7 @@
 
   // Codex / Gemini CLI を CLI から使える状態で用意
   
-  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.npm || true && mkdir -p $HOME/.npm-global && npm config set prefix $HOME/.npm-global && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> $HOME/.bashrc && export PATH=$HOME/.npm-global/bin:$PATH && npm i -g @openai/codex @google/gemini-cli && python -m pip install -U pip && if [ -f apps/backend/requirements.txt ]; then pip install -r apps/backend/requirements.txt; fi",
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.npm || true && mkdir -p $HOME/.npm-global && npm config set prefix $HOME/.npm-global && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> $HOME/.bashrc && export PATH=$HOME/.npm-global/bin:$PATH && npm i -g @openai/codex @google/gemini-cli && python -m pip install -U pip && if [ -f apps/backend/requirements.txt ]; then pip install -r apps/backend/requirements.txt; fi && git config --local core.hooksPath .githooks",
   "postStartCommand": "grep -q '.npm-global/bin' $HOME/.bashrc || echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> $HOME/.bashrc; sudo chown -R vscode:vscode /home/vscode/.npm /home/vscode/.codex /home/vscode/.npm-global || true",
 
   "customizations": {
