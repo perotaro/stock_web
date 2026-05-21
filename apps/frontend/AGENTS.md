@@ -23,6 +23,7 @@
 - Format: `npm run format`
 - Type check: `npm run typecheck`
 - Unit / component test: `npm run test`
+- Unit / component coverage: `npm run test:coverage`
 - E2E test: `npm run test:e2e`
 
 ## Code Style

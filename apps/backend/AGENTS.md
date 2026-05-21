@@ -15,6 +15,7 @@
 
 - Install dependencies: `pip install -r apps/backend/requirements.txt`
 - Run all tests: `pytest`
+- Run coverage: `pytest apps/backend/tests --cov=apps/backend/src --cov-report=term-missing`
 - Run single test: `pytest -k <test_name>`
 - Lint: `ruff check apps/backend`
 - Format: `ruff format apps/backend`
