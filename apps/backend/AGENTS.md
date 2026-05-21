@@ -15,6 +15,7 @@
 
 - Install dependencies: `pip install -r apps/backend/requirements.txt`
 - Run all tests: `pytest`
+- Run coverage: `pytest apps/backend/tests --cov=apps/backend/src --cov-report=term-missing`
 - Run single test: `pytest -k <test_name>`
 - Lint: `ruff check apps/backend`
 - Format: `ruff format apps/backend`
@@ -27,7 +28,9 @@
 - 関数名・変数名: `snake_case`、定数: `UPPER_SNAKE_CASE`
 - 公開関数・メソッドは型ヒントを必須とし、日本語の docstring を Google スタイルで記述する
 - handler は薄く保ち、リクエスト解析・認証済みコンテキスト受け取り・レスポンス整形に集中させる
-- ビジネスルールや取得条件の組み立ては service、DynamoDB との入出力は repository に分離する
+- API ごとの実行手順は usecase、外部入力の解釈は parser、API response への変換は assembler、DynamoDB との入出力は repository に分離する
+- repository implementation は DynamoDB item を domain DTO に変換して返す。ただし API response model は返さない
+- domain は現時点では rich domain model ではなく、DynamoDB item、API response、query、cursor などを表す pydantic DTO / schema model として扱う
 - datetime はタイムゾーン付きで扱い、JST 前提の値を naive datetime で扱わない
 - コメントは「なぜ」を補足するときだけ追加し、コード上で表現できる内容はコメントに逃がさない
 

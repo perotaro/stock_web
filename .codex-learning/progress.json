@@ -1,0 +1,1418 @@
+{
+  "version": 1,
+  "current_focus": "react",
+  "preferences": {
+    "review_intensity": "normal",
+    "task_size": "large"
+  },
+  "curriculum": {
+    "ordered_topics": [
+      "jsx-and-components",
+      "props",
+      "state",
+      "event-handling",
+      "conditional-rendering",
+      "list-rendering",
+      "lifting-state-up",
+      "form-handling",
+      "derived-values-and-simple-effects",
+      "custom-hooks",
+      "context",
+      "performance-basics"
+    ],
+    "current_topic": "derived-values-and-simple-effects",
+    "next_topic": "derived-values-and-simple-effects",
+    "prefer_natural_implementation": true,
+    "allow_exceptional_concepts_when_needed": true
+  },
+  "tracks": {
+    "react": {
+      "topics_mastered": [
+        "props",
+        "list-rendering"
+      ],
+      "topics_in_progress": [
+        "state",
+        "event-handling",
+        "form-handling",
+        "conditional-rendering",
+        "lifting-state-up",
+        "derived-values-and-simple-effects"
+      ],
+      "topics_blocked": [],
+      "last_studied_at": "2026-05-19",
+      "recent_tasks": [
+        {
+          "goal": "共通 LoadingState コンポーネントの骨格を props で作る",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "PublicSummaryMetrics の isPending 分岐で LoadingState を呼び出す",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "共通 ErrorState コンポーネントを props で切り出す",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-17"
+        },
+        {
+          "goal": "共通 EmptyState コンポーネントを props で作る",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-18"
+        },
+        {
+          "goal": "LoadingState に最小限の文字スタイルと余白を付ける",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "props",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-18"
+        },
+        {
+          "goal": "公開トップの成功・通信失敗・レスポンス不正をテストで固定する",
+          "learning_theme": "state",
+          "allowed_concepts": [
+            "state",
+            "conditional-rendering",
+            "props",
+            "async test"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-19"
+        },
+        {
+          "goal": "ページ冒頭に Summary タイトルと短い説明だけを持つ PageHeader 相当のブロックを作る",
+          "learning_theme": "conditional-rendering",
+          "allowed_concepts": [
+            "props",
+            "conditional-rendering",
+            "list-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app を 2 カラムのプレースホルダーから、要約カード -> システム一覧の縦積みレイアウトへ直す",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "要約カード群を、React の map + key を守ったカード UI に仕上げる",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "認証後の共通ヘッダから Summary と Watchlist を外し、Logout だけにする",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "props",
+            "jsx-and-components"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app のページ内ナビと要約カードを、見た目としてもページ内ナビ・カード群と分かる形に整える",
+          "learning_theme": "props",
+          "allowed_concepts": [
+            "props",
+            "jsx-and-components",
+            "list-rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-21"
+        },
+        {
+          "goal": "/app のシステム一覧を API データから map で描画し、状態と詳細リンクを表示する",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering",
+            "Link",
+            "small helper"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks",
+            "new local state"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-22"
+        },
+        {
+          "goal": "/app と /app/watchlist のページ内ナビを共通コンポーネントにまとめる",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "conditional-rendering",
+            "Link",
+            "small helper"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "context",
+            "custom-hooks",
+            "new local state"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-24"
+        },
+        {
+          "goal": "SystemLatestPage のシグナルカードが優先度順に表示されることをテストする",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "props",
+            "list-rendering",
+            "Testing Library",
+            "within"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "state",
+            "custom-hooks",
+            "API fetch",
+            "Tailwind class change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-25"
+        },
+        {
+          "goal": "/app/watchlist のフィルタフォームを JSX と通常 CSS Grid で作る",
+          "learning_theme": "form-handling",
+          "allowed_concepts": [
+            "jsx-and-components",
+            "form-handling",
+            "CSS Grid"
+          ],
+          "disallowed_concepts": [
+            "state",
+            "useEffect",
+            "custom-hooks",
+            "API fetch",
+            "Tailwind utility"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-26"
+        },
+        {
+          "goal": "/app/watchlist の結果一覧に静的データ 3 件を map で表示する",
+          "learning_theme": "list-rendering",
+          "allowed_concepts": [
+            "list-rendering",
+            "semantic HTML",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "state",
+            "useEffect",
+            "custom-hooks",
+            "API fetch",
+            "pagination"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-26"
+        },
+        {
+          "goal": "Watchlist のフィルタフォームを controlled input にする",
+          "learning_theme": "state + event-handling",
+          "allowed_concepts": [
+            "useState",
+            "onChange",
+            "props",
+            "controlled input"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-26"
+        },
+        {
+          "goal": "Watchlist のフィルタフォームに Reset ボタンを追加し、4 つの state を初期値に戻す",
+          "learning_theme": "event-handling",
+          "allowed_concepts": [
+            "useState",
+            "onChange",
+            "onClick",
+            "props",
+            "controlled input"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "form submit"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-28"
+        },
+        {
+          "goal": "フィルタが 1 つでも入力されているときだけ Reset ボタンを有効化する",
+          "learning_theme": "conditional-rendering",
+          "allowed_concepts": [
+            "useState",
+            "onChange",
+            "onClick",
+            "props",
+            "controlled input",
+            "boolean expression",
+            "disabled"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "useMemo",
+            "new state for derived value"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-28"
+        },
+        {
+          "goal": "フィルタ入力中だけ、フィルタパネル内に状態メッセージを表示する",
+          "learning_theme": "conditional-rendering",
+          "allowed_concepts": [
+            "props",
+            "boolean expression",
+            "conditional rendering",
+            "&&",
+            "disabled"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "useMemo",
+            "new state"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-28"
+        },
+        {
+          "goal": "Watchlist のフィルタフォームに Apply ボタンを追加し、submit してもページ遷移しないようにする",
+          "learning_theme": "form-handling",
+          "allowed_concepts": [
+            "useState",
+            "props",
+            "onSubmit",
+            "event.preventDefault()",
+            "controlled input",
+            "conditional rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-28"
+        },
+        {
+          "goal": "Apply 後にフィルタ入力を変更したら、フィルタを適用しました を消す",
+          "learning_theme": "form-handling + event-handling",
+          "allowed_concepts": [
+            "useState",
+            "props",
+            "onChange",
+            "onSubmit",
+            "event.preventDefault()",
+            "controlled input",
+            "conditional rendering"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo",
+            "new state for derived value"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-29"
+        },
+        {
+          "goal": "Apply 後、フィルタを変更するまで Apply ボタンを disabled にする",
+          "learning_theme": "form-handling + conditional rendering",
+          "allowed_concepts": [
+            "useState",
+            "props",
+            "onChange",
+            "onSubmit",
+            "event.preventDefault()",
+            "disabled",
+            "boolean expression",
+            "controlled input"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo",
+            "new state for derived value"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-29"
+        },
+        {
+          "goal": "Watchlist の 4 つのフィルタ値を filterValues props にまとめる",
+          "learning_theme": "props + form-handling",
+          "allowed_concepts": [
+            "type",
+            "object props",
+            "useState",
+            "onChange",
+            "controlled input",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-29"
+        },
+        {
+          "goal": "Watchlist の 4 つのフィルタ更新関数を filterHandlers props にまとめる",
+          "learning_theme": "props + form-handling",
+          "allowed_concepts": [
+            "type",
+            "object props",
+            "useState",
+            "onChange",
+            "controlled input",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-29"
+        },
+        {
+          "goal": "Watchlist の 4 つのフィルタ state を 1 つの filterValues state にまとめる",
+          "learning_theme": "lifting-state-up + form-handling",
+          "allowed_concepts": [
+            "type",
+            "object state",
+            "useState",
+            "object spread",
+            "onChange",
+            "controlled input",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-29"
+        },
+        {
+          "goal": "フィルタ編集時に isApplied を解除する責務を filterHandlers 側へ移す",
+          "learning_theme": "lifting-state-up + event-handling",
+          "allowed_concepts": [
+            "type",
+            "object state",
+            "useState",
+            "object spread",
+            "onChange",
+            "controlled input",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-30"
+        },
+        {
+          "goal": "フィルタ値の field 更新処理を handleFilterValueChange にまとめる",
+          "learning_theme": "lifting-state-up + event-handling",
+          "allowed_concepts": [
+            "type",
+            "keyof",
+            "object state",
+            "useState",
+            "object spread",
+            "onChange",
+            "controlled input",
+            "props"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "filter()",
+            "URL query sync",
+            "API fetch",
+            "useMemo"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-30"
+        },
+        {
+          "goal": "WatchlistPage の Apply 表示と編集後解除の振る舞いをテストする",
+          "learning_theme": "behavior testing + form-handling",
+          "allowed_concepts": [
+            "screen",
+            "within",
+            "fireEvent",
+            "toHaveValue",
+            "toBeVisible",
+            "queryByText",
+            "getByRole",
+            "getByLabelText"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "mock server"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-04-30"
+        },
+        {
+          "goal": "WatchlistFilterPanelProps の順序を子コンポーネントの責務が読みやすい形に整える",
+          "learning_theme": "props + component responsibility",
+          "allowed_concepts": [
+            "type",
+            "props",
+            "object props",
+            "controlled input",
+            "component responsibility"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "file split"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-30"
+        },
+        {
+          "goal": "WatchlistFilterPanel を features/watchlist/components へ分割する",
+          "learning_theme": "component responsibility + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import",
+            "props",
+            "component responsibility",
+            "controlled input"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-04-30"
+        },
+        {
+          "goal": "CodePill と DecisionPill を features/watchlist/components へ分割する",
+          "learning_theme": "component responsibility + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import",
+            "props",
+            "component responsibility"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "formatActiveLabel と WatchlistResultCard を features/watchlist/components へ分割する",
+          "learning_theme": "component responsibility + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import",
+            "props",
+            "component responsibility",
+            "map"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistResultsPanel を features/watchlist/components へ分割する",
+          "learning_theme": "component responsibility + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import",
+            "props",
+            "component responsibility",
+            "map"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()",
+            "types.ts"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistItem を features/watchlist/types.ts へ分割する",
+          "learning_theme": "shared type + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import type",
+            "props",
+            "component responsibility"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()",
+            "index.ts"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistFilterValues を features/watchlist/types.ts へ分割する",
+          "learning_theme": "shared type + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import type",
+            "keyof",
+            "props",
+            "component responsibility"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()",
+            "index.ts"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "active 表示を ActivePill として WatchlistPills.tsx に切り出す",
+          "learning_theme": "component responsibility + import/export",
+          "allowed_concepts": [
+            "type",
+            "export",
+            "import",
+            "props",
+            "boolean",
+            "component responsibility"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()",
+            "index.ts"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "Watchlist component 分割後の import / JSX / docstring を整える",
+          "learning_theme": "code readability + component responsibility",
+          "allowed_concepts": [
+            "import",
+            "props",
+            "docstring",
+            "component responsibility",
+            "formatting"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state move",
+            "filter()",
+            "new component",
+            "type move"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistPage.test.tsx の空行・末尾スペース・expect 文を整える",
+          "learning_theme": "test readability",
+          "allowed_concepts": [
+            "screen",
+            "within",
+            "fireEvent",
+            "expect",
+            "test readability",
+            "formatting"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "component implementation change",
+            "test case add",
+            "test case delete"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistPills.tsx の ActivePill docstring を既存 component と同じ粒度に揃える",
+          "learning_theme": "documentation + component responsibility",
+          "allowed_concepts": [
+            "docstring",
+            "props",
+            "component responsibility",
+            "formatting"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state change",
+            "component add",
+            "type move",
+            "import change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "Watchlist 分割後の小さな残り note を 1〜2 個だけ直す",
+          "learning_theme": "review cleanup + component responsibility",
+          "allowed_concepts": [
+            "docstring",
+            "import",
+            "formatting",
+            "component responsibility",
+            "review cleanup"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "state change",
+            "component add",
+            "type move",
+            "test add",
+            "index.ts"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "WatchlistResultsPanel に hasActiveFilters を渡して結果見出し横に状態メモを表示する",
+          "learning_theme": "lifting-state-up + props",
+          "allowed_concepts": [
+            "props",
+            "boolean",
+            "conditional rendering",
+            "lifting-state-up",
+            "test readability"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "filter()",
+            "state move",
+            "new type file",
+            "new component"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "フィルタ条件を反映予定 のテスト意図を独立したテストケースに分ける",
+          "learning_theme": "test readability + behavior testing",
+          "allowed_concepts": [
+            "screen",
+            "fireEvent",
+            "expect",
+            "queryByText",
+            "getByText",
+            "test readability"
+          ],
+          "disallowed_concepts": [
+            "component implementation change",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "filter()",
+            "userEvent",
+            "mock add"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "reset 後に フィルタ条件を反映予定 も消えることをテストする",
+          "learning_theme": "lifting-state-up + behavior testing",
+          "allowed_concepts": [
+            "screen",
+            "fireEvent",
+            "expect",
+            "queryByText",
+            "getByText",
+            "behavior testing"
+          ],
+          "disallowed_concepts": [
+            "component implementation change",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "URL query sync",
+            "filter()",
+            "userEvent",
+            "mock add"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-01"
+        },
+        {
+          "goal": "filterValues を watchlist API query に変換する純粋関数の設計メモを作る",
+          "learning_theme": "API boundary + data mapping",
+          "allowed_concepts": [
+            "type",
+            "mapping",
+            "query parameter",
+            "API contract",
+            "documentation"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "component implementation change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-02"
+        },
+        {
+          "goal": "WatchlistFilterValues を watchlist API query object に変換する純粋関数を作る",
+          "learning_theme": "API boundary + data mapping",
+          "allowed_concepts": [
+            "type",
+            "mapping",
+            "pure function",
+            "query parameter",
+            "unit test",
+            "documentation"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "component implementation change",
+            "preview data filtering"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-03"
+        },
+        {
+          "goal": "Watchlist 初回表示の Active 条件を UI 側既定値として true にする",
+          "learning_theme": "default state + behavior testing",
+          "allowed_concepts": [
+            "state",
+            "default value",
+            "controlled input",
+            "behavior test",
+            "type"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering",
+            "new component"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-04"
+        },
+        {
+          "goal": "Watchlist の検索ボタン押下時に、現在の filterValues から適用済み API query を作って保持する",
+          "learning_theme": "state + API boundary",
+          "allowed_concepts": [
+            "state",
+            "pure function",
+            "mapping",
+            "controlled input",
+            "behavior test",
+            "type"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering",
+            "new component"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-04"
+        },
+        {
+          "goal": "WatchlistQuery 同士を比較する純粋関数を作り、検索ボタンの disabled 判定に使う",
+          "learning_theme": "pure function + equality logic",
+          "allowed_concepts": [
+            "type",
+            "pure function",
+            "boolean",
+            "equality",
+            "unit test",
+            "import"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering",
+            "new component"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-05"
+        },
+        {
+          "goal": "WatchlistPage の query 比較結果の変数名を意味に合わせる",
+          "learning_theme": "naming + readability",
+          "allowed_concepts": [
+            "rename",
+            "boolean",
+            "readability",
+            "pure function usage"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "state add",
+            "component implementation change",
+            "test add"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-05"
+        },
+        {
+          "goal": "WatchlistPage の「入力中条件」と「適用済み条件」の状態表示を正しく分ける",
+          "learning_theme": "state meaning + UI state contract",
+          "allowed_concepts": [
+            "state",
+            "props",
+            "boolean",
+            "conditional rendering",
+            "behavior test",
+            "naming"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-06"
+        },
+        {
+          "goal": "WatchlistResultsPanel に適用済み条件を表示し、テスト用 JSON output 依存をやめる",
+          "learning_theme": "props + applied state contract",
+          "allowed_concepts": [
+            "props",
+            "state",
+            "boolean",
+            "conditional rendering",
+            "object prop",
+            "behavior test",
+            "naming"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "map()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-06"
+        },
+        {
+          "goal": "Watchlist の適用済み条件表示とテスト観測を小さく仕上げる",
+          "learning_theme": "behavior test + UI contract",
+          "allowed_concepts": [
+            "props",
+            "conditional rendering",
+            "behavior test",
+            "naming"
+          ],
+          "disallowed_concepts": [
+            "filter()",
+            "map()",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-07"
+        },
+        {
+          "goal": "API fetch 前に WatchlistResultsPanel の loading / error / empty / success 表示契約を props とテストで固定する",
+          "learning_theme": "async UI state contract",
+          "allowed_concepts": [
+            "props",
+            "boolean",
+            "string | null",
+            "conditional rendering",
+            "behavior test",
+            "LoadingState",
+            "ErrorState",
+            "EmptyState"
+          ],
+          "disallowed_concepts": [
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "API fetch",
+            "TanStack Query",
+            "URL query sync",
+            "new API client",
+            "preview data filtering"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-07"
+        },
+        {
+          "goal": "GET /v1/watchlist 用の API 関数と Zod schema を作り、単体テストで固定する",
+          "learning_theme": "API boundary + schema validation",
+          "allowed_concepts": [
+            "type",
+            "zod schema",
+            "async function",
+            "apiRequest",
+            "query object",
+            "unit test",
+            "import/export"
+          ],
+          "disallowed_concepts": [
+            "React component change",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "TanStack Query",
+            "UI state change",
+            "URL query sync",
+            "preview data filtering"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-10"
+        },
+        {
+          "goal": "fetchWatchlistPage の API response shape を UI 用 WatchlistItem に変換する pure function を作る",
+          "learning_theme": "API response mapping + type boundary",
+          "allowed_concepts": [
+            "type",
+            "pure function",
+            "array map",
+            "record lookup",
+            "unit test",
+            "import/export"
+          ],
+          "disallowed_concepts": [
+            "React component change",
+            "fetch",
+            "apiRequest",
+            "useEffect",
+            "custom-hooks",
+            "context",
+            "TanStack Query",
+            "UI state change",
+            "URL query sync",
+            "preview data filtering"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-10"
+        },
+        {
+          "goal": "WatchlistPage を preview data から実 API 読み込みへ切り替える",
+          "learning_theme": "async UI state + API boundary integration",
+          "allowed_concepts": [
+            "useState",
+            "useEffect",
+            "async function",
+            "API function",
+            "mapWatchlistPage",
+            "loading / error / empty / success state",
+            "unit/component test",
+            "import/export"
+          ],
+          "disallowed_concepts": [
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "TanStack Query",
+            "URL query sync",
+            "preview data filtering",
+            "pagination UI implementation",
+            "localStorage/sessionStorage"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-10"
+        },
+        {
+          "goal": "WatchlistPage のさらに読み込むボタンを nextCursor と接続し、次ページを追記する",
+          "learning_theme": "cursor pagination + async UI state",
+          "allowed_concepts": [
+            "useState",
+            "async function",
+            "cursor query",
+            "array append",
+            "button disabled state",
+            "component test",
+            "import/export"
+          ],
+          "disallowed_concepts": [
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "TanStack Query",
+            "URL query sync",
+            "localStorage/sessionStorage"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-10"
+        },
+        {
+          "goal": "WatchlistPage のエラー表示に再試行動作を接続する",
+          "learning_theme": "error recovery + async UI state",
+          "allowed_concepts": [
+            "useState",
+            "async function",
+            "callback prop",
+            "error state",
+            "loading state",
+            "component test",
+            "useCallback"
+          ],
+          "disallowed_concepts": [
+            "custom-hooks",
+            "context",
+            "useReducer",
+            "TanStack Query",
+            "URL query sync"
+          ],
+          "status": "pass",
+          "reviewed_at": "2026-05-11"
+        },
+        {
+          "goal": "OIDC モードの LoginPage で認証リダイレクト開始と失敗時の再試行導線を実装する",
+          "learning_theme": "derived-values-and-simple-effects",
+          "allowed_concepts": [
+            "useEffect",
+            "useRef",
+            "useState",
+            "event-handling",
+            "conditional-rendering",
+            "useAuth"
+          ],
+          "disallowed_concepts": [
+            "custom-hooks",
+            "Provider / Context change",
+            "env design change",
+            "test expectation change"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-12"
+        },
+        {
+          "goal": "WatchlistPage の手書き async state を TanStack Query の useInfiniteQuery に置き換える",
+          "learning_theme": "TanStack Query + server state",
+          "allowed_concepts": [
+            "TanStack Query",
+            "useInfiniteQuery",
+            "query key",
+            "queryFn",
+            "pageParam",
+            "getNextPageParam",
+            "fetchNextPage",
+            "isPending",
+            "isFetchingNextPage",
+            "error",
+            "component test"
+          ],
+          "disallowed_concepts": [
+            "manual items state",
+            "manual nextCursor state",
+            "manual loading state",
+            "manual loading more state",
+            "manual errorMessage state",
+            "cursor in query key"
+          ],
+          "status": "pass with notes",
+          "reviewed_at": "2026-05-19"
+        }
+      ]
+    }
+  }
+}

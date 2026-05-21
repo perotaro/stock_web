@@ -9,14 +9,19 @@ services:
     volumes:
       - ./:/workspace:rw
       - npm-cache:/home/vscode/.npm
+      - frontend-node-modules:/workspace/apps/frontend/node_modules
 
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
-      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://host.docker.internal:8000}
+      - AWS_REGION=${AWS_REGION:-ap-northeast-1}
+      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://dynamodb-local:8000}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - dynamodb-shared
     # 起動し続ける
     init: true
     command: sleep infinity
@@ -36,14 +41,40 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-northeast-1}
-      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://host.docker.internal:8000}
+      - AWS_REGION=${AWS_REGION:-ap-northeast-1}
+      - DYNAMODB_ENDPOINT_URL=${DYNAMODB_ENDPOINT_URL:-http://dynamodb-local:8000}
       - BACKEND_PORT=${BACKEND_PORT:-8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - dynamodb-shared
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     init: true
     command: bash /workspace/apps/backend/scripts/run_dev.sh
+
+  frontend_dev:
+    # フロントエンドのローカル実行専用
+    build:
+      context: .
+      dockerfile: ./.devcontainer/Dockerfile.dev
+    working_dir: /workspace/apps/frontend
+    volumes:
+      - ./:/workspace:rw
+      - npm-cache:/home/vscode/.npm
+      - frontend-node-modules:/workspace/apps/frontend/node_modules
+    environment:
+      - FRONTEND_API_PROXY_TARGET=http://backend_dev:8080
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend_dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    init: true
+    command: >-
+      bash -lc "if [ ! -d node_modules ]; then npm ci; fi && npm run dev -- --host 0.0.0.0 --port 5173"
 
   # dynamodb-local-web:
   #   image: amazon/dynamodb-local:latest
@@ -72,4 +103,10 @@ services:
 
 volumes:
   npm-cache:
+  frontend-node-modules:
   dynamodb-data:
+
+networks:
+  dynamodb-shared:
+    external: true
+    name: ${DYNAMODB_SHARED_NETWORK:-dynamodb-shared}

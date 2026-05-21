@@ -1,17 +1,17 @@
-# OTOSHIN Webシステム 要件定義（データ設計除く）
+# Guppy Webシステム 要件定義（データ設計除く）
 
 ## 1. 文書目的
-本書は、OTOSHIN のWebシステムに関する要件を定義する。  
+本書は、Guppy のWebシステムに関する要件を定義する。  
 対象は「公開トップページ」「ログイン後画面」「バッチ実行方式」「API公開方式」「非機能要件」であり、データの持ち方（テーブル設計、キー設計、TTL設計など）は本書の対象外とする。
 
 ## 2. 前提と方針
 - 利用者は当面1名（運用者本人）。
 - バッチ処理は1日1回を基本とする。
-- バッチ起動は画面経由ではなく EventBridge による定刻実行とする。
+- 初期段階のバッチ起動は画面経由ではなく EventBridge による定刻実行を基本とする。
 - インフラはAWSサーバレス（Lambda / API Gateway / DynamoDB / S3）を前提とする。
 - 日付境界・時刻基準は JST とする。
 - フロントエンドのコードは公開リポジトリ、戦略ロジック・機密情報は非公開領域で管理する。
-- 技術詳細の説明はトップページに掲載せず、公開GitHubで説明する。
+- 技術詳細の説明はトップページに掲載しない。
 
 ## 3. スコープ
 ### 3.1 対象
@@ -107,12 +107,12 @@
 - システム横断サマリAPIは、システム単位の表示に必要な `system_code` と `system_name` を返すこと。
 - システム別最新実行結果APIは、最新実行分の `ticker` と `判定結果` を返すこと。
 - システム別最新実行結果APIは、バッチ実行時に算出・保存した入札優先度順を維持して返すこと。
-- 対象銘柄一覧APIの `q_ticker` は部分一致とする。
+- 対象銘柄一覧APIの `q_ticker` は完全一致とする。
 - 対象銘柄一覧APIは `is_active=true` をデフォルト条件とする。
 - 対象銘柄一覧APIの並び順は更新日時降順とする。
-- 対象銘柄一覧APIは当面ページングを行わず、全件返却とする。
+- 対象銘柄一覧APIは `limit/cursor` によるカーソルベースページングを提供する。
 - 認証はJWTベースで行い、未認証アクセスは拒否する。
-- APIは読み取り専用とし、画面からバッチ起動APIは提供しない。
+- 初期段階では API は読み取り専用とし、画面からのバッチ起動 API は対象外とする。
 
 ### 6.3 認証連携要件
 - フロントエンドは認証後に取得した Access Token を `Authorization: Bearer <token>` でAPIへ送信する。
@@ -126,7 +126,7 @@
 | 1 | `/` 公開トップ | 初回表示 | `GET /api/v1/public/summary` | 不要 | なし | なし | `operating_days`, `batch_runs_total`, `success_rate`, `avg_duration_sec`, `updated_at` |
 | 2 | `/app` ログイン後サマリ | 初回表示 | `GET /api/v1/summary` | 必須 | なし | なし | `system_count`, `latest_run_at`, `status_counts`, `systems[]` |
 | 3 | `/app/systems/{system_code}` | 初回表示 | `GET /api/v1/systems/{system_code}/latest` | 必須 | Path: `system_code` | `signals` は入札優先度順を維持 | `system_code`, `system_name`, `latest_run_at`, `signals[]`, `updated_at` |
-| 4 | `/app/watchlist` | 初回表示・検索/絞り込み変更時 | `GET /api/v1/watchlist` | 必須 | Query: `q_ticker`（部分一致）, `is_active`（未指定時`true`）, `system_code`, `category_code`, `sort=updated_at_desc` | `updated_at` 降順, ページングなし（全件返却） | `ticker`, `is_active`, `category_code`, `systems`, `latest_decisions_by_system`, `updated_at` |
+| 4 | `/app/watchlist` | 初回表示・検索/絞り込み変更時 | `GET /api/v1/watchlist` | 必須 | Query: `q_ticker`（完全一致）, `is_active`（未指定時`true`）, `system_code`, `category_code`, `sort=updated_at_desc`, `limit`, `cursor` | `updated_at` 降順, カーソルベースページング | `items[]`, `next_cursor` |
 
 ## 7. バッチ実行要件
 - EventBridge Schedulerで各バッチLambdaを個別スケジュール設定できること。
@@ -183,7 +183,7 @@
 - スマートフォン表示でも主要画面が利用可能で、レイアウト崩れがないこと。
 - EventBridge で各バッチLambdaを別時刻で起動できること。
 - バッチ失敗時にアラーム通知されること。
-- 画面からバッチ起動ができないこと。
+- 初期段階では画面からバッチ起動ができないこと。
 
 ## 11. 未確定事項（別途定義）
 - バッチ失敗時の通知チャネル最終選定

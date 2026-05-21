@@ -4,8 +4,6 @@ model_auto_compact_token_limit = 900000
 ################################################################################
 # Core
 ################################################################################
-model_provider = "openai"
-
 # 品質寄り（重ければ "medium" に）
 model_reasoning_summary = "auto"
 model_verbosity = "medium"
@@ -58,6 +56,8 @@ shell_snapshot = true
 unified_exec = false
 apply_patch_freeform = false
 exec_policy = true
+collaboration_modes = true
+multi_agent = true
 
 ################################################################################
 # MCP Servers
@@ -81,9 +81,21 @@ args = [
 startup_timeout_sec = 60
 tool_timeout_sec = 120
 
+[mcp_servers.serena.tools.write_memory]
+approval_mode = "approve"
+
 [mcp_servers.drawio]
 command = "npx"
 args = ["-y", "@drawio/mcp"]
+
+[mcp_servers."gemini-cli"]
+command = "npx"
+args = ["-y", "gemini-mcp-tool"]
+startup_timeout_sec = 60
+tool_timeout_sec = 300
+
+[mcp_servers."gemini-cli".tools.ask-gemini]
+approval_mode = "approve"
 
 [projects."/workspace"]
 trust_level = "trusted"

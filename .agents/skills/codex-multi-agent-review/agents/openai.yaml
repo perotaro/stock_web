@@ -1,0 +1,3 @@
+interface:
+  display_name: "Codex Multi-Agent Review"
+  short_description: "Review Codex diffs with multiple specialized reviewer perspectives."
