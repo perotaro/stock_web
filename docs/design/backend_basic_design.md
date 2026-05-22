@@ -5,9 +5,9 @@
 対象は、参照専用 API を提供する AWS サーバレスバックエンドであり、Lambda アプリケーション構造、API 設計方針、DynamoDB 参照方針、認証連携、CDK によるインフラ管理方針を明確化することを目的とする。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
-- [Backend README](/workspace/apps/backend/README.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
+- [Backend README](../../apps/backend/README.md)
 
 ## 3. スコープ
 

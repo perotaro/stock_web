@@ -4,15 +4,15 @@
 本書は、Guppy Webシステムにおける主要ユーザー向け画面のビジュアル設計を定義する。  
 対象は公開トップページ `/`、公開導線 `/login` `/logout`、認証後画面 `/app` `/app/systems/:system_code` `/app/watchlist` とし、各画面の情報優先順位、レイアウト、状態表示、モバイル方針を明確化することを目的とする。
 
-本書は [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md) を補完する文書であり、見た目の装飾よりも、情報が整理され、実装しやすく、保守しやすい UI を定義することを重視する。
+本書は [フロントエンド基本設計](frontend_basic_design.md) を補完する文書であり、見た目の装飾よりも、情報が整理され、実装しやすく、保守しやすい UI を定義することを重視する。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md)
-- [フロントエンド実装メモ](/workspace/docs/design/frontend_implementation_memo.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [フロントエンド共通デザイン指針](/workspace/apps/frontend/DESIGN.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [システム基本設計](system_basic_design.md)
+- [フロントエンド基本設計](frontend_basic_design.md)
+- [フロントエンド実装メモ](frontend_implementation_memo.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [フロントエンド共通デザイン指針](../../apps/frontend/DESIGN.md)
 
 ## 3. スコープ
 
@@ -31,7 +31,7 @@
 - Figma 等のデザインツール上の作業手順
 
 ## 4. 前提
-- 共通の色、タイポグラフィ、余白、角丸、ボタン、カードの基準は [DESIGN.md](/workspace/apps/frontend/DESIGN.md) を正本とする。
+- 共通の色、タイポグラフィ、余白、角丸、ボタン、カードの基準は [DESIGN.md](../../apps/frontend/DESIGN.md) を正本とする。
 - 公開導線と認証後導線は同じブランドトーンを維持するが、情報密度と面構成は明確に切り替える。
 - 公開画面では匿名集計のみを見せ、個別銘柄、戦略詳細、当日シグナル生データは表示しない。
 - 認証後画面では、更新状況の把握と詳細画面への遷移を優先し、装飾的な要素は増やさない。

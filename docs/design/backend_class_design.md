@@ -8,11 +8,11 @@
 本設計では、継承階層を深く作るのではなく、read-only API に必要な責務境界を明確にし、テストしやすい小さな usecase / repository / DTO を中心に構成する。
 
 ## 2. 関連ドキュメント
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [バックエンド実装メモ](/workspace/docs/design/backend_implementation_memo.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
-- [フロントエンド API 契約](/workspace/docs/design/frontend_api_contract.md)
-- [Backend README](/workspace/apps/backend/README.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [バックエンド実装メモ](backend_implementation_memo.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
+- [フロントエンド API 契約](frontend_api_contract.md)
+- [Backend README](../../apps/backend/README.md)
 
 ## 3. 設計方針
 - handler は薄く保ち、API Gateway event の取り出しと HTTP response 変換に集中する。

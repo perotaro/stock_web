@@ -7,12 +7,12 @@
 本書は、要件定義とシステム基本設計を受けて、フロントエンドの責務、構成、実装方針、採用技術を明確化することを目的とする。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [フロントエンドビジュアル設計](/workspace/docs/design/frontend_visual_design.md)
-- [フロントエンド実装メモ](/workspace/docs/design/frontend_implementation_memo.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [システム基本設計](system_basic_design.md)
+- [フロントエンドビジュアル設計](frontend_visual_design.md)
+- [フロントエンド実装メモ](frontend_implementation_memo.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
 
 ## 3. スコープ
 

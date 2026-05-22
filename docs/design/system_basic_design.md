@@ -7,11 +7,11 @@
 本書は全体設計の親文書として位置付け、フロントエンド、バックエンド、データ設計の詳細は各設計書へ委譲する。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
-- [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [フロントエンド基本設計](frontend_basic_design.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
+- [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
 
 ## 3. スコープ
 
@@ -258,12 +258,12 @@ Backend API -> Frontend 向け JSON 応答
 - 通知チャネルの最終選定は別途運用設計で確定する
 
 ## 14. 詳細設計文書
-- [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
+- [フロントエンド基本設計](frontend_basic_design.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
 - 認証設計
 - 運用設計
-- [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
+- [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
 
 ## 15. 設計上の制約
 - 初期段階では画面からのバッチ起動 API は対象外とする。ただし、将来的な追加可能性を妨げない構成とする

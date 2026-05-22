@@ -6,11 +6,11 @@
 基本設計や API 契約で固定済みの内容は各設計書を正とし、本書では実装時に迷いやすい補足と、後続タスクへ引き継ぐべき論点を扱う。
 
 ## 2. 関連ドキュメント
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
-- [フロントエンド API 契約](/workspace/docs/design/frontend_api_contract.md)
-- [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
-- [Backend README](/workspace/apps/backend/README.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
+- [フロントエンド API 契約](frontend_api_contract.md)
+- [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
+- [Backend README](../../apps/backend/README.md)
 
 ## 3. 現時点の前提
 - 現在のバックエンドは、フロントエンド開発用のダミーサーバーが中心である。

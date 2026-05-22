@@ -5,9 +5,9 @@
 対象は、`.github/workflows` 配下に配置するワークフロー、環境ごとのデプロイ方針、AWS 認証連携、デプロイ単位、承認フロー、成果物管理である。
 
 ## 2. 関連ドキュメント
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
+- [システム基本設計](../design/system_basic_design.md)
+- [バックエンド基本設計](../design/backend_basic_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
 
 ## 3. スコープ
 

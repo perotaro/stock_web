@@ -7,11 +7,11 @@
 本書はバックエンド内部実装の詳細ではなく、フロントエンドが何を送信し、何を受信し、どのように扱うかを明確化することを目的とする。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [システム基本設計](system_basic_design.md)
+- [フロントエンド基本設計](frontend_basic_design.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
 
 ## 3. 前提
 
