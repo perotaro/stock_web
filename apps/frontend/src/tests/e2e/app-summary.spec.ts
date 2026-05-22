@@ -1,6 +1,12 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
-test('認証後トップでサマリとシステム一覧が表示される', async ({ page }) => {
+/**
+ * 認証後サマリ API の正常レスポンスをモックする。
+ *
+ * @param page Playwright のページインスタンス。
+ * @returns モック設定の完了を表す Promise。
+ */
+async function mockAppSummaryApi(page: Page) {
   await page.route('**/api/v1/summary', async (route) => {
     await route.fulfill({
       status: 200,
@@ -32,6 +38,10 @@ test('認証後トップでサマリとシステム一覧が表示される', as
       }),
     })
   })
+}
+
+test('認証後トップでサマリとシステム一覧が表示される', async ({ page }) => {
+  await mockAppSummaryApi(page)
 
   await page.goto('/app')
 
@@ -56,4 +66,27 @@ test('認証後トップでサマリとシステム一覧が表示される', as
   await expect(
     page.getByRole('link', { name: '詳細を見る' }).first(),
   ).toHaveAttribute('href', '/app/systems/DMP')
+})
+
+test('中間幅でもシステム一覧の最新実行列と導線列が表示領域に収まる', async ({
+  page,
+}) => {
+  await mockAppSummaryApi(page)
+
+  for (const width of [1110, 970]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/app')
+
+    const latestRun = page.getByText('最新実行 2026/04/10 6:30').first()
+    const detailLink = page.getByRole('link', { name: '詳細を見る' }).first()
+
+    await latestRun.scrollIntoViewIfNeeded()
+    await expect(latestRun).toBeVisible()
+    await expect(detailLink).toBeVisible()
+    await expect(latestRun).toBeInViewport({ ratio: 1 })
+    await expect(detailLink).toBeInViewport({ ratio: 1 })
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+      .toBeLessThanOrEqual(width)
+  }
 })

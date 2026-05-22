@@ -66,9 +66,9 @@ export function SystemsList(props: SystemsListProps) {
 
   return (
     <div className="overflow-hidden rounded-[4px] border border-[color:var(--color-line)] bg-[color:var(--color-surface)] shadow-[var(--shadow-soft)]">
-      <div className="hidden grid-cols-[9rem_10rem_minmax(16rem,1.6fr)_12rem_7rem] gap-x-8 border-b border-[color:var(--color-line)] bg-[color:var(--color-subtle-surface)] px-6 py-4 text-left text-xs font-medium tracking-[0.18em] text-[color:var(--color-muted)] uppercase md:grid">
+      <div className="hidden grid-cols-[6.5rem_7.5rem_minmax(0,1fr)_10.5rem_5.5rem] gap-x-4 border-b border-[color:var(--color-line)] bg-[color:var(--color-subtle-surface)] px-5 py-4 text-left text-xs font-medium tracking-[0.18em] text-[color:var(--color-muted)] uppercase md:grid lg:grid-cols-[7rem_8rem_minmax(0,1fr)_11rem_6rem] lg:gap-x-6 xl:grid-cols-[9rem_10rem_minmax(16rem,1.6fr)_12rem_7rem] xl:gap-x-8 xl:px-6">
         <span>Status</span>
-        <span>System Code</span>
+        <span className="min-w-0 break-words">System Code</span>
         <span>System Name</span>
         <span>最新実行</span>
         <span>導線</span>
@@ -81,7 +81,7 @@ export function SystemsList(props: SystemsListProps) {
           return (
             <article
               key={system.system_code}
-              className="px-4 py-4 md:grid md:grid-cols-[9rem_10rem_minmax(16rem,1.6fr)_12rem_7rem] md:items-start md:gap-x-8 md:px-6"
+              className="px-4 py-4 md:grid md:grid-cols-[6.5rem_7.5rem_minmax(0,1fr)_10.5rem_5.5rem] md:items-start md:gap-x-4 md:px-5 lg:grid-cols-[7rem_8rem_minmax(0,1fr)_11rem_6rem] lg:gap-x-6 xl:grid-cols-[9rem_10rem_minmax(16rem,1.6fr)_12rem_7rem] xl:gap-x-8 xl:px-6"
             >
               <div className="flex items-center justify-between gap-4 md:w-max md:justify-self-center">
                 <StatusPill label={statusMeta.label} tone={statusMeta.tone} />
@@ -90,7 +90,7 @@ export function SystemsList(props: SystemsListProps) {
                 </p>
               </div>
 
-              <p className="mt-4 hidden text-sm font-medium tracking-[0.12em] text-[color:var(--color-muted)] uppercase md:block">
+              <p className="mt-4 hidden min-w-0 break-words text-sm font-medium tracking-[0.12em] text-[color:var(--color-muted)] uppercase md:block">
                 {system.system_code}
               </p>
 
@@ -100,14 +100,14 @@ export function SystemsList(props: SystemsListProps) {
                 </h2>
               </div>
 
-              <p className="mt-3 text-sm leading-5 text-[color:var(--color-muted)] md:mt-0">
+              <p className="mt-3 min-w-0 text-sm leading-5 text-[color:var(--color-muted)] md:mt-0">
                 最新実行 {formatLatestRunAt(system.latest_run_at)}
               </p>
 
-              <div className="mt-4 md:mt-0">
+              <div className="mt-4 min-w-0 md:mt-0">
                 <Link
                   to={`/app/systems/${system.system_code}`}
-                  className="text-sm font-semibold text-[color:var(--color-ink)] transition hover:text-[color:var(--color-accent)]"
+                  className="whitespace-nowrap text-sm font-semibold text-[color:var(--color-ink)] transition hover:text-[color:var(--color-accent)]"
                 >
                   詳細を見る
                 </Link>
