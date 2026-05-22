@@ -188,9 +188,3 @@
 ## 11. 未確定事項（別途定義）
 - バッチ失敗時の通知チャネル最終選定
 - バッチ再実行のUI化要否
-
-## 12. 参照
-- `doc/temp/web_system_structure.drawio`
-- `doc/temp/aws_serverless_architecture.drawio`
-- `doc/required/web_screen_items_template.md`
-- `doc/required/dynamodb_data_design.md`
