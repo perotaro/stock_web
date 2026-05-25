@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
@@ -54,54 +54,86 @@ function DevBypassLogoutPage() {
 function OidcLogoutPage() {
   const auth = useAuth()
   const navigate = useNavigate()
+  const clientEnv = getClientEnv()
+  const hasStartedLogout = useRef(false)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined,
   )
 
-  const isRedirecting =
-    auth.isLoading || auth.activeNavigator === 'signoutRedirect'
+  useEffect(() => {
+    if (auth.error) {
+      setErrorMessage(buildLogoutErrorMessage(auth.error))
+      return
+    }
+    if (auth.isLoading) return
+    if (hasStartedLogout.current) return
+
+    hasStartedLogout.current = true
+    resetCurrentAccessToken()
+
+    if (!auth.isAuthenticated) {
+      auth
+        .removeUser()
+        .catch(() => undefined)
+        .finally(() => {
+          navigate('/auth/logout/callback', { replace: true })
+        })
+      return
+    }
+
+    if (!clientEnv.oidcLogoutEndpoint) {
+      hasStartedLogout.current = false
+      setErrorMessage(
+        'ログアウト処理に失敗しました: VITE_OIDC_LOGOUT_ENDPOINT が設定されていません。',
+      )
+      return
+    }
+    const oidcLogoutEndpoint = clientEnv.oidcLogoutEndpoint
+
+    auth
+      .removeUser()
+      .catch(() => undefined)
+      .finally(() => {
+        window.location.assign(
+          buildOidcLogoutUrl({
+            logoutEndpoint: oidcLogoutEndpoint,
+            clientId: clientEnv.oidcClientId,
+            logoutUri: clientEnv.oidcPostLogoutRedirectUri,
+          }),
+        )
+      })
+  }, [auth, clientEnv, navigate])
 
   return (
-    <LogoutTransitionCard
-      statusLabel={isRedirecting ? 'ログアウト処理中' : 'ログアウト待機中'}
+    <LogoutAutoTransitionCard
       description="認証サービスでセッションを終了し、公開トップへ戻ります。"
-      errorMessage={
-        errorMessage ??
-        (auth.error ? buildLogoutErrorMessage(auth.error) : undefined)
-      }
-      isSubmitting={isRedirecting}
-      onLogout={() => {
-        setErrorMessage(undefined)
-        resetCurrentAccessToken()
-
-        if (!auth.isAuthenticated) {
-          auth
-            .removeUser()
-            .catch(() => undefined)
-            .finally(() => {
-              navigate('/auth/logout/callback', { replace: true })
-            })
-          return
-        }
-
-        auth.signoutRedirect().catch((error: unknown) => {
-          setErrorMessage(buildLogoutErrorMessage(error))
-        })
-      }}
+      errorMessage={errorMessage}
     />
   )
 }
 
-type LogoutTransitionCardProps = {
-  statusLabel: string
-  description: string
-  errorMessage?: string | undefined
-  isSubmitting?: boolean
-  onLogout: () => void
+type BuildOidcLogoutUrlInput = {
+  logoutEndpoint: string
+  clientId: string
+  logoutUri: string
+}
+
+/**
+ * Cognito Hosted UI のログアウト URL を組み立てる。
+ *
+ * @param input ログアウトエンドポイント、クライアント ID、戻り先 URL。
+ * @returns Cognito logout endpoint に渡す完全な URL。
+ */
+export function buildOidcLogoutUrl(input: BuildOidcLogoutUrlInput): string {
+  const logoutUrl = new URL(input.logoutEndpoint)
+  logoutUrl.searchParams.set('client_id', input.clientId)
+  logoutUrl.searchParams.set('logout_uri', input.logoutUri)
+  return logoutUrl.toString()
 }
 
 type LogoutAutoTransitionCardProps = {
   description: string
+  errorMessage?: string | undefined
 }
 
 /**
@@ -111,7 +143,7 @@ type LogoutAutoTransitionCardProps = {
  * @returns ログアウト遷移中カード。
  */
 function LogoutAutoTransitionCard(props: LogoutAutoTransitionCardProps) {
-  const { description } = props
+  const { description, errorMessage } = props
 
   return (
     <SectionCard
@@ -125,41 +157,7 @@ function LogoutAutoTransitionCard(props: LogoutAutoTransitionCardProps) {
         </p>
 
         <div className="flex flex-wrap gap-3">
-          <StatusPill label="ローカルログアウト中" tone="info" />
-        </div>
-      </div>
-    </SectionCard>
-  )
-}
-
-/**
- * ログアウト開始時の共通カードを描画する。
- *
- * @param props ステータス、説明、エラー、ログアウト処理を含む props。
- * @returns ログアウト開始カード。
- */
-function LogoutTransitionCard(props: LogoutTransitionCardProps) {
-  const {
-    statusLabel,
-    description,
-    errorMessage,
-    isSubmitting = false,
-    onLogout,
-  } = props
-
-  return (
-    <SectionCard
-      title="ログアウトします"
-      description={description}
-      className="mx-auto mt-8 max-w-3xl"
-    >
-      <div className="space-y-6">
-        <p className="text-sm leading-7 text-[color:var(--color-muted)]">
-          続行すると認証状態を破棄します。処理後は公開トップへ移動します。
-        </p>
-
-        <div className="flex flex-wrap gap-3">
-          <StatusPill label={statusLabel} tone="info" />
+          <StatusPill label="ログアウト中" tone="info" />
         </div>
 
         {errorMessage ? (
@@ -171,19 +169,16 @@ function LogoutTransitionCard(props: LogoutTransitionCardProps) {
           </p>
         ) : null}
 
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={onLogout}
-            disabled={isSubmitting}
-            className="button-primary disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            ログアウトを続行
-          </button>
-          <Link to="/" className="button-secondary">
-            公開トップへ戻る
-          </Link>
-        </div>
+        {errorMessage ? (
+          <div className="flex flex-wrap gap-3">
+            <Link to="/" className="button-primary">
+              公開トップへ戻る
+            </Link>
+            <Link to="/login" className="button-secondary">
+              再ログイン
+            </Link>
+          </div>
+        ) : null}
       </div>
     </SectionCard>
   )

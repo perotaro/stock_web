@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -9,7 +9,7 @@ import {
 } from '@/features/auth/accessTokenStore'
 import { DEV_AUTH_TRANSITION_DELAY_MS } from '@/features/auth/timing'
 import { LogoutCallbackPage } from '@/pages/auth/LogoutCallbackPage'
-import { LogoutPage } from '@/pages/public/LogoutPage'
+import { buildOidcLogoutUrl, LogoutPage } from '@/pages/public/LogoutPage'
 
 vi.mock('react-oidc-context', () => ({
   useAuth: vi.fn(),
@@ -23,7 +23,11 @@ const mockedUseAuth = vi.mocked(useAuth)
  * @param authMode 認証モード。
  * @returns 何も返さない。
  */
-function stubRequiredEnv(authMode: 'oidc' | 'dev-bypass'): void {
+function stubRequiredEnv(
+  authMode: 'oidc' | 'dev-bypass',
+  options: { withLogoutEndpoint?: boolean } = {},
+): void {
+  const { withLogoutEndpoint = true } = options
   vi.stubEnv('VITE_API_BASE_URL', '/api/')
   vi.stubEnv('VITE_AUTH_MODE', authMode)
   vi.stubEnv('VITE_OIDC_AUTHORITY', 'http://localhost:9000/realms/guppy')
@@ -33,6 +37,12 @@ function stubRequiredEnv(authMode: 'oidc' | 'dev-bypass'): void {
     'VITE_OIDC_POST_LOGOUT_REDIRECT_URI',
     'http://localhost:5173/auth/logout/callback',
   )
+  if (withLogoutEndpoint) {
+    vi.stubEnv(
+      'VITE_OIDC_LOGOUT_ENDPOINT',
+      'http://localhost:9000/realms/guppy/protocol/openid-connect/logout',
+    )
+  }
   vi.stubEnv('VITE_OIDC_SCOPE', 'openid profile email')
 }
 
@@ -86,7 +96,7 @@ describe('LogoutPage', () => {
 
     renderLogoutPage()
 
-    expect(screen.getByText('ローカルログアウト中')).toBeVisible()
+    expect(screen.getByText('ログアウト中')).toBeVisible()
 
     expect(getCurrentAccessToken()).toBeUndefined()
     expect(screen.queryByText('ログアウトコールバック')).not.toBeInTheDocument()
@@ -99,44 +109,54 @@ describe('LogoutPage', () => {
     expect(mockedUseAuth).not.toHaveBeenCalled()
   })
 
-  it('oidc では OIDC Provider へのログアウトリダイレクトを開始する', async () => {
-    const signoutRedirect = vi.fn().mockResolvedValue(undefined)
-    stubRequiredEnv('oidc')
+  it('Cognito Hosted UI 用のログアウト URL を組み立てる', () => {
+    expect(
+      buildOidcLogoutUrl({
+        logoutEndpoint:
+          'https://example.auth.ap-northeast-1.amazoncognito.com/logout',
+        clientId: 'client-id',
+        logoutUri: 'https://example.com/auth/logout/callback',
+      }),
+    ).toBe(
+      'https://example.auth.ap-northeast-1.amazoncognito.com/logout?client_id=client-id&logout_uri=https%3A%2F%2Fexample.com%2Fauth%2Flogout%2Fcallback',
+    )
+  })
+
+  it('oidc のログアウトエンドポイント未設定時にエラーを表示する', async () => {
+    stubRequiredEnv('oidc', { withLogoutEndpoint: false })
     setCurrentAccessToken('access-token')
     mockedUseAuth.mockReturnValue({
       isAuthenticated: true,
       isLoading: false,
-      signoutRedirect,
     } as unknown as ReturnType<typeof useAuth>)
 
     renderLogoutPage()
-
-    fireEvent.click(screen.getByRole('button', { name: 'ログアウトを続行' }))
 
     expect(getCurrentAccessToken()).toBeUndefined()
-    await waitFor(() => {
-      expect(signoutRedirect).toHaveBeenCalledTimes(1)
-    })
+    expect(
+      await screen.findByText(
+        'ログアウト処理に失敗しました: VITE_OIDC_LOGOUT_ENDPOINT が設定されていません。',
+      ),
+    ).toBeVisible()
   })
 
-  it('oidc のログアウトリダイレクト失敗時に再試行できる', async () => {
-    const signoutRedirect = vi
-      .fn()
-      .mockRejectedValue(new Error('logout failed'))
+  it('oidc で未認証ならローカル状態を破棄してコールバックへ進む', async () => {
+    const removeUser = vi.fn().mockResolvedValue(undefined)
     stubRequiredEnv('oidc')
     mockedUseAuth.mockReturnValue({
-      isAuthenticated: true,
+      isAuthenticated: false,
       isLoading: false,
-      signoutRedirect,
+      removeUser,
     } as unknown as ReturnType<typeof useAuth>)
 
     renderLogoutPage()
 
-    fireEvent.click(screen.getByRole('button', { name: 'ログアウトを続行' }))
-
-    expect(
-      await screen.findByText('ログアウト処理に失敗しました: logout failed'),
-    ).toBeVisible()
+    await waitFor(() => {
+      expect(removeUser).toHaveBeenCalledTimes(1)
+    })
+    await waitFor(() => {
+      expect(screen.getByText('ログアウトコールバック')).toBeVisible()
+    })
   })
 })
 

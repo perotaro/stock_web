@@ -21,6 +21,10 @@ function stubRequiredEnv(): void {
     'VITE_OIDC_POST_LOGOUT_REDIRECT_URI',
     'http://localhost:5173/auth/logout/callback',
   )
+  vi.stubEnv(
+    'VITE_OIDC_LOGOUT_ENDPOINT',
+    'http://localhost:9000/realms/guppy/protocol/openid-connect/logout',
+  )
   vi.stubEnv('VITE_OIDC_SCOPE', 'openid profile email')
 }
 
@@ -40,6 +44,8 @@ describe('getClientEnv', () => {
       oidcClientId: 'guppy-web-dev',
       oidcRedirectUri: 'http://localhost:5173/auth/callback',
       oidcPostLogoutRedirectUri: 'http://localhost:5173/auth/logout/callback',
+      oidcLogoutEndpoint:
+        'http://localhost:9000/realms/guppy/protocol/openid-connect/logout',
       oidcScope: 'openid profile email',
     })
   })
