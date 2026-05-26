@@ -10,6 +10,7 @@
 - [Webシステム要件定義](../required/web_system_required.md)
 - [フロントエンド基本設計](frontend_basic_design.md)
 - [バックエンド基本設計](backend_basic_design.md)
+- [インフラ IaC 設計](infrastructure_iac_design.md)
 - [DynamoDB データ設計](dynamodb_data_design.md)
 - [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
 
@@ -204,7 +205,9 @@ Backend API -> Frontend 向け JSON 応答
   - EventBridge Scheduler / Batch Lambda
 
 ### 10.3 インフラ管理
-- バックエンドの AWS リソースは AWS CDK で管理する
+- Web システムの AWS リソースは AWS CDK で管理する
+- フロントエンド配信基盤は S3 + CloudFront を基本構成とし、OAC と bucket policy により S3 を非公開に保つ
+- 独自ドメインと WAF は初期スコープ外とする
 - 環境差分は設定値として明示管理する
 - コンソール手動設定への依存を避ける
 
@@ -260,6 +263,7 @@ Backend API -> Frontend 向け JSON 応答
 ## 14. 詳細設計文書
 - [フロントエンド基本設計](frontend_basic_design.md)
 - [バックエンド基本設計](backend_basic_design.md)
+- [インフラ IaC 設計](infrastructure_iac_design.md)
 - [DynamoDB データ設計](dynamodb_data_design.md)
 - 認証設計
 - 運用設計

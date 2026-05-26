@@ -7,6 +7,7 @@
 ## 2. 関連ドキュメント
 - [システム基本設計](../design/system_basic_design.md)
 - [バックエンド基本設計](../design/backend_basic_design.md)
+- [インフラ IaC 設計](../design/infrastructure_iac_design.md)
 - [Webシステム要件定義](../required/web_system_required.md)
 
 ## 3. スコープ
@@ -14,7 +15,7 @@
 ### 3.1 対象
 - `.github/workflows` 配下の GitHub Actions ワークフロー設計
 - フロントエンド、バックエンドの CI 設計
-- バックエンドの AWS CDK デプロイ設計
+- Web システムの AWS CDK デプロイ設計
 - GitHub Environments を用いた承認・環境分離
 - GitHub OIDC を用いた AWS 認証
 
@@ -38,7 +39,7 @@
 - `Backend`
   - API Gateway / Lambda / DynamoDB / Cognito / CloudWatch
 - `Infrastructure`
-  - AWS CDK により管理するバックエンド関連リソース
+  - AWS CDK により管理するフロントエンド配信基盤、バックエンド関連リソース、GitHub OIDC 関連リソース
 
 ### 4.3 責務分離
 - CI は品質確認を担当する
@@ -198,6 +199,8 @@ GitHub 上に以下の Environment を定義する。
 - ビルド成果物を S3 へ配置する
 - 必要に応じて CloudFront キャッシュ無効化を行う
 - バックエンドとは独立して実行できるようにする
+- S3 / CloudFront / OAC / bucket policy は CDK 管理対象とし、通常のフロントエンドデプロイでは変更しない
+- 独自ドメイン、ACM、Route 53、WAF は初期スコープ外とし、デプロイワークフローでも扱わない
 
 ## 11. CDK 差分確認フロー
 
@@ -212,6 +215,7 @@ GitHub 上に以下の Environment を定義する。
 
 ### 11.3 適用対象
 - `infra/cdk/**`
+- フロントエンド配信基盤の定義変更を含む場合
 - バックエンド Lambda 定義変更を含む場合
 
 ## 12. AWS 認証設計
