@@ -32,7 +32,7 @@
 - WAF の設定
 
 ## 4. 基本方針
-- Web システムの AWS リソースは原則として AWS CDK で定義する。
+- Web システムの AWS リソースは原則として TypeScript 版 AWS CDK で定義する。
 - コンソール手動設定に依存せず、差分を Pull Request でレビューできる状態にする。
 - フロントエンドとバックエンドは分離デプロイ可能にする。
 - 環境差分は CDK context または環境別設定として明示管理する。
@@ -94,24 +94,32 @@
 ## 7. 推奨 CDK ディレクトリ構成
 ```text
 infra/cdk/
-├─ app.py
+├─ bin/
+│  └─ guppy-infra.ts
 ├─ config/
-│  ├─ dev.py
-│  ├─ stg.py
-│  └─ prd.py
-├─ stacks/
-│  ├─ frontend_hosting_stack.py
-│  ├─ api_stack.py
-│  ├─ data_stack.py
-│  ├─ auth_stack.py
-│  ├─ monitoring_stack.py
-│  └─ github_oidc_stack.py
-└─ requirements.txt
+│  ├─ dev.example.json
+│  ├─ dev.local.json
+│  ├─ stg.local.json
+│  └─ prd.local.json
+├─ lib/
+│  ├─ api-stack.ts
+│  ├─ auth-stack.ts
+│  ├─ config.ts
+│  ├─ data-stack.ts
+│  ├─ frontend-hosting-stack.ts
+│  ├─ github-oidc-stack.ts
+│  └─ monitoring-stack.ts
+├─ cdk.json
+├─ package.json
+├─ package-lock.json
+└─ tsconfig.json
 ```
+
+`*.local.json` は環境固有値を含むため Git 管理しない。公開可能な設定例は `dev.example.json` に置く。
 
 ## 8. 推奨スタック責務
 
-### 8.1 `frontend_hosting_stack`
+### 8.1 `FrontendHostingStack`
 - S3 bucket
 - CloudFront distribution
 - CloudFront OAC
@@ -120,31 +128,32 @@ infra/cdk/
 - キャッシュ方針
 - デプロイワークフロー向けの出力値または SSM Parameter
 
-### 8.2 `data_stack`
+### 8.2 `DataStack`
 - DynamoDB table
 - read model 参照に必要な index
 - table stream は初期段階では原則使用しない
 
-### 8.3 `auth_stack`
+### 8.3 `AuthStack`
 - Cognito User Pool
 - App Client
 - callback URL
 - logout URL
 - API Gateway JWT Authorizer 連携に必要な値
 
-### 8.4 `api_stack`
+### 8.4 `ApiStack`
 - Lambda
 - API Gateway HTTP API
 - Route
 - Authorizer 連携
 - Lambda 実行 Role / Policy
+- API endpoint の SSM Parameter
 
-### 8.5 `monitoring_stack`
+### 8.5 `MonitoringStack`
 - CloudWatch Logs retention
 - CloudWatch Alarms
 - 必要に応じた通知設定
 
-### 8.6 `github_oidc_stack`
+### 8.6 `GithubOidcStack`
 - GitHub OIDC Provider
 - GitHub Actions 用 IAM Role
 - backend deploy 用 Policy
@@ -154,22 +163,34 @@ infra/cdk/
 - 環境は `dev` `stg` `prd` を想定する。
 - 初期段階では `prd` のみ先行してよいが、CDK の構成は複数環境を前提にする。
 - 環境ごとに以下を明示する。
+  - project name
+  - environment name
   - AWS account
   - AWS region
   - resource name prefix
+  - frontend base URL
   - Cognito callback URL
   - Cognito logout URL
-  - API base URL
+  - Cognito domain prefix
+  - GitHub Actions OIDC subject
+  - DynamoDB table names
+- CDK が生成する以下の非機密値は SSM Parameter Store と CloudFormation output に出力する。
+  - API endpoint
   - CloudFront distribution ID
+  - CloudFront domain name
   - frontend hosting bucket name
-- 機密値は CDK context に直接置かず、Secrets Manager または SSM Parameter Store で管理する。
+  - Cognito User Pool ID
+  - Cognito User Pool Client ID
+  - GitHub Actions deploy role ARN
+- 機密値は CDK context や環境別 JSON に直接置かず、Secrets Manager または SSM Parameter Store SecureString で管理する。
+- Lambda が利用する cursor signing secret は、環境別 JSON に SecureString の parameter name と version のみを指定する。
 
 ## 10. デプロイ方針
 - CDK は AWS リソース定義と更新を担当する。
 - バックエンドデプロイでは、Lambda コードと API 関連リソースを CDK で更新する。
 - フロントエンドデプロイでは、CDK が配信基盤を作成し、GitHub Actions が `dist/` を S3 に同期する。
 - フロントエンドのデプロイ後、必要に応じて CloudFront invalidation を実行する。
-- Pull Request では `cdk synth` と `cdk diff` によりインフラ差分を確認する。
+- Pull Request では `npm run build`、`npm run synth -- -c config=<環境別設定ファイル>`、`npm run diff -- -c config=<環境別設定ファイル>` によりインフラ差分を確認する。
 
 ## 11. 設計上の制約
 - S3 bucket は public access を許可しない。
