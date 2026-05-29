@@ -13,7 +13,12 @@ apps/frontend/playwright-report/
 apps/frontend/test-results/
 apps/frontend/.env.local
 apps/backend/tests/__pycache__/*.pyc
+apps/backend/*.zip
 docs/temp/*
+docs/operations/*.local.md
+infra/cdk/config/*.local.json
+infra/cdk/cdk.out/
+infra/cdk/node_modules/
 .agents/skills/oop-design-mentor/*
 .mypy_cache/*
 .coverage
