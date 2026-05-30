@@ -43,6 +43,8 @@ function stubRequiredEnv(
       'VITE_OIDC_LOGOUT_ENDPOINT',
       'http://localhost:9000/realms/guppy/protocol/openid-connect/logout',
     )
+  } else {
+    vi.stubEnv('VITE_OIDC_LOGOUT_ENDPOINT', undefined)
   }
   vi.stubEnv('VITE_OIDC_SCOPE', 'openid profile email')
 }
