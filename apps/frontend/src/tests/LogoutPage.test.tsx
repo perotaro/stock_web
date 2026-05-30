@@ -9,7 +9,8 @@ import {
 } from '@/features/auth/accessTokenStore'
 import { DEV_AUTH_TRANSITION_DELAY_MS } from '@/features/auth/timing'
 import { LogoutCallbackPage } from '@/pages/auth/LogoutCallbackPage'
-import { buildOidcLogoutUrl, LogoutPage } from '@/pages/public/LogoutPage'
+import { buildOidcLogoutUrl } from '@/lib/oidc/logoutUrl'
+import { LogoutPage } from '@/pages/public/LogoutPage'
 
 vi.mock('react-oidc-context', () => ({
   useAuth: vi.fn(),

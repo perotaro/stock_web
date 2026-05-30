@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
@@ -8,6 +8,7 @@ import { StatusPill } from '@/components/ui/StatusPill'
 import { resetCurrentAccessToken } from '@/features/auth/accessTokenStore'
 import { DEV_AUTH_TRANSITION_DELAY_MS } from '@/features/auth/timing'
 import { getClientEnv } from '@/lib/env/clientEnv'
+import { buildOidcLogoutUrl } from '@/lib/oidc/logoutUrl'
 
 /**
  * ログアウト開始画面を描画する。
@@ -56,15 +57,16 @@ function OidcLogoutPage() {
   const navigate = useNavigate()
   const clientEnv = getClientEnv()
   const hasStartedLogout = useRef(false)
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(
-    undefined,
-  )
+  const errorMessage =
+    buildLogoutErrorMessage(auth.error) ??
+    buildConfigurationErrorMessage({
+      isAuthenticated: auth.isAuthenticated,
+      isLoading: auth.isLoading,
+      oidcLogoutEndpoint: clientEnv.oidcLogoutEndpoint,
+    })
 
   useEffect(() => {
-    if (auth.error) {
-      setErrorMessage(buildLogoutErrorMessage(auth.error))
-      return
-    }
+    if (auth.error) return
     if (auth.isLoading) return
     if (hasStartedLogout.current) return
 
@@ -83,9 +85,6 @@ function OidcLogoutPage() {
 
     if (!clientEnv.oidcLogoutEndpoint) {
       hasStartedLogout.current = false
-      setErrorMessage(
-        'ログアウト処理に失敗しました: VITE_OIDC_LOGOUT_ENDPOINT が設定されていません。',
-      )
       return
     }
     const oidcLogoutEndpoint = clientEnv.oidcLogoutEndpoint
@@ -110,25 +109,6 @@ function OidcLogoutPage() {
       errorMessage={errorMessage}
     />
   )
-}
-
-type BuildOidcLogoutUrlInput = {
-  logoutEndpoint: string
-  clientId: string
-  logoutUri: string
-}
-
-/**
- * Cognito Hosted UI のログアウト URL を組み立てる。
- *
- * @param input ログアウトエンドポイント、クライアント ID、戻り先 URL。
- * @returns Cognito logout endpoint に渡す完全な URL。
- */
-export function buildOidcLogoutUrl(input: BuildOidcLogoutUrlInput): string {
-  const logoutUrl = new URL(input.logoutEndpoint)
-  logoutUrl.searchParams.set('client_id', input.clientId)
-  logoutUrl.searchParams.set('logout_uri', input.logoutUri)
-  return logoutUrl.toString()
 }
 
 type LogoutAutoTransitionCardProps = {
@@ -190,7 +170,11 @@ function LogoutAutoTransitionCard(props: LogoutAutoTransitionCardProps) {
  * @param error ログアウト処理で発生したエラー。
  * @returns 利用者向けエラーメッセージ。
  */
-function buildLogoutErrorMessage(error: unknown): string {
+function buildLogoutErrorMessage(error: unknown): string | undefined {
+  if (error === undefined || error === null) {
+    return undefined
+  }
+
   if (typeof error === 'string' && error.length > 0) {
     return `ログアウト処理に失敗しました: ${error}`
   }
@@ -200,4 +184,26 @@ function buildLogoutErrorMessage(error: unknown): string {
   }
 
   return 'ログアウト処理に失敗しました。時間を置いて再試行してください。'
+}
+
+type BuildConfigurationErrorMessageInput = {
+  isAuthenticated: boolean
+  isLoading: boolean
+  oidcLogoutEndpoint?: string | undefined
+}
+
+/**
+ * ログアウト設定不備の表示メッセージを組み立てる。
+ *
+ * @param input 認証状態とログアウトエンドポイント設定。
+ * @returns 設定不備があれば表示メッセージ、なければ undefined。
+ */
+function buildConfigurationErrorMessage(
+  input: BuildConfigurationErrorMessageInput,
+): string | undefined {
+  if (input.isLoading) return undefined
+  if (!input.isAuthenticated) return undefined
+  if (input.oidcLogoutEndpoint) return undefined
+
+  return 'ログアウト処理に失敗しました: VITE_OIDC_LOGOUT_ENDPOINT が設定されていません。'
 }
