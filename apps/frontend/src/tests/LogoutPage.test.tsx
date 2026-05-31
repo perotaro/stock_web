@@ -198,6 +198,8 @@ describe('LogoutCallbackPage', () => {
       expect(removeUser).toHaveBeenCalledTimes(1)
     })
     expect(getCurrentAccessToken()).toBeUndefined()
-    expect(screen.getByText('公開トップ')).toBeVisible()
+    await waitFor(() => {
+      expect(screen.getByText('公開トップ')).toBeVisible()
+    })
   })
 })
