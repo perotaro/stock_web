@@ -61,6 +61,7 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 - Web/API の本番デプロイは手動構築で完了済みです。ただし、バッチ処理側の本番対応は未対応のため、Web/API の公開構成を先行して検証しています。
 - デプロイ構成は当初想定していた `CloudFront + S3 + API Gateway + Lambda + DynamoDB + Cognito` を基本とし、設計方針どおりの責務分離で構成しています。
 - IaC は TypeScript 版 AWS CDK で初期実装し、手動構築済み環境とは別の検証環境で `synth` / `bootstrap` / `deploy` / `destroy` の流れを確認済みです。
+- CI/CD は GitHub Actions で段階的に整備しており、フロントエンドの本番向け手動CDは動作確認済みです。
 - 公開範囲ではドメインロジックが限定的なため、DDDの全面適用ではなく、handler / usecase / repository の責務分離を優先しました。
 
 ## 技術スタック
@@ -104,6 +105,7 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 
 また、既存の手動構築・運用手順を整理しながら、IaC への移行を実践中です。
 現在は `infra/cdk` に TypeScript 版 AWS CDK の初期構成を追加し、手動構築済み環境を直接取り込むのではなく、別環境を作成して検証する方針にしています。
+CI/CD は GitHub Actions で整備中で、フロントエンドは `frontend-prd` Environment と GitHub OIDC を使った手動デプロイを確認済みです。
 
 フロントエンドはローカル環境で起動でき、主要画面・主要機能を確認できる状態です。
 バックエンドも実装していますが、実データ参照には非公開リポジトリ側で管理しているDB定義・バッチ処理・実データが必要です。
@@ -121,6 +123,14 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
   - APIクライアント
 - バックエンドAPI
 - Web/API の本番デプロイ
+- GitHub Actions による CI
+  - フロントエンド lint / typecheck / unit test / E2E / build
+  - バックエンド ruff / mypy / pytest
+  - CDK build / synth
+- GitHub Actions によるフロントエンド手動CD
+  - GitHub OIDC による AWS 認証
+  - S3 sync
+  - CloudFront invalidation
 - TypeScript 版 AWS CDK によるインフラ定義の初期実装
   - S3 / CloudFront
   - Cognito User Pools
@@ -145,7 +155,7 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 
 ### 対応中
 
-- CI/CD構築
+- バックエンドCD構築
 - IaC の本番移行方針整理
 - バッチ処理側の本番対応
 - 手動構築済みリソースからCDK管理環境への移行検討
@@ -256,6 +266,7 @@ Lambda 用のハンドラーコードをローカル HTTP サーバーから呼�
 
 初期の本番環境は AWS Console を使って手動構築しています。
 現在は、同じ構成を再現可能にするために TypeScript 版 AWS CDK を `infra/cdk` に追加しています。
+CI/CD は GitHub Actions で段階的に整備しており、フロントエンドは `frontend-prd` Environment の承認付き手動デプロイで S3 同期と CloudFront キャッシュ無効化まで確認済みです。
 
 CDK で定義している主なリソースは以下です。
 
@@ -282,6 +293,7 @@ npm run synth -- -c config=config/dev.example.json
 
 - [インフラ IaC 設計](docs/design/infrastructure_iac_design.md)
 - [IaC 移行計画](docs/operations/iac_migration_plan.md)
+- [CI/CD・リリースフロー設計](docs/operations/ci_cd_design.md)
 - [CDK README](infra/cdk/README.md)
 
 ## AI活用について

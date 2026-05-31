@@ -59,30 +59,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit test
-        run: npm run test
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: E2E test
-        run: npm run test:e2e
-        env:
-          VITE_API_BASE_URL: /api
-          VITE_AUTH_MODE: dev-bypass
-          VITE_OIDC_AUTHORITY: http://localhost:9000/realms/guppy
-          VITE_OIDC_CLIENT_ID: guppy-web-dev
-          VITE_OIDC_REDIRECT_URI: http://localhost:4173/auth/callback
-          VITE_OIDC_POST_LOGOUT_REDIRECT_URI: http://localhost:4173/auth/logout/callback
-          VITE_OIDC_LOGOUT_ENDPOINT: http://localhost:9000/realms/guppy/protocol/openid-connect/logout
-          VITE_OIDC_SCOPE: openid profile email
-
       - name: Validate deployment variables
         env:
           FRONTEND_AWS_ROLE_ARN: ${{ vars.FRONTEND_AWS_ROLE_ARN }}

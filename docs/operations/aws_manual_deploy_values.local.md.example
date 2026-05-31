@@ -1,0 +1,44 @@
+# Guppy AWS 手動デプロイ値メモ
+
+このファイルは実値管理用テンプレートです。  
+実値を入れた `docs/operations/aws_manual_deploy_values.local.md` は Git 管理しません。
+
+```text
+AWS_ACCOUNT_ID=
+AWS_REGION=ap-northeast-1
+
+FRONTEND_BUCKET_NAME=
+CLOUDFRONT_DOMAIN=
+CLOUDFRONT_DISTRIBUTION_ID=
+
+COGNITO_USER_POOL_ID=
+COGNITO_APP_CLIENT_ID=
+COGNITO_DOMAIN=
+COGNITO_ISSUER_URL=
+COGNITO_LOGOUT_ENDPOINT=
+
+API_GATEWAY_ID=
+API_GATEWAY_INVOKE_URL=
+
+LAMBDA_ROLE_NAME=guppy-web-api-lambda-role-dev
+LAMBDA_PUBLIC_SUMMARY_NAME=guppy-web-public-summary-dev
+LAMBDA_SUMMARY_NAME=guppy-web-summary-dev
+LAMBDA_SYSTEM_LATEST_NAME=guppy-web-system-latest-dev
+LAMBDA_WATCHLIST_NAME=guppy-web-watchlist-dev
+
+DYNAMODB_PUBLIC_SUMMARY_TABLE=md_public_summary
+DYNAMODB_SYSTEM_LATEST_STATUS_TABLE=md_system_latest_status
+DYNAMODB_SYSTEM_LATEST_SIGNALS_TABLE=md_system_latest_signals
+DYNAMODB_WATCHLIST_TABLE=md_watchlist
+```
+
+このファイルに以下は書かないでください。
+
+- AWS access key
+- AWS secret access key
+- AWS session token
+- Cognito client secret
+- ID token
+- Access token
+- Refresh token
+- 本番用の署名 secret

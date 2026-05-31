@@ -205,6 +205,7 @@ feature / fix ブランチでは Pull Request 作成時に CI を実行し、必
 - type check
 - test
 - build
+- E2E test
 
 ### 10.2 フロントエンド デプロイ
 - ビルド成果物を S3 へ配置する
@@ -215,8 +216,32 @@ feature / fix ブランチでは Pull Request 作成時に CI を実行し、必
 - 初期実装では `workflow_dispatch` のみ許可し、`main` branch 由来であることと明示確認入力を workflow 内で検証する
 - 同一 frontend 環境へのデプロイは GitHub Actions concurrency で直列化する
 - 本番ビルドでは GitHub Environment Variables から Vite の公開環境変数を注入する
-- デプロイ前に frontend CI 相当の検証と E2E smoke test を実行する
+- デプロイ前には frontend CI 相当の再実行は行わず、main branch protection による CI 成功を前提にする
+- デプロイ workflow では本番用環境変数の検証、本番ビルド、AWS デプロイ対象確認を行う
 - デプロイ成果物は commit SHA 付き artifact として短期間保持し、復旧時に参照できるようにする
+
+### 10.3 フロントエンド CD 初期実装
+初期実装では `.github/workflows/frontend-deploy.yml` により、本番フロントエンドを手動デプロイする。
+
+- 実行方式は `workflow_dispatch` とする
+- 対象 GitHub Environment は `frontend-prd` とする
+- AWS 認証は GitHub OIDC を利用する
+- 実行元 ref は `main` のみに制限する
+- `frontend-prd` Environment の Required reviewers により承認後にデプロイする
+- `confirm_production` に `deploy frontend-prd` を入力した場合のみ進める
+- 本番ビルドに必要な `VITE_*` は GitHub Environment Variables から注入する
+- `apps/frontend/.env.production.local` は手動検証用であり、GitHub Actions CD では使用しない
+- 本番デプロイ設定の正本は GitHub Environment Variables とする
+- 2026-05-31 時点で、`frontend-prd` から既存 S3 / CloudFront へのデプロイが成功済み
+
+Frontend deploy role には、主に以下の権限を付与する。
+
+- `s3:ListBucket`
+- `s3:GetObject`
+- `s3:PutObject`
+- `s3:GetBucketLocation`
+- `cloudfront:GetDistribution`
+- `cloudfront:CreateInvalidation`
 
 ## 11. CDK 差分確認フロー
 
@@ -276,7 +301,10 @@ feature / fix ブランチでは Pull Request 作成時に CI を実行し、必
 - AWS 長期アクセスキー
 - 本番用シークレット値そのもの
 
-### 13.2 GitHub Environments / Variables に置く候補
+### 13.2 GitHub Environments / Variables に置く変数
+GitHub Environment Variables には、秘密ではないが環境ごとに異なる値を置く。
+フロントエンド本番デプロイでは、`frontend-prd` Environment の Variables を正本とする。
+
 - `AWS_REGION`
 - `CDK_APP_PATH`
 - `FRONTEND_AWS_ROLE_ARN`

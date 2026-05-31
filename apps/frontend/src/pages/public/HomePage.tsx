@@ -42,13 +42,13 @@ export function HomePage() {
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-7 [text-wrap:pretty] text-[color:var(--color-hero-muted)]">
             Guppy
-            は、複数の売買戦略を日次で運用し、相場に対する判断を継続的に更新する株売買システムです。公開トップでは、運用状況の匿名集計と最終更新日時を掲載しています。
+            は、複数の売買戦略を日次で運用し、相場に対する判断を継続的に更新する株売買システムです。公開トップでは、画面構成を確認できるようにサンプル集計値とデモデータ基準日時を掲載しています。
           </p>
 
           <div className="mt-8 border-t border-[color:var(--color-hero-line)] pt-6">
             <div>
               <p className="text-xs font-medium tracking-[0.18em] text-[color:var(--color-hero-muted)] uppercase">
-                最終更新日時
+                デモデータ基準日時
               </p>
               <p className="mt-2 text-lg font-semibold tracking-tight text-[color:var(--color-hero-text)] md:text-xl">
                 {updatedAtLabel}
@@ -62,10 +62,10 @@ export function HomePage() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-ink)]">
-              公開している運用指標
+              公開デモで表示している運用指標
             </h2>
             <p className="mt-2 text-sm leading-7 text-[color:var(--color-muted)]">
-              公開トップでは、運用全体の状態を把握できる集計値だけを掲載しています。
+              公開トップでは、画面構成を確認できるようにサンプル集計値を表示しています。
             </p>
           </div>
         </div>
