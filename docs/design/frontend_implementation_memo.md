@@ -2,15 +2,15 @@
 
 ## 1. 文書目的
 本書は、Guppy フロントエンドの実装着手順と、各フェーズで作るべき単位を整理するための補助メモである。  
-[フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md) の `15. 実装順序` を補完し、実装時に迷いやすい `page / feature / hook / api / component` の分割単位まで具体化することを目的とする。
+[フロントエンド基本設計](frontend_basic_design.md) の `15. 実装順序` を補完し、実装時に迷いやすい `page / feature / hook / api / component` の分割単位まで具体化することを目的とする。
 
 本書は詳細設計書ではなく、実装開始前の作業順メモとして扱う。
 
 ## 2. 関連ドキュメント
-- [フロントエンド基本設計](/workspace/docs/design/frontend_basic_design.md)
-- [フロントエンド API 契約](/workspace/docs/design/frontend_api_contract.md)
-- [フロントエンドビジュアル設計](/workspace/docs/design/frontend_visual_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
+- [フロントエンド基本設計](frontend_basic_design.md)
+- [フロントエンド API 契約](frontend_api_contract.md)
+- [フロントエンドビジュアル設計](frontend_visual_design.md)
+- [バックエンド基本設計](backend_basic_design.md)
 
 ## 3. 実装方針
 - 既存の `public-summary` 実装をテンプレートとし、他画面も `api -> hook -> feature ui -> page` の順で揃える。

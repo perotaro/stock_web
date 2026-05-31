@@ -5,16 +5,17 @@
 対象は、`.github/workflows` 配下に配置するワークフロー、環境ごとのデプロイ方針、AWS 認証連携、デプロイ単位、承認フロー、成果物管理である。
 
 ## 2. 関連ドキュメント
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
+- [システム基本設計](../design/system_basic_design.md)
+- [バックエンド基本設計](../design/backend_basic_design.md)
+- [インフラ IaC 設計](../design/infrastructure_iac_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
 
 ## 3. スコープ
 
 ### 3.1 対象
 - `.github/workflows` 配下の GitHub Actions ワークフロー設計
 - フロントエンド、バックエンドの CI 設計
-- バックエンドの AWS CDK デプロイ設計
+- Web システムの AWS CDK デプロイ設計
 - GitHub Environments を用いた承認・環境分離
 - GitHub OIDC を用いた AWS 認証
 
@@ -38,7 +39,7 @@
 - `Backend`
   - API Gateway / Lambda / DynamoDB / Cognito / CloudWatch
 - `Infrastructure`
-  - AWS CDK により管理するバックエンド関連リソース
+  - AWS CDK により管理するフロントエンド配信基盤、バックエンド関連リソース、GitHub OIDC 関連リソース
 
 ### 4.3 責務分離
 - CI は品質確認を担当する
@@ -83,6 +84,8 @@ GitHub 上に以下の Environment を定義する。
   - `feature/xxx`
 - 修正ブランチ
   - `fix/xxx`
+- 統合ブランチ
+  - `develop`
 - デフォルトブランチ
   - `main`
 
@@ -105,8 +108,12 @@ GitHub 上に以下の Environment を定義する。
 `.github/workflows` 配下には、少なくとも以下を配置する。
 
 - `backend-ci.yml`
-- `backend-deploy.yml`
 - `frontend-ci.yml`
+- `cdk-ci.yml`
+
+デプロイ段階で以下を追加する。
+
+- `backend-deploy.yml`
 - `frontend-deploy.yml`
 
 必要に応じて以下を追加する。
@@ -121,13 +128,13 @@ GitHub 上に以下の Environment を定義する。
 | `backend-deploy.yml` | バックエンドのデプロイ | `workflow_dispatch`, `push`, `tag` |
 | `frontend-ci.yml` | フロントエンドの品質確認 | `pull_request`, `push` |
 | `frontend-deploy.yml` | フロントエンドのデプロイ | `workflow_dispatch`, `push`, `tag` |
+| `cdk-ci.yml` | CDK app の build / synth 確認 | `pull_request`, `push` |
 | `cdk-diff.yml` | CDK 差分確認 | `pull_request` |
 
 ## 8. バックエンド CI 設計
 
 ### 8.1 対象
 - `apps/backend/**`
-- `infra/cdk/**`
 
 ### 8.2 実行内容
 - Python セットアップ
@@ -139,10 +146,15 @@ GitHub 上に以下の Environment を定義する。
 ### 8.3 トリガー
 - `pull_request`
   - `main` 向け
+  - `develop` 向け
 - `push`
+  - `develop`
+  - `main`
   - `feature/**`
   - `fix/**`
-  - `main`
+
+初期実装では、push は `develop` と `main` を対象とする。
+feature / fix ブランチでは Pull Request 作成時に CI を実行し、必要になった段階で push 対象へ追加する。
 
 ### 8.4 失敗時の扱い
 - CI 失敗時はマージ不可とする
@@ -198,21 +210,43 @@ GitHub 上に以下の Environment を定義する。
 - ビルド成果物を S3 へ配置する
 - 必要に応じて CloudFront キャッシュ無効化を行う
 - バックエンドとは独立して実行できるようにする
+- S3 / CloudFront / OAC / bucket policy は CDK 管理対象とし、通常のフロントエンドデプロイでは変更しない
+- 独自ドメイン、ACM、Route 53、WAF は初期スコープ外とし、デプロイワークフローでも扱わない
+- 初期実装では `workflow_dispatch` のみ許可し、`main` branch 由来であることと明示確認入力を workflow 内で検証する
+- 同一 frontend 環境へのデプロイは GitHub Actions concurrency で直列化する
+- 本番ビルドでは GitHub Environment Variables から Vite の公開環境変数を注入する
+- デプロイ前に frontend CI 相当の検証と E2E smoke test を実行する
+- デプロイ成果物は commit SHA 付き artifact として短期間保持し、復旧時に参照できるようにする
 
 ## 11. CDK 差分確認フロー
 
-### 11.1 目的
+### 11.1 CDK CI
+- AWS 認証なしで実行できる CDK の静的確認として、`cdk-ci.yml` を先に実装する。
+- 対象は `infra/cdk/**` と、Lambda asset に影響する `apps/backend/src/**` とする。
+- 実行内容は以下とする。
+  - Node.js セットアップ
+  - Python 3.11 セットアップ
+  - CDK 依存関係インストール
+  - `npm run build`
+  - `npm run synth -- -c config=config/dev.example.json`
+- `cdk-ci.yml` では AWS 認証、`cdk diff`、`cdk deploy`、`cdk destroy` を実行しない。
+
+### 11.2 CDK diff の目的
 - Pull Request 時点でインフラ変更内容をレビュー可能にする
 - 想定外の差分を早期に検出する
 
-### 11.2 実行内容
+### 11.3 CDK diff の実行内容
 - CDK synth
 - CDK diff
 - 差分の要約を PR に出力
 
-### 11.3 適用対象
+### 11.4 CDK diff の適用対象
 - `infra/cdk/**`
+- フロントエンド配信基盤の定義変更を含む場合
 - バックエンド Lambda 定義変更を含む場合
+
+`cdk-diff.yml` は GitHub OIDC Role と環境別設定の扱いが固まった後に追加する。
+初期段階では `cdk-ci.yml` による build / synth までを CI の範囲とする。
 
 ## 12. AWS 認証設計
 
@@ -244,10 +278,17 @@ GitHub 上に以下の Environment を定義する。
 
 ### 13.2 GitHub Environments / Variables に置く候補
 - `AWS_REGION`
-- `AWS_ROLE_ARN`
 - `CDK_APP_PATH`
+- `FRONTEND_AWS_ROLE_ARN`
 - `FRONTEND_S3_BUCKET`
 - `CLOUDFRONT_DISTRIBUTION_ID`
+- `VITE_API_BASE_URL`
+- `VITE_OIDC_AUTHORITY`
+- `VITE_OIDC_CLIENT_ID`
+- `VITE_OIDC_REDIRECT_URI`
+- `VITE_OIDC_POST_LOGOUT_REDIRECT_URI`
+- `VITE_OIDC_LOGOUT_ENDPOINT`
+- `VITE_OIDC_SCOPE`
 
 ### 13.3 AWS 側に置くもの
 - Cognito 設定の機密値
@@ -293,6 +334,7 @@ GitHub 上に以下の Environment を定義する。
 ├─ workflows/
 │  ├─ backend-ci.yml
 │  ├─ backend-deploy.yml
+│  ├─ cdk-ci.yml
 │  ├─ frontend-ci.yml
 │  ├─ frontend-deploy.yml
 │  └─ cdk-diff.yml
@@ -300,12 +342,14 @@ GitHub 上に以下の Environment を定義する。
 ```
 
 ## 18. 初期実装順序
-1. `backend-ci.yml` を作成する
-2. `backend-deploy.yml` を `workflow_dispatch` ベースで作成する
-3. GitHub OIDC と AWS IAM Role を整備する
-4. `prd` Environment の承認設定を行う
-5. フロントエンド実装後に `frontend-ci.yml` と `frontend-deploy.yml` を追加する
-6. 必要に応じて `cdk-diff.yml` を追加する
+1. `frontend-ci.yml` を作成する
+2. `backend-ci.yml` を作成する
+3. `cdk-ci.yml` を作成する
+4. GitHub OIDC と AWS IAM Role を整備する
+5. `prd` Environment の承認設定を行う
+6. `frontend-deploy.yml` を `workflow_dispatch` ベースで作成する
+7. `backend-deploy.yml` を `workflow_dispatch` ベースで作成する
+8. 必要に応じて `cdk-diff.yml` と dev / stg 向け CDK deploy workflow を追加する
 
 ## 19. 設計上の注意事項
 - 本番デプロイを完全自動にしない

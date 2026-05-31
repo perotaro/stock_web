@@ -7,12 +7,13 @@
 本書は、要件定義とシステム基本設計を受けて、フロントエンドの責務、構成、実装方針、採用技術を明確化することを目的とする。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [システム基本設計](/workspace/docs/design/system_basic_design.md)
-- [フロントエンドビジュアル設計](/workspace/docs/design/frontend_visual_design.md)
-- [フロントエンド実装メモ](/workspace/docs/design/frontend_implementation_memo.md)
-- [バックエンド基本設計](/workspace/docs/design/backend_basic_design.md)
-- [CI/CD・リリースフロー設計](/workspace/docs/operations/ci_cd_design.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [システム基本設計](system_basic_design.md)
+- [フロントエンドビジュアル設計](frontend_visual_design.md)
+- [フロントエンド実装メモ](frontend_implementation_memo.md)
+- [バックエンド基本設計](backend_basic_design.md)
+- [インフラ IaC 設計](infrastructure_iac_design.md)
+- [CI/CD・リリースフロー設計](../operations/ci_cd_design.md)
 
 ## 3. スコープ
 
@@ -594,6 +595,9 @@ apps/frontend/
 - `BrowserRouter` を使うため、CloudFront 側で SPA フォールバックを設定する
 - `/app` や `/app/systems/...` への直接アクセス時も `index.html` を返せるようにする
 - `index.html` は短めのキャッシュ、ハッシュ付き静的アセットは長めのキャッシュとする
+- 配信基盤は [インフラ IaC 設計](infrastructure_iac_design.md) に従い、S3 + CloudFront を AWS CDK で管理する
+- S3 は public access を無効化し、CloudFront OAC 経由でのみ参照可能にする
+- 独自ドメイン、ACM、Route 53、WAF は初期スコープ外とする
 
 ### 13.3 環境変数
 最低限、以下の値をフロントエンド環境変数として持つ。

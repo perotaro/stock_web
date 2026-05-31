@@ -1,0 +1,7 @@
+{
+  "app": "node --loader ts-node/esm bin/guppy-infra.ts",
+  "context": {
+    "projectName": "guppy-web",
+    "environmentName": "dev"
+  }
+}

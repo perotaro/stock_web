@@ -58,7 +58,9 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 
 - 実データや売買ロジックは公開せず、Web/API/設計ドキュメントのみ公開する方針にしました。
 - 実DBがなくても画面確認できるよう、固定ダミーデータを返す簡易サーバーを用意しました。
-- 本番デプロイよりも、まずはローカルでの動作確認、責務分離、テスト整備を優先しました。
+- Web/API の本番デプロイは手動構築で完了済みです。ただし、バッチ処理側の本番対応は未対応のため、Web/API の公開構成を先行して検証しています。
+- デプロイ構成は当初想定していた `CloudFront + S3 + API Gateway + Lambda + DynamoDB + Cognito` を基本とし、設計方針どおりの責務分離で構成しています。
+- IaC は TypeScript 版 AWS CDK で初期実装し、手動構築済み環境とは別の検証環境で `synth` / `bootstrap` / `deploy` / `destroy` の流れを確認済みです。
 - 公開範囲ではドメインロジックが限定的なため、DDDの全面適用ではなく、handler / usecase / repository の責務分離を優先しました。
 
 ## 技術スタック
@@ -86,9 +88,22 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 - AGENTS.md
 - Codex
 
+### Infrastructure
+
+- AWS CDK v2
+- TypeScript
+- CloudFormation
+- SSM Parameter Store
+
 ## 現在の進捗
 
-現時点では、機能・設計・ローカル動作確認を優先しており、本番デプロイは今後の改善項目としています。
+現時点では、Web/API の本番デプロイは手動構築で完了しています。
+デプロイ構成は、当初想定していた AWS 構成どおりに構築しています。
+一方で、日次データ更新やシグナル生成を担うバッチ処理側の本番対応は未対応です。
+そのためバッチ実行結果はダミーの値をDBに登録し表示させています。
+
+また、既存の手動構築・運用手順を整理しながら、IaC への移行を実践中です。
+現在は `infra/cdk` に TypeScript 版 AWS CDK の初期構成を追加し、手動構築済み環境を直接取り込むのではなく、別環境を作成して検証する方針にしています。
 
 フロントエンドはローカル環境で起動でき、主要画面・主要機能を確認できる状態です。
 バックエンドも実装していますが、実データ参照には非公開リポジトリ側で管理しているDB定義・バッチ処理・実データが必要です。
@@ -105,6 +120,14 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
   - ウォッチリスト画面
   - APIクライアント
 - バックエンドAPI
+- Web/API の本番デプロイ
+- TypeScript 版 AWS CDK によるインフラ定義の初期実装
+  - S3 / CloudFront
+  - Cognito User Pools
+  - API Gateway / Lambda
+  - DynamoDB
+  - CloudWatch
+  - GitHub Actions OIDC 用 IAM Role
 - フロントエンド確認用のダミーサーバー
 - ドキュメント
   - 要件定義書
@@ -123,10 +146,9 @@ Guppy Web System は、自身の株式トレード支援を目的に開発して
 ### 対応中
 
 - CI/CD構築
-- IaC
-- 本番デプロイ
-- 認証・権限まわりの本実装
-- 実DB連携
+- IaC の本番移行方針整理
+- バッチ処理側の本番対応
+- 手動構築済みリソースからCDK管理環境への移行検討
 - CC-SDD風ワークフローを用いた開発プロセスの改善
 
 ## ローカル動作について
@@ -221,13 +243,46 @@ Lambda 用のハンドラーコードをローカル HTTP サーバーから呼�
   - DynamoDB を想定
   - 詳細なテーブル定義は非公開リポジトリで管理
 
-将来的なデプロイ構成としては、以下を想定しています。
+現在の Web/API のデプロイ構成は、以下の AWS 構成を基本としています。
+バッチ処理側は未対応のため、EventBridge Scheduler + Lambda 構成は今後の対応対象です。
 
 - Frontend: S3 + CloudFront
 - API: API Gateway + Lambda
 - Auth: Cognito User Pools
 - Database: DynamoDB
 - Batch: EventBridge Scheduler + Lambda
+
+## デプロイ・IaC
+
+初期の本番環境は AWS Console を使って手動構築しています。
+現在は、同じ構成を再現可能にするために TypeScript 版 AWS CDK を `infra/cdk` に追加しています。
+
+CDK で定義している主なリソースは以下です。
+
+- `FrontendHostingStack`: S3 + CloudFront + OAC
+- `DataStack`: DynamoDB
+- `AuthStack`: Cognito User Pools / App Client
+- `ApiStack`: API Gateway HTTP API + Lambda + IAM Role
+- `MonitoringStack`: CloudWatch Logs / Alarms
+- `GithubOidcStack`: GitHub Actions OIDC 用 IAM Role / Policy
+
+基本コマンドは以下です。
+
+```bash
+cd infra/cdk
+npm install
+npm run build
+npm run synth -- -c config=config/dev.example.json
+```
+
+実際のAWSアカウントへデプロイする場合は、`config/*.local.json` に環境固有値を置きます。
+`*.local.json`、`cdk.out`、`node_modules`、Lambda zip、手動デプロイ値のローカルメモは Git 管理しません。
+
+詳細は以下を参照してください。
+
+- [インフラ IaC 設計](docs/design/infrastructure_iac_design.md)
+- [IaC 移行計画](docs/operations/iac_migration_plan.md)
+- [CDK README](infra/cdk/README.md)
 
 ## AI活用について
 

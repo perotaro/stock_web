@@ -52,7 +52,7 @@ services:
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     init: true
-    command: bash /workspace/apps/backend/scripts/run_dev.sh
+    command: bash /workspace/apps/backend/scripts/run_local_dev.sh
 
   frontend_dev:
     # フロントエンドのローカル実行専用
@@ -72,9 +72,13 @@ services:
       - backend_dev
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    user: root
     init: true
     command: >-
-      bash -lc "if [ ! -d node_modules ]; then npm ci; fi && npm run dev -- --host 0.0.0.0 --port 5173"
+      bash -lc "chown -R vscode:vscode /workspace/apps/frontend/node_modules /home/vscode/.npm &&
+      runuser -u vscode -- bash -lc 'cd /workspace/apps/frontend &&
+      if [ ! -x node_modules/.bin/vite ]; then npm ci; fi &&
+      npm run dev'"
 
   # dynamodb-local-web:
   #   image: amazon/dynamodb-local:latest

@@ -9,6 +9,7 @@ const clientEnvSchema = z.object({
   VITE_OIDC_CLIENT_ID: z.string().min(1),
   VITE_OIDC_REDIRECT_URI: z.string().url(),
   VITE_OIDC_POST_LOGOUT_REDIRECT_URI: z.string().url(),
+  VITE_OIDC_LOGOUT_ENDPOINT: z.string().url().optional(),
   VITE_OIDC_SCOPE: z.string().min(1),
 })
 
@@ -21,6 +22,7 @@ type ClientEnv = {
   oidcClientId: string
   oidcRedirectUri: string
   oidcPostLogoutRedirectUri: string
+  oidcLogoutEndpoint: string | undefined
   oidcScope: string
 }
 
@@ -84,6 +86,7 @@ export function getClientEnv(): ClientEnv {
     oidcRedirectUri: parsedEnv.data.VITE_OIDC_REDIRECT_URI,
     oidcPostLogoutRedirectUri:
       parsedEnv.data.VITE_OIDC_POST_LOGOUT_REDIRECT_URI,
+    oidcLogoutEndpoint: parsedEnv.data.VITE_OIDC_LOGOUT_ENDPOINT,
     oidcScope: parsedEnv.data.VITE_OIDC_SCOPE,
   }
 

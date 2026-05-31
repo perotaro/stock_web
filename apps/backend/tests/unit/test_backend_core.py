@@ -99,6 +99,21 @@ class FakeWatchlistRepository:
         self.queries.append(query)
         return self._page
 
+    def get_by_ticker(self, ticker: str) -> WatchlistItem | None:
+        """ticker 完全一致の fake item を返す。
+
+        Args:
+            ticker: 銘柄コード。
+
+        Returns:
+            一致する item。存在しなければ None。
+        """
+
+        for item in self._page.items:
+            if item.ticker == ticker:
+                return item
+        return None
+
 
 class FakeAppSummaryRepository:
     """認証後サマリ repository fake。"""

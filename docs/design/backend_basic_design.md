@@ -5,9 +5,11 @@
 対象は、参照専用 API を提供する AWS サーバレスバックエンドであり、Lambda アプリケーション構造、API 設計方針、DynamoDB 参照方針、認証連携、CDK によるインフラ管理方針を明確化することを目的とする。
 
 ## 2. 関連ドキュメント
-- [Webシステム要件定義](/workspace/docs/required/web_system_required.md)
-- [DynamoDB データ設計](/workspace/docs/design/dynamodb_data_design.md)
-- [Backend README](/workspace/apps/backend/README.md)
+- [Webシステム要件定義](../required/web_system_required.md)
+- [システム基本設計](system_basic_design.md)
+- [インフラ IaC 設計](infrastructure_iac_design.md)
+- [DynamoDB データ設計](dynamodb_data_design.md)
+- [Backend README](../../apps/backend/README.md)
 
 ## 3. スコープ
 
@@ -361,6 +363,7 @@ apps/backend/
 ### 12.1 方針
 - バックエンドの AWS リソースは AWS CDK で定義する
 - コンソール手動設定を避け、再現性ある構成を維持する
+- Web システム全体の IaC 方針、スタック分割、フロントエンド配信基盤との関係は [インフラ IaC 設計](infrastructure_iac_design.md) に従う
 
 ### 12.2 CDK で管理する主なリソース
 - API Gateway

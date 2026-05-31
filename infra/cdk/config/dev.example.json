@@ -1,0 +1,20 @@
+{
+  "projectName": "guppy-web",
+  "environmentName": "dev",
+  "resourceNamePrefix": "guppy-web-dev",
+  "awsAccountId": "000000000000",
+  "awsRegion": "ap-northeast-1",
+  "frontendBaseUrl": "https://example.cloudfront.net",
+  "cognitoCallbackUrl": "https://example.cloudfront.net/auth/callback",
+  "cognitoLogoutUrl": "https://example.cloudfront.net/auth/logout/callback",
+  "cognitoDomainPrefix": "guppy-web-dev-example",
+  "cursorSigningSecretParameterName": "/guppy-web-dev/api/cursor-signing-secret",
+  "cursorSigningSecretParameterVersion": 1,
+  "githubActionsSubject": "repo:example-owner/example-repo:environment:dev",
+  "tableNames": {
+    "publicSummary": "md_public_summary",
+    "systemLatestStatus": "md_system_latest_status",
+    "systemLatestSignals": "md_system_latest_signals",
+    "watchlist": "md_watchlist"
+  }
+}

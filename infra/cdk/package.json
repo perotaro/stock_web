@@ -1,0 +1,22 @@
+{
+  "name": "guppy-infra-cdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "diff": "cdk diff"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.257.0",
+    "constructs": "10.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.2",
+    "aws-cdk": "2.1124.1",
+    "ts-node": "10.9.2",
+    "typescript": "6.0.2"
+  }
+}
