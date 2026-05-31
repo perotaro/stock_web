@@ -212,6 +212,11 @@ feature / fix ブランチでは Pull Request 作成時に CI を実行し、必
 - バックエンドとは独立して実行できるようにする
 - S3 / CloudFront / OAC / bucket policy は CDK 管理対象とし、通常のフロントエンドデプロイでは変更しない
 - 独自ドメイン、ACM、Route 53、WAF は初期スコープ外とし、デプロイワークフローでも扱わない
+- 初期実装では `workflow_dispatch` のみ許可し、`main` branch 由来であることと明示確認入力を workflow 内で検証する
+- 同一 frontend 環境へのデプロイは GitHub Actions concurrency で直列化する
+- 本番ビルドでは GitHub Environment Variables から Vite の公開環境変数を注入する
+- デプロイ前に frontend CI 相当の検証と E2E smoke test を実行する
+- デプロイ成果物は commit SHA 付き artifact として短期間保持し、復旧時に参照できるようにする
 
 ## 11. CDK 差分確認フロー
 
@@ -273,10 +278,17 @@ feature / fix ブランチでは Pull Request 作成時に CI を実行し、必
 
 ### 13.2 GitHub Environments / Variables に置く候補
 - `AWS_REGION`
-- `AWS_ROLE_ARN`
 - `CDK_APP_PATH`
+- `FRONTEND_AWS_ROLE_ARN`
 - `FRONTEND_S3_BUCKET`
 - `CLOUDFRONT_DISTRIBUTION_ID`
+- `VITE_API_BASE_URL`
+- `VITE_OIDC_AUTHORITY`
+- `VITE_OIDC_CLIENT_ID`
+- `VITE_OIDC_REDIRECT_URI`
+- `VITE_OIDC_POST_LOGOUT_REDIRECT_URI`
+- `VITE_OIDC_LOGOUT_ENDPOINT`
+- `VITE_OIDC_SCOPE`
 
 ### 13.3 AWS 側に置くもの
 - Cognito 設定の機密値
