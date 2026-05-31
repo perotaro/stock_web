@@ -67,7 +67,7 @@ multi_agent = true
 [mcp_servers.serena]
 # uvx が PATH に乗らない/別物を踏む事故を避けるため “絶対パス推奨”
 # （上の uv install を vscode ユーザーで実行した想定）
-command = "/home/vscode/.local/bin/uvx"
+command = "uvx"
 
 args = [
   "--from", "git+https://github.com/oraios/serena",
