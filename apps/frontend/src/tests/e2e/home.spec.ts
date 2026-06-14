@@ -23,8 +23,13 @@ test('公開トップが表示される', async ({ page }) => {
     }),
   ).toBeVisible()
 
-  await expect(page.getByText('当月稼働日数', { exact: true })).toBeVisible()
-  await expect(page.getByText('7日')).toBeVisible()
+  const operatingDaysCard = page.locator('article').filter({
+    has: page.getByText('7日', { exact: true }),
+  })
+  await expect(operatingDaysCard.locator('p').first()).toHaveText(
+    '当月稼働日数',
+  )
+  await expect(operatingDaysCard.getByText('7日', { exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'ログイン' })).toBeVisible()
   await expect(
     page.getByRole('link', { name: 'ログインして詳細を見る' }),

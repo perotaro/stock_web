@@ -41,7 +41,6 @@ class SystemLatestAssembler:
             if item.record_key.startswith("SIGNAL#")
             and item.priority_rank is not None
             and item.ticker is not None
-            and item.name is not None
             and item.decision is not None
             and item.run_id is not None
         ]

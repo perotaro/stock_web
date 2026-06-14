@@ -19,7 +19,7 @@ describe('fetchSystemLatest', () => {
         {
           priority_rank: 1,
           ticker: 'AAPL',
-          name: 'Apple Inc.',
+          name: '',
           decision: 'BUY',
           reason: 'EMA20 support and ATR contraction',
           run_id: 'DMP-20260410-063000',

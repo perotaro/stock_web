@@ -32,6 +32,16 @@ type SignalCardProps = {
 }
 
 /**
+ * シグナルカードで表示する銘柄名を返す。
+ *
+ * @param signal API が返したシグナル情報。
+ * @returns 銘柄名。未設定の場合はティッカー。
+ */
+function getSignalDisplayName(signal: SystemLatestSignal): string {
+  return signal.name.trim() || signal.ticker
+}
+
+/**
  * 任意の日時を JST 表記へ変換する。
  *
  * @param value API が返す ISO 形式の日時。未実行時は null。
@@ -188,10 +198,11 @@ function SignalsGrid(props: SignalsGridProps) {
 function SignalCard(props: SignalCardProps) {
   const { signal } = props
   const isBuySignal = signal.decision === 'BUY'
+  const displayName = getSignalDisplayName(signal)
 
   return (
     <article
-      aria-label={`${signal.priority_rank}. ${signal.name}`}
+      aria-label={`${signal.priority_rank}. ${displayName}`}
       className={`rounded-[4px] border bg-[color:var(--color-surface)] p-5 shadow-[var(--shadow-soft)] ${
         isBuySignal
           ? 'border-[color:var(--color-accent)]'
@@ -209,7 +220,7 @@ function SignalCard(props: SignalCardProps) {
       </div>
 
       <h3 className="mt-5 text-xl font-semibold tracking-tight text-[color:var(--color-ink)]">
-        {signal.name}
+        {displayName}
       </h3>
       <p className="mt-2 text-sm font-medium text-[color:var(--color-muted)]">
         {signal.ticker}
