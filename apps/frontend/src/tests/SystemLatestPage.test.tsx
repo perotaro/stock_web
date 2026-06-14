@@ -31,7 +31,7 @@ const systemLatestResponse = {
     {
       priority_rank: 3,
       ticker: 'NVDA',
-      name: 'NVIDIA Corporation',
+      name: '',
       decision: 'BUY',
       reason: 'Relative strength improved after consolidation',
       run_id: 'DMP-20260410-063000',
@@ -142,7 +142,7 @@ describe('SystemLatestPage', () => {
 
     expect(articles[0]).toHaveTextContent('Apple Inc.')
     expect(articles[1]).toHaveTextContent('Microsoft Corporation')
-    expect(articles[2]).toHaveTextContent('NVIDIA Corporation')
+    expect(articles[2]).toHaveTextContent('NVDA')
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/systems/DMP/latest',
       expect.objectContaining({

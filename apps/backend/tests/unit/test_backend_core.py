@@ -376,8 +376,8 @@ def test_get_app_summary_usecase_delegates_to_repository_and_assembler() -> None
     assert response.status_counts.failed == 1
 
 
-def test_system_latest_assembler_sorts_complete_signals_and_ignores_incomplete_items() -> None:
-    """システム別最新結果 assembler が signal を整列して不完全 item を除外することを確認する。
+def test_system_latest_assembler_sorts_signals_and_allows_missing_name() -> None:
+    """システム別最新結果 assembler が name 未設定の signal も返すことを確認する。
 
     Args:
         なし。
@@ -434,8 +434,9 @@ def test_system_latest_assembler_sorts_complete_signals_and_ignores_incomplete_i
 
     assert response.system_name == "Dynamic Momentum Pullback"
     assert response.latest_run_id == "run-1"
-    assert [signal.ticker for signal in response.signals] == ["AAPL", "MSFT"]
+    assert [signal.ticker for signal in response.signals] == ["AAPL", "MSFT", "NVDA"]
     assert response.signals[0].reason == "momentum"
+    assert response.signals[2].name == ""
 
 
 def test_system_latest_assembler_raises_not_found_without_meta() -> None:

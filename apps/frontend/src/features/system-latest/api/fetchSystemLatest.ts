@@ -5,7 +5,7 @@ import { apiRequest } from '@/lib/api/httpClient'
 const systemLatestSignalSchema = z.object({
   priority_rank: z.number().int().positive(),
   ticker: z.string().min(1),
-  name: z.string().min(1),
+  name: z.string(),
   decision: z.string().min(1),
   reason: z.string().nullable(),
   run_id: z.string().min(1),

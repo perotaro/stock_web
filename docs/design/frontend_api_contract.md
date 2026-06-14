@@ -252,7 +252,7 @@
 | `signals` | `array` | 必須 | 最新シグナル一覧 |
 | `signals[].priority_rank` | `number` | 必須 | 入札優先度。昇順で返却する |
 | `signals[].ticker` | `string` | 必須 | 銘柄コード |
-| `signals[].name` | `string` | 必須 | 銘柄名 |
+| `signals[].name` | `string` | 必須 | 銘柄名。未解決の場合は空文字を許容し、画面は `ticker` を表示名として扱う |
 | `signals[].decision` | `string` | 必須 | 判定結果。初期運用で返却される値は `BUY`, `NO_SIGNAL` のみ。将来的な追加ステータスもあり得る |
 | `signals[].reason` | `string \| null` | 必須 | 判定理由。画面初期版では非表示でもよい |
 | `signals[].run_id` | `string` | 必須 | 当該シグナルの run ID |
