@@ -1,0 +1,180 @@
+<mxfile host="65bd71144e">
+    <diagram id="otoshin-public-aws-architecture" name="OTOSHIN AWS Architecture">
+        <mxGraphModel dx="596" dy="805" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="760" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="AWS Cloud" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#232F3E;dashed=0;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="60" width="1110" height="470" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheduler_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#FF9900;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.eventbridge;" parent="2" vertex="1">
+                    <mxGeometry x="116.5" y="161" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheduler_label" value="EventBridge Scheduler&#xa;定期実行" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="76.5" y="251" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="lambda_signal_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#FF9900;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.lambda_function;" parent="2" vertex="1">
+                    <mxGeometry x="385" y="131" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="lambda_signal_label" value="Lambda&#xa;シグナル生成バッチ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="345" y="91" width="160" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="lambda_summary_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#FF9900;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.lambda_function;" parent="2" vertex="1">
+                    <mxGeometry x="270" y="329" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="lambda_summary_label" value="Lambda&#xa;公開サマリ更新バッチ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="222.5" y="410" width="175" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="container_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#D86613;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.ecr;" parent="2" vertex="1">
+                    <mxGeometry x="396" y="266" width="58" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="container_label" value="ECR&lt;br&gt;Container Image" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=12;fontColor=#666666;" parent="2" vertex="1">
+                    <mxGeometry x="335" y="324" width="175" height="42" as="geometry"/>
+                </mxCell>
+                <mxCell id="dynamodb_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#2E73B8;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.dynamodb;" parent="2" vertex="1">
+                    <mxGeometry x="495" y="236" width="90" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="dynamodb_label" value="Amazon DynamoDB" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="510" y="326" width="200" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="cloudwatch_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.cloudwatch;" parent="2" vertex="1">
+                    <mxGeometry x="10" y="60" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="cloudwatch_label" value="CloudWatch Alarm&#xa;エラー監視" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="10" y="31" width="180" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="sns_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#D13212;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.sns;" parent="2" vertex="1">
+                    <mxGeometry x="300" y="16" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="sns_label" value="Amazon SNS&#xa;運用通知" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="325" width="170" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_cw_sns" value="通知" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#D13212;strokeWidth=2;" parent="2" source="cloudwatch_icon" target="sns_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="652.5" y="126" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_scheduler_signal" value="起動" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;" parent="2" source="scheduler_icon" target="lambda_signal_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_scheduler_summary" value="起動" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;" parent="2" source="scheduler_icon" target="lambda_summary_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_container_signal" value="image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;dashed=1;strokeColor=#999999;" parent="2" source="container_icon" target="lambda_signal_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_container_summary" value="image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;dashed=1;strokeColor=#999999;" parent="2" source="container_icon" target="lambda_summary_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="340" y="295"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_signal_db" value="read/write" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#2E73B8;strokeWidth=2;" parent="2" source="lambda_signal_icon" target="dynamodb_icon" edge="1">
+                    <mxGeometry x="0.0428" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_summary_db" value="read/write" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#2E73B8;strokeWidth=2;" parent="2" source="lambda_summary_icon" target="dynamodb_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_summary_cw" value="errors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#7AA116;strokeWidth=2;" parent="2" source="lambda_summary_icon" target="cloudwatch_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="20" y="376"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="3" value="errors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#7AA116;strokeWidth=2;" parent="2" source="lambda_signal_icon" target="cloudwatch_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="360" y="140" as="sourcePoint"/>
+                        <mxPoint x="110" y="-101" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="150" y="140"/>
+                            <mxPoint x="150" y="130"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#FF9900;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.lambda_function;" parent="2" vertex="1">
+                    <mxGeometry x="700" y="211" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#FF9900;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.api_gateway;" parent="2" vertex="1">
+                    <mxGeometry x="850" y="221" width="72.52" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="api_gateway_label" value="Amazon API Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="801.26" y="179" width="170" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.bucket;" parent="2" vertex="1">
+                    <mxGeometry x="952.5" y="96" width="75" height="78" as="geometry"/>
+                </mxCell>
+                <mxCell id="s3_label" value="Amazon S3&#xa;静的ファイル" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="910" y="41" width="155" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="web_lambda_label" value="Lambda&#xa;Web API" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="665" y="172" width="155" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="cloudfront_icon" value="" style="sketch=0;points=[];outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.cloudfront;" parent="2" vertex="1">
+                    <mxGeometry x="950" y="291" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="cloudfront_label" value="Amazon CloudFront" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="2" vertex="1">
+                    <mxGeometry x="915" y="400" width="165" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_cloudfront_s3" value="静的コンテンツ" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#7AA116;strokeWidth=2;" parent="2" source="cloudfront_icon" target="7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_api_gateway_lambda" value="invoke" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#FF9900;strokeWidth=2;" parent="2" source="5" target="4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_web_lambda_db" value="read" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#2E73B8;strokeWidth=2;" parent="2" source="4" target="dynamodb_icon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="" style="shape=image;imageAspect=0;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;image=data:image/png,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;" parent="2" vertex="1">
+                    <mxGeometry x="904.5" y="106" width="48" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="&lt;b&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;本レポジトリの範囲&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="2">
+                    <mxGeometry x="691.25" y="40" width="202.5" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Cognito User Pools" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" vertex="1" parent="2">
+                    <mxGeometry x="690" y="354" width="78" height="78" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="JWT検証 / Authorizer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#FF9900;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="2" source="5" target="12">
+                    <mxGeometry x="0.6823" y="-13" relative="1" as="geometry">
+                        <mxPoint x="830" y="520" as="sourcePoint"/>
+                        <mxPoint x="700" y="393" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="870" y="310"/>
+                            <mxPoint x="730" y="310"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="10" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=3;strokeColor=light-dark(#fb0404, #ededed);" vertex="1" parent="2">
+                    <mxGeometry x="496" y="40" width="595" height="425" as="geometry"/>
+                </mxCell>
+                <mxCell id="browser_label" value="Webブラウザ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=14;fontColor=#232F3E;" parent="1" vertex="1">
+                    <mxGeometry x="965" y="650" width="155" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#434445;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.vvd.web_browser;" parent="1" vertex="1">
+                    <mxGeometry x="997.74" y="570" width="84.51" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_browser_cloudfront" value="ページ表示" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;" parent="1" source="6" target="cloudfront_icon" edge="1">
+                    <mxGeometry x="0.0072" y="-10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_browser_api_gateway" value="APIリクエスト" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#FF9900;strokeWidth=2;" parent="1" source="6" target="5" edge="1">
+                    <mxGeometry x="0.5555" y="-14" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="13" value="ログイン/トークン発行" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#FF9900;strokeWidth=2;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="6" target="12">
+                    <mxGeometry x="0.6823" y="-13" relative="1" as="geometry">
+                        <mxPoint x="951.7" y="600" as="sourcePoint"/>
+                        <mxPoint x="889.7" y="351" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
