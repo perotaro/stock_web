@@ -56,7 +56,7 @@ function buildMetricItems(summary: PublicSummary): MetricItem[] {
     {
       label: '当月稼働日数',
       value: `${formatInteger(summary.operating_days)}日`,
-      detail: 'JST 基準の当月稼働日数',
+      detail: '当月稼働日数',
     },
     {
       label: '総実行回数（累計）',
@@ -66,7 +66,7 @@ function buildMetricItems(summary: PublicSummary): MetricItem[] {
     {
       label: '当月成功率',
       value: formatPercent(summary.success_rate),
-      detail: 'run_id 単位の当月成功率',
+      detail: '1回ごとの実行結果にもとづく当月成功率',
     },
     {
       label: '当月平均処理時間',
